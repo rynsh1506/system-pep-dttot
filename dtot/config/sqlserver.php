@@ -1,10 +1,11 @@
 <?php
+
 /**
  * SQL Server Configuration (Dummy)
  * Edit this file with your actual SQL Server credentials
  */
 
-$sqlsrv_host = "10.27.19.12"; // Ganti dengan IP SQL Server Anda
+$sqlsrv_host = "10.27.19.12"; // Ganti dengan IP SQL Server Anda 10.27.19.27
 $sqlsrv_db = "KRF";
 $sqlsrv_user = "sa";
 $sqlsrv_pass = "Bintang7";

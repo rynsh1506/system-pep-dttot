@@ -9,6 +9,7 @@ $success = false;
 $isVerify = false;
 $results_dttot = [];
 $input_data = [];
+$is_ppatk_terindikasi = false;
 
 // PHASE 1: Handle Initial Check Request
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['cek_dulu'])) {
@@ -19,11 +20,45 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['cek_dulu'])) {
         'nik' => trim($_POST['nik'])
     ];
 
-    // Perform Similarity Search in DTTOT
+    // Perform Similarity Search in DTTOT (Internal DB)
     $searchTerm = "%" . $input_data['nama_cadeb'] . "%";
     $stmtSearch = $pdo->prepare("SELECT * FROM terduga WHERE deleted_at IS NULL AND (nama LIKE ? OR deskripsi LIKE ?)");
     $stmtSearch->execute([$searchTerm, $searchTerm]);
     $results_dttot = $stmtSearch->fetchAll();
+
+    // Perform Search via PPATK API to determine form defaults and overwrite typo name
+    $api_url = 'http://localhost:3000/api/v1/search';
+    
+    $post_data = json_encode([
+        'nik' => $input_data['nik']
+    ]);
+    
+    $options = [
+        'http' => [
+            'header'  => "Content-Type: application/json\r\n" .
+                         "Accept: application/json\r\n",
+            'method'  => 'POST',
+            'content' => $post_data,
+            'timeout' => 60
+        ]
+    ];
+    $context  = stream_context_create($options);
+    $response = @file_get_contents($api_url, false, $context);
+    
+    if ($response) {
+        $api_result = json_decode($response, true);
+        if (isset($api_result['data']['extracted_data']['data']) && !empty($api_result['data']['extracted_data']['data'])) {
+            $is_ppatk_terindikasi = true;
+            
+            // Overwrite nama_cadeb with the correct name from PPATK
+            $first_row = $api_result['data']['extracted_data']['data'][0];
+            $nama_ppatk = isset($first_row['Nama']) ? $first_row['Nama'] : (isset($first_row['Nama Lengkap']) ? $first_row['Nama Lengkap'] : (isset($first_row['NAMA']) ? $first_row['NAMA'] : null));
+            
+            if ($nama_ppatk && $nama_ppatk !== 'Tidak Diketahui') {
+                $input_data['nama_cadeb'] = $nama_ppatk;
+            }
+        }
+    }
 }
 
 // PHASE 3: Handle Final Submission
@@ -420,6 +455,16 @@ $history = $pdo->query("SELECT p.*, u.full_name as checker_name FROM pengajuan_d
                     <h5 class="card-title"><i class="fas fa-check-circle"></i> Finalisasi Hasil Pengecekan</h5>
                 </div>
                 <div class="card-body">
+                    <?php if ($is_ppatk_terindikasi): ?>
+                        <div style="background-color: #e8f4fd; color: #0c5460; border: 1px solid #d1ecf1; padding: 12px 15px; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.9rem; display: flex; align-items: start; gap: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                            <i class="fas fa-info-circle" style="margin-top: 3px; font-size: 1.1rem; color: #17a2b8;"></i>
+                            <div>
+                                <strong style="display: block; margin-bottom: 3px; color: #0c5460;">Informasi Sistem</strong>
+                                NIK terdeteksi di database PEP PPATK. Nama calon debitur telah otomatis disesuaikan dan status PEP diatur menjadi <strong>Terindikasi</strong>.
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
                     <div class="data-summary-box">
                         <div class="data-kategori"><?php echo htmlspecialchars($input_data['kategori']); ?></div>
                         <div class="data-label">Nama & NIK Terdaftar:</div>
@@ -449,8 +494,8 @@ $history = $pdo->query("SELECT p.*, u.full_name as checker_name FROM pengajuan_d
                             <label class="form-group-label">Hasil Pengecekan PEP</label>
                             <select name="hasil_pep" class="custom-input" required>
                                 <option value="">-- Hasil Manual PEP --</option>
-                                <option value="Tidak Terindikasi">Tidak Terindikasi</option>
-                                <option value="Terindikasi">Terindikasi</option>
+                                <option value="Tidak Terindikasi" <?php echo !$is_ppatk_terindikasi ? 'selected' : ''; ?>>Tidak Terindikasi</option>
+                                <option value="Terindikasi" <?php echo $is_ppatk_terindikasi ? 'selected' : ''; ?>>Terindikasi</option>
                             </select>
                         </div>
                         <div style="margin-bottom: 1.2rem;">
