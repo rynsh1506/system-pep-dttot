@@ -159,14 +159,24 @@ $results = $stmtSearch->fetchAll();
                 </div>
                 <div style="margin-bottom: 1rem;">
                     <label
-                        style="display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-secondary);">Hasil
-                        Pengecekan PEP</label>
+                        style="display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-secondary);">
+                        Hasil Pengecekan PEP
+                    </label>
                     <select name="hasil_pep" class="form-control" required
                         style="width: 100%; height: 42px; padding: 0 12px; border: 1px solid #d1d3e2; border-radius: 5px;">
                         <option value="">Pilih</option>
                         <option value="Tidak Terindikasi" <?php echo $pengajuan['hasil_pep'] == 'Tidak Terindikasi' ? 'selected' : ''; ?>>Tidak Terindikasi</option>
                         <option value="Terindikasi" <?php echo $pengajuan['hasil_pep'] == 'Terindikasi' ? 'selected' : ''; ?>>Terindikasi</option>
                     </select>
+
+                    <!-- NEW BIG LOADING BLOCK -->
+                    <div id="pep-loading-block" style="text-align: center; padding: 1.5rem; background: #f8f9fc; border: 1px dashed #d1d3e2; border-radius: 5px; margin-top: 15px;">
+                        <i class="fas fa-spinner fa-spin fa-2x" style="color: var(--primary-color); margin-bottom: 10px;"></i>
+                        <p style="color: var(--text-primary); font-weight: 600; margin: 0;">Memeriksa ke Server PPATK...</p>
+                        <p style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 5px; margin-bottom: 0;">Sistem sedang melakukan sinkronisasi live.</p>
+                    </div>
+                    <!-- NEW RESULT BLOCK -->
+                    <div id="pep-result-block" style="display: none; text-align: center; padding: 1.5rem; border-radius: 5px; margin-top: 15px; font-weight: 600;"></div>
                 </div>
 
                 <div style="margin-bottom: 1.5rem;">
@@ -304,5 +314,69 @@ $results = $stmtSearch->fetchAll();
         letter-spacing: 0.5px;
     }
 </style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Memakai NIK untuk pencarian, bukan nama
+    const searchNik = <?php echo json_encode($search_nik); ?>;
+    
+    // Menggunakan URLSearchParams agar request menjadi x-www-form-urlencoded
+    // Ini mencegah browser mengirim preflight OPTIONS yang membuat CORS error
+    const payload = new URLSearchParams();
+    
+    // Asumsi PPATK menggunakan name input "SearchForm[name]" untuk kotak pencarian utama (walau isinya NIK)
+    payload.append("SearchForm[name]", searchNik);
+
+    const apiUrl = "http://localhost:3000/api/v1/search";
+
+    fetch(apiUrl, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: payload
+    })
+    .then(response => response.json())
+    .then(res => {
+        document.getElementById('pep-loading-block').style.display = 'none';
+        const resultBlock = document.getElementById('pep-result-block');
+        const pepSelect = document.querySelector('select[name="hasil_pep"]');
+        
+        if(res.success && res.data && res.data.extracted_data) {
+            const extracted = res.data.extracted_data;
+            const records = extracted.data || [];
+            
+            if(records.length > 0) {
+                // Set otomatis Terindikasi jika belum di-set manual
+                if (pepSelect && !pepSelect.value) pepSelect.value = "Terindikasi";
+                resultBlock.style.background = 'rgba(231, 74, 59, 0.1)';
+                resultBlock.style.border = '1px solid #e74a3b';
+                resultBlock.style.color = '#e74a3b';
+                resultBlock.innerHTML = '<i class="fas fa-exclamation-triangle fa-2x" style="margin-bottom: 10px;"></i><br><span style="font-size: 1.1rem;">Ditemukan ' + records.length + ' data di PEP!</span>';
+                resultBlock.style.display = 'block';
+            } else {
+                // Set otomatis Tidak Terindikasi jika belum di-set manual
+                if (pepSelect && !pepSelect.value) pepSelect.value = "Tidak Terindikasi";
+                resultBlock.style.background = 'rgba(28, 200, 138, 0.1)';
+                resultBlock.style.border = '1px solid #1cc88a';
+                resultBlock.style.color = '#1cc88a';
+                resultBlock.innerHTML = '<i class="fas fa-check-circle fa-2x" style="margin-bottom: 10px;"></i><br><span style="font-size: 1.1rem;">Tidak Terindikasi</span><br><span style="font-size: 0.85rem; font-weight: normal; margin-top: 5px; display: inline-block;">(Data tidak ditemukan di database PPATK)</span>';
+                resultBlock.style.display = 'block';
+            }
+        } else {
+            throw new Error(res.error || res.message || "Data dari PPATK tidak valid.");
+        }
+    })
+    .catch(err => {
+        document.getElementById('pep-loading-block').style.display = 'none';
+        const resultBlock = document.getElementById('pep-result-block');
+        resultBlock.style.background = 'rgba(231, 74, 59, 0.1)';
+        resultBlock.style.border = '1px solid #e74a3b';
+        resultBlock.style.color = '#e74a3b';
+        resultBlock.innerHTML = '<i class="fas fa-wifi fa-2x" style="margin-bottom: 10px;"></i><br><span style="font-size: 1.1rem;">API Error: ' + err.message + '</span>';
+        resultBlock.style.display = 'block';
+    });
+});
+</script>
 
 <?php include 'layout/footer.php'; ?>
