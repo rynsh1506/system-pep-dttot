@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['save_result'])) {
         if (in_array($ext, $allowed)) {
             $new_filename = uniqid('bukti_', true) . '.' . $ext;
             $upload_path = 'uploads/' . $new_filename;
-            
+
             if (move_uploaded_file($_FILES['bukti_ss']['tmp_name'], $upload_path)) {
                 // Delete old file if exists
                 if ($bukti_ss && file_exists('uploads/' . $bukti_ss)) {
@@ -103,12 +103,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['save_result'])) {
 }
 
 // Perform Search against 'terduga' table
-// Based on image: Search by Name and Type (Orang/Korporasi)
-// Note: We'll search by name primarily.
-$searchTerm = "%$search_name%";
-$stmtSearch = $pdo->prepare("SELECT * FROM terduga WHERE deleted_at IS NULL AND (nama LIKE ? OR deskripsi LIKE ?)");
-$stmtSearch->execute([$searchTerm, $searchTerm]);
-$results = $stmtSearch->fetchAll();
+$results = [];
+if (!empty($search_name) || !empty($search_nik)) {
+    $query = "SELECT * FROM terduga WHERE deleted_at IS NULL AND (";
+    $params = [];
+    $conditions = [];
+    
+    if (!empty($search_name)) {
+        $conditions[] = "(nama LIKE ? OR deskripsi LIKE ?)";
+        $params[] = "%" . $search_name . "%";
+        $params[] = "%" . $search_name . "%";
+    }
+    
+    if (!empty($search_nik)) {
+        $conditions[] = "deskripsi LIKE ?";
+        $params[] = "%" . $search_nik . "%";
+    }
+    
+    $query .= implode(" OR ", $conditions) . ")";
+    $stmtSearch = $pdo->prepare($query);
+    $stmtSearch->execute($params);
+    $results = $stmtSearch->fetchAll();
+}
 ?>
 
 <div class="dashboard-header" style="margin-bottom: 2rem;">
@@ -196,7 +212,7 @@ $results = $stmtSearch->fetchAll();
                         </div>
                     <?php endif; ?>
                     <input type="file" name="bukti_ss" class="form-control" accept="image/*"
-                           style="width: 100%; padding: 8px; border: 1px solid #d1d3e2; border-radius: 5px;">
+                        style="width: 100%; padding: 8px; border: 1px solid #d1d3e2; border-radius: 5px;">
                 </div>
                 <button type="submit" name="save_result" class="btn-upload"
                     style="width: 100%; height: 45px; background: var(--primary-color); color: #fff; font-weight: 700; border-radius: 8px;">
@@ -316,67 +332,95 @@ $results = $stmtSearch->fetchAll();
 </style>
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    // Memakai NIK untuk pencarian, bukan nama
-    const searchNik = <?php echo json_encode($search_nik); ?>;
-    
-    // Menggunakan URLSearchParams agar request menjadi x-www-form-urlencoded
-    // Ini mencegah browser mengirim preflight OPTIONS yang membuat CORS error
-    const payload = new URLSearchParams();
-    
-    // Asumsi PPATK menggunakan name input "SearchForm[name]" untuk kotak pencarian utama (walau isinya NIK)
-    payload.append("SearchForm[name]", searchNik);
+    document.addEventListener("DOMContentLoaded", function() {
+        // Memakai NIK untuk pencarian, bukan nama
+        const searchNik = <?php echo json_encode($search_nik); ?>;
 
-    const apiUrl = "http://localhost:3000/api/v1/search";
+        // Menggunakan URLSearchParams agar request menjadi x-www-form-urlencoded
+        // Ini mencegah browser mengirim preflight OPTIONS yang membuat CORS error
+        const payload = new URLSearchParams();
 
-    fetch(apiUrl, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: payload
-    })
-    .then(response => response.json())
-    .then(res => {
-        document.getElementById('pep-loading-block').style.display = 'none';
-        const resultBlock = document.getElementById('pep-result-block');
-        const pepSelect = document.querySelector('select[name="hasil_pep"]');
-        
-        if(res.success && res.data && res.data.extracted_data) {
-            const extracted = res.data.extracted_data;
-            const records = extracted.data || [];
-            
-            if(records.length > 0) {
-                // Set otomatis Terindikasi jika belum di-set manual
-                if (pepSelect && !pepSelect.value) pepSelect.value = "Terindikasi";
+        payload.append("nik", searchNik);
+
+        const apiUrl = "http://localhost:3000/api/v1/search";
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 60000); // Batas maksimal 60 detik
+
+        fetch(apiUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: payload,
+                signal: controller.signal
+            })
+            .then(response => {
+                clearTimeout(timeoutId);
+                return response.json();
+            })
+            .then(res => {
+                document.getElementById('pep-loading-block').style.display = 'none';
+                const resultBlock = document.getElementById('pep-result-block');
+                const pepSelect = document.querySelector('select[name="hasil_pep"]');
+
+                if (res.success && res.data && res.data.extracted_data) {
+                    const extracted = res.data.extracted_data;
+                    const records = extracted.data || [];
+
+                    if (records.length > 0) {
+                        // Set otomatis Terindikasi jika belum di-set manual
+                        if (pepSelect && !pepSelect.value) pepSelect.value = "Terindikasi";
+                        resultBlock.style.background = 'rgba(231, 74, 59, 0.1)';
+                        resultBlock.style.border = '1px solid #e74a3b';
+                        resultBlock.style.color = '#e74a3b';
+                        resultBlock.innerHTML = '<i class="fas fa-exclamation-triangle fa-2x" style="margin-bottom: 10px;"></i><br><span style="font-size: 1.1rem;">Tercatat dalam Database PEP!</span>';
+                        resultBlock.style.display = 'block';
+                    } else {
+                        // Set otomatis Tidak Terindikasi jika belum di-set manual
+                        if (pepSelect && !pepSelect.value) pepSelect.value = "Tidak Terindikasi";
+                        resultBlock.style.background = 'rgba(28, 200, 138, 0.1)';
+                        resultBlock.style.border = '1px solid #1cc88a';
+                        resultBlock.style.color = '#1cc88a';
+                        resultBlock.innerHTML = '<i class="fas fa-check-circle fa-2x" style="margin-bottom: 10px;"></i><br><span style="font-size: 1.1rem;">Tidak Terindikasi</span><br><span style="font-size: 0.85rem; font-weight: normal; margin-top: 5px; display: inline-block;">(Data tidak ditemukan di database PPATK)</span>';
+                        resultBlock.style.display = 'block';
+                    }
+                } else {
+                    throw new Error(res.error || res.message || "Sistem PPATK merespon dengan format yang tidak dikenal.");
+                }
+            })
+            .catch(err => {
+                document.getElementById('pep-loading-block').style.display = 'none';
+                const resultBlock = document.getElementById('pep-result-block');
                 resultBlock.style.background = 'rgba(231, 74, 59, 0.1)';
                 resultBlock.style.border = '1px solid #e74a3b';
                 resultBlock.style.color = '#e74a3b';
-                resultBlock.innerHTML = '<i class="fas fa-exclamation-triangle fa-2x" style="margin-bottom: 10px;"></i><br><span style="font-size: 1.1rem;">Ditemukan ' + records.length + ' data di PEP!</span>';
+
+                // Menganalisa jenis error agar pesan yang tampil sangat jelas untuk user/atasan
+                let userMessage = "";
+                const errMsg = err.message ? err.message.toLowerCase() : "";
+
+                if (errMsg.includes("failed to fetch") || errMsg.includes("networkerror")) {
+                    userMessage = "Service API Internal (Scraper) mati atau tidak bisa dihubungi. Pastikan server Node.js menyala.";
+                } else if (errMsg.includes("timeout") || errMsg.includes("exceeded") || errMsg.includes("gagal mengakses") || errMsg.includes("abort") || err.name === 'AbortError') {
+                    userMessage = "Website PPATK sedang sangat lambat atau Server Down. Sistem menghentikan proses karena melebihi batas waktu (60 detik).";
+                } else if (errMsg.includes("captcha")) {
+                    userMessage = "Sistem gagal menembus perlindungan CAPTCHA PPATK. Ini biasanya terjadi jika IP sedang dibatasi sementara oleh Google.";
+                } else if (errMsg.includes("login")) {
+                    userMessage = "Gagal login otomatis ke sistem PPATK. Cek apakah password berubah atau web PPATK sedang maintenance.";
+                } else {
+                    userMessage = err.message || "Terjadi kesalahan tidak dikenal."; // Fallback error
+                }
+
+                resultBlock.innerHTML = `
+                    <i class="fas fa-server fa-2x" style="margin-bottom: 10px;"></i><br>
+                    <span style="font-size: 1.1rem;">Pengecekan Gagal / Timeout</span><br>
+                    <span style="font-size: 0.9rem; font-weight: normal; margin-top: 5px; display: inline-block;">Keterangan: ${userMessage}</span><br>
+                    <a href="https://pep.ppatk.go.id" target="_blank" style="display: inline-block; margin-top: 15px; padding: 8px 15px; background: #e74a3b; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 0.85rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><i class="fas fa-external-link-alt"></i> Cek Manual di Portal PPATK</a>
+                `;
                 resultBlock.style.display = 'block';
-            } else {
-                // Set otomatis Tidak Terindikasi jika belum di-set manual
-                if (pepSelect && !pepSelect.value) pepSelect.value = "Tidak Terindikasi";
-                resultBlock.style.background = 'rgba(28, 200, 138, 0.1)';
-                resultBlock.style.border = '1px solid #1cc88a';
-                resultBlock.style.color = '#1cc88a';
-                resultBlock.innerHTML = '<i class="fas fa-check-circle fa-2x" style="margin-bottom: 10px;"></i><br><span style="font-size: 1.1rem;">Tidak Terindikasi</span><br><span style="font-size: 0.85rem; font-weight: normal; margin-top: 5px; display: inline-block;">(Data tidak ditemukan di database PPATK)</span>';
-                resultBlock.style.display = 'block';
-            }
-        } else {
-            throw new Error(res.error || res.message || "Data dari PPATK tidak valid.");
-        }
-    })
-    .catch(err => {
-        document.getElementById('pep-loading-block').style.display = 'none';
-        const resultBlock = document.getElementById('pep-result-block');
-        resultBlock.style.background = 'rgba(231, 74, 59, 0.1)';
-        resultBlock.style.border = '1px solid #e74a3b';
-        resultBlock.style.color = '#e74a3b';
-        resultBlock.innerHTML = '<i class="fas fa-wifi fa-2x" style="margin-bottom: 10px;"></i><br><span style="font-size: 1.1rem;">API Error: ' + err.message + '</span>';
-        resultBlock.style.display = 'block';
+            });
     });
-});
 </script>
 
 <?php include 'layout/footer.php'; ?>

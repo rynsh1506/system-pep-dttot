@@ -21,44 +21,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['cek_dulu'])) {
     ];
 
     // Perform Similarity Search in DTTOT (Internal DB)
-    $searchTerm = "%" . $input_data['nama_cadeb'] . "%";
-    $stmtSearch = $pdo->prepare("SELECT * FROM terduga WHERE deleted_at IS NULL AND (nama LIKE ? OR deskripsi LIKE ?)");
-    $stmtSearch->execute([$searchTerm, $searchTerm]);
-    $results_dttot = $stmtSearch->fetchAll();
-
-    // Perform Search via PPATK API to determine form defaults and overwrite typo name
-    $api_url = 'http://localhost:3000/api/v1/search';
+    $results_dttot = [];
+    $nama = $input_data['nama_cadeb'];
+    $nik = $input_data['nik'];
     
-    $post_data = json_encode([
-        'nik' => $input_data['nik']
-    ]);
-    
-    $options = [
-        'http' => [
-            'header'  => "Content-Type: application/json\r\n" .
-                         "Accept: application/json\r\n",
-            'method'  => 'POST',
-            'content' => $post_data,
-            'timeout' => 60
-        ]
-    ];
-    $context  = stream_context_create($options);
-    $response = @file_get_contents($api_url, false, $context);
-    
-    if ($response) {
-        $api_result = json_decode($response, true);
-        if (isset($api_result['data']['extracted_data']['data']) && !empty($api_result['data']['extracted_data']['data'])) {
-            $is_ppatk_terindikasi = true;
-            
-            // Overwrite nama_cadeb with the correct name from PPATK
-            $first_row = $api_result['data']['extracted_data']['data'][0];
-            $nama_ppatk = isset($first_row['Nama']) ? $first_row['Nama'] : (isset($first_row['Nama Lengkap']) ? $first_row['Nama Lengkap'] : (isset($first_row['NAMA']) ? $first_row['NAMA'] : null));
-            
-            if ($nama_ppatk && $nama_ppatk !== 'Tidak Diketahui') {
-                $input_data['nama_cadeb'] = $nama_ppatk;
-            }
+    if (!empty($nama) || !empty($nik)) {
+        $query = "SELECT * FROM terduga WHERE deleted_at IS NULL AND (";
+        $params = [];
+        $conditions = [];
+        
+        if (!empty($nama)) {
+            $conditions[] = "(nama LIKE ? OR deskripsi LIKE ?)";
+            $params[] = "%" . $nama . "%";
+            $params[] = "%" . $nama . "%";
         }
+        
+        if (!empty($nik)) {
+            $conditions[] = "deskripsi LIKE ?";
+            $params[] = "%" . $nik . "%";
+        }
+        
+        $query .= implode(" OR ", $conditions) . ")";
+        $stmtSearch = $pdo->prepare($query);
+        $stmtSearch->execute($params);
+        $results_dttot = $stmtSearch->fetchAll();
     }
+
 }
 
 // PHASE 3: Handle Final Submission
@@ -425,14 +413,13 @@ $history = $pdo->query("SELECT p.*, u.full_name as checker_name FROM pengajuan_d
                             <input type="hidden" name="kategori" value="Calon Debitur">
                         </div>
                         <div style="margin-bottom: 1.25rem;">
-                            <label class="form-group-label">NAMA LENGKAP <span style="color: #e53e3e;">*</span></label>
-                            <input type="text" name="nama_cadeb" class="custom-input" placeholder="Masukkan nama..."
-                                required>
-                        </div>
-                        <div style="margin-bottom: 2rem;">
                             <label class="form-group-label">NIK / IDENTITAS <span style="color: #e53e3e;">*</span></label>
                             <input type="text" name="nik" class="custom-input" placeholder="Masukkan NIK 16 digit..."
                                 required>
+                        </div>
+                        <div style="margin-bottom: 2rem;">
+                            <label class="form-group-label">NAMA LENGKAP</label>
+                            <input type="text" name="nama_cadeb" class="custom-input" placeholder="Masukkan nama (opsional)...">
                         </div>
                         <div style="display: flex; gap: 12px;">
                             <a href="pengajuan_cek.php" style="flex: 1; text-align: center; background: #edeff2; color: #4a5568; text-decoration: none; padding: 12px; border-radius: 10px; font-weight: 700; transition: 0.2s;">Batal</a>
@@ -455,20 +442,12 @@ $history = $pdo->query("SELECT p.*, u.full_name as checker_name FROM pengajuan_d
                     <h5 class="card-title"><i class="fas fa-check-circle"></i> Finalisasi Hasil Pengecekan</h5>
                 </div>
                 <div class="card-body">
-                    <?php if ($is_ppatk_terindikasi): ?>
-                        <div style="background-color: #e8f4fd; color: #0c5460; border: 1px solid #d1ecf1; padding: 12px 15px; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.9rem; display: flex; align-items: start; gap: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                            <i class="fas fa-info-circle" style="margin-top: 3px; font-size: 1.1rem; color: #17a2b8;"></i>
-                            <div>
-                                <strong style="display: block; margin-bottom: 3px; color: #0c5460;">Informasi Sistem</strong>
-                                NIK terdeteksi di database PEP PPATK. Nama calon debitur telah otomatis disesuaikan dan status PEP diatur menjadi <strong>Terindikasi</strong>.
-                            </div>
-                        </div>
-                    <?php endif; ?>
+                    <!-- Alert has been removed -->
 
                     <div class="data-summary-box">
                         <div class="data-kategori"><?php echo htmlspecialchars($input_data['kategori']); ?></div>
                         <div class="data-label">Nama & NIK Terdaftar:</div>
-                        <div class="data-value"><?php echo htmlspecialchars($input_data['nama_cadeb']); ?></div>
+                        <div class="data-value" id="display-nama-cadeb"><?php echo htmlspecialchars($input_data['nama_cadeb']); ?></div>
                         <div
                             style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 4px; font-family: monospace; font-weight: 600;">
                             <?php echo htmlspecialchars($input_data['nik']); ?>
@@ -476,7 +455,7 @@ $history = $pdo->query("SELECT p.*, u.full_name as checker_name FROM pengajuan_d
                     </div>
 
                     <form method="POST" action="" enctype="multipart/form-data">
-                        <input type="hidden" name="nama_cadeb"
+                        <input type="hidden" name="nama_cadeb" id="input-nama-cadeb"
                             value="<?php echo htmlspecialchars($input_data['nama_cadeb']); ?>">
                         <input type="hidden" name="nik" value="<?php echo htmlspecialchars($input_data['nik']); ?>">
                         <input type="hidden" name="kategori"
@@ -494,9 +473,18 @@ $history = $pdo->query("SELECT p.*, u.full_name as checker_name FROM pengajuan_d
                             <label class="form-group-label">Hasil Pengecekan PEP</label>
                             <select name="hasil_pep" class="custom-input" required>
                                 <option value="">-- Hasil Manual PEP --</option>
-                                <option value="Tidak Terindikasi" <?php echo !$is_ppatk_terindikasi ? 'selected' : ''; ?>>Tidak Terindikasi</option>
-                                <option value="Terindikasi" <?php echo $is_ppatk_terindikasi ? 'selected' : ''; ?>>Terindikasi</option>
+                                <option value="Tidak Terindikasi">Tidak Terindikasi</option>
+                                <option value="Terindikasi">Terindikasi</option>
                             </select>
+
+                            <!-- NEW BIG LOADING BLOCK -->
+                            <div id="pep-loading-block" style="text-align: center; padding: 1.5rem; background: #f8f9fc; border: 1px dashed #d1d3e2; border-radius: 10px; margin-top: 15px;">
+                                <i class="fas fa-spinner fa-spin fa-2x" style="color: #4e73df; margin-bottom: 10px;"></i>
+                                <p style="color: #4a5568; font-weight: 700; margin: 0;">Memeriksa ke Server PPATK...</p>
+                                <p style="color: #858796; font-size: 0.75rem; margin-top: 5px; margin-bottom: 0;">Sistem sedang melakukan sinkronisasi live.</p>
+                            </div>
+                            <!-- NEW RESULT BLOCK -->
+                            <div id="pep-result-block" style="display: none; text-align: center; padding: 1.5rem; border-radius: 10px; margin-top: 15px; font-weight: 600;"></div>
                         </div>
                         <div style="margin-bottom: 1.2rem;">
                             <label class="form-group-label">Catatan Pemeriksaan</label>
@@ -532,7 +520,7 @@ $history = $pdo->query("SELECT p.*, u.full_name as checker_name FROM pengajuan_d
                 </div>
                 <div class="card-body">
                     <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.2rem;">
-                        Pencarian data yang mirip dengan <strong
+                        Pencarian data yang mirip dengan <strong id="display-nama-dttot"
                             style="color: var(--primary-color);">"<?php echo htmlspecialchars($input_data['nama_cadeb']); ?>"</strong>.
                     </p>
 
@@ -641,5 +629,101 @@ $history = $pdo->query("SELECT p.*, u.full_name as checker_name FROM pengajuan_d
         </tbody>
     </table>
 </div>
+
+<?php if ($isVerify): ?>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const searchNik = <?php echo json_encode($input_data['nik']); ?>;
+    const payload = new URLSearchParams();
+    payload.append("nik", searchNik);
+
+    const apiUrl = "http://localhost:3000/api/v1/search";
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000); // Batas maksimal 60 detik
+
+    fetch(apiUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: payload,
+        signal: controller.signal
+    })
+    .then(response => {
+        clearTimeout(timeoutId);
+        return response.json();
+    })
+    .then(res => {
+        document.getElementById('pep-loading-block').style.display = 'none';
+        const resultBlock = document.getElementById('pep-result-block');
+        const pepSelect = document.querySelector('select[name="hasil_pep"]');
+        
+        if(res.success && res.data && res.data.extracted_data) {
+            const extracted = res.data.extracted_data;
+            const records = extracted.data || [];
+            
+            if(records.length > 0) {
+                // Update Name secara otomatis jika ada
+                const firstRow = records[0];
+                const namaPpatk = firstRow['Nama'] || firstRow['Nama Lengkap'] || firstRow['NAMA'];
+                if (namaPpatk && namaPpatk !== 'Tidak Diketahui') {
+                    const displayNama = document.getElementById('display-nama-cadeb');
+                    const displayNamaDttot = document.getElementById('display-nama-dttot');
+                    const inputNama = document.getElementById('input-nama-cadeb');
+                    if (displayNama) displayNama.innerHTML = namaPpatk + ' <span style="font-size:0.65rem; background:#36b9cc; color:white; padding:3px 8px; border-radius:10px; vertical-align:middle; margin-left:5px; font-weight: 700;"><i class="fas fa-check"></i> PPATK</span>';
+                    if (displayNamaDttot) displayNamaDttot.innerHTML = '"' + namaPpatk + '"';
+                    if (inputNama) inputNama.value = namaPpatk;
+                }
+
+                if (pepSelect && !pepSelect.value) pepSelect.value = "Terindikasi";
+                resultBlock.style.background = 'rgba(54, 185, 204, 0.1)';
+                resultBlock.style.border = '1px solid #36b9cc';
+                resultBlock.style.color = '#36b9cc';
+                resultBlock.innerHTML = '<i class="fas fa-info-circle fa-2x" style="margin-bottom: 10px;"></i><br><span style="font-size: 1.1rem;">Tercatat dalam Database PEP</span><br><span style="font-size: 0.85rem; font-weight: normal; margin-top: 5px; display: inline-block;">(Menyesuaikan nama secara otomatis)</span>';
+                resultBlock.style.display = 'block';
+            } else {
+                if (pepSelect && !pepSelect.value) pepSelect.value = "Tidak Terindikasi";
+                resultBlock.style.background = 'rgba(28, 200, 138, 0.1)';
+                resultBlock.style.border = '1px solid #1cc88a';
+                resultBlock.style.color = '#1cc88a';
+                resultBlock.innerHTML = '<i class="fas fa-check-circle fa-2x" style="margin-bottom: 10px;"></i><br><span style="font-size: 1.1rem;">Tidak Terindikasi</span><br><span style="font-size: 0.85rem; font-weight: normal; margin-top: 5px; display: inline-block;">(Data tidak ditemukan di database PPATK)</span>';
+                resultBlock.style.display = 'block';
+            }
+        } else {
+            throw new Error(res.error || res.message || "Sistem PPATK merespon dengan format yang tidak dikenal.");
+        }
+    })
+    .catch(err => {
+        document.getElementById('pep-loading-block').style.display = 'none';
+        const resultBlock = document.getElementById('pep-result-block');
+        resultBlock.style.background = 'rgba(231, 74, 59, 0.1)';
+        resultBlock.style.border = '1px solid #e74a3b';
+        resultBlock.style.color = '#e74a3b';
+        
+        let userMessage = "";
+        const errMsg = err.message ? err.message.toLowerCase() : "";
+        
+        if (errMsg.includes("failed to fetch") || errMsg.includes("networkerror")) {
+            userMessage = "Service API Internal (Scraper) mati atau tidak bisa dihubungi. Pastikan server Node.js menyala.";
+        } else if (errMsg.includes("timeout") || errMsg.includes("exceeded") || errMsg.includes("gagal mengakses") || errMsg.includes("abort") || err.name === 'AbortError') {
+            userMessage = "Website PPATK sedang sangat lambat atau Server Down. Sistem menghentikan proses karena melebihi batas waktu (60 detik).";
+        } else if (errMsg.includes("captcha")) {
+            userMessage = "Sistem gagal menembus perlindungan CAPTCHA PPATK. Ini biasanya terjadi jika IP sedang dibatasi sementara oleh Google.";
+        } else if (errMsg.includes("login")) {
+            userMessage = "Gagal login otomatis ke sistem PPATK. Cek apakah password berubah atau web PPATK sedang maintenance.";
+        } else {
+            userMessage = err.message || "Terjadi kesalahan tidak dikenal.";
+        }
+
+        resultBlock.innerHTML = `
+            <i class="fas fa-server fa-2x" style="margin-bottom: 10px;"></i><br>
+            <span style="font-size: 1.1rem;">Pengecekan Gagal / Timeout</span><br>
+            <span style="font-size: 0.9rem; font-weight: normal; margin-top: 5px; display: inline-block;">Keterangan: ${userMessage}</span><br>
+            <a href="https://pep.ppatk.go.id" target="_blank" style="display: inline-block; margin-top: 15px; padding: 8px 15px; background: #e74a3b; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 0.85rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><i class="fas fa-external-link-alt"></i> Cek Manual di Portal PPATK</a>
+        `;
+        resultBlock.style.display = 'block';
+    });
+});
+</script>
+<?php endif; ?>
 
 <?php include 'layout/footer.php'; ?>
