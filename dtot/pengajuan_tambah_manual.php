@@ -463,10 +463,11 @@ $history = $pdo->query("SELECT p.*, u.full_name as checker_name FROM pengajuan_d
 
                         <div style="margin-bottom: 1.2rem;">
                             <label class="form-group-label">Hasil Pengecekan DTTOT</label>
+                            <?php $auto_dttot = (!empty($results_dttot)) ? 'Terindikasi' : 'Tidak Terindikasi'; ?>
                             <select name="hasil_pengecekan" class="custom-input" required>
                                 <option value="">-- Hasil Manual DTOT --</option>
-                                <option value="Tidak Terindikasi">Tidak Terindikasi</option>
-                                <option value="Terindikasi">Terindikasi</option>
+                                <option value="Tidak Terindikasi" <?php echo $auto_dttot == 'Tidak Terindikasi' ? 'selected' : ''; ?>>Tidak Terindikasi</option>
+                                <option value="Terindikasi" <?php echo $auto_dttot == 'Terindikasi' ? 'selected' : ''; ?>>Terindikasi</option>
                             </select>
                         </div>
                         <div style="margin-bottom: 1.2rem;">
