@@ -342,7 +342,7 @@ if (!empty($search_name) || !empty($search_nik)) {
 
         payload.append("nik", searchNik);
 
-        const apiUrl = "http://localhost:3000/api/v1/search";
+        const apiUrl = "http://10.27.19.243:3000/api/v1/search";
 
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 60000); // Batas maksimal 60 detik
