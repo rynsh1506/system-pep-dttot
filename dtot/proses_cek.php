@@ -187,7 +187,7 @@ if (!empty($search_name) || !empty($search_nik)) {
 
                     <!-- NEW BIG LOADING BLOCK -->
                     <div id="pep-loading-block" style="text-align: center; padding: 1.5rem; background: #f8f9fc; border: 1px dashed #d1d3e2; border-radius: 5px; margin-top: 15px;">
-                        <i class="fas fa-spinner fa-spin fa-2x" style="color: var(--primary-color); margin-bottom: 10px;"></i>
+                        <i class="fas fa-spinner fa-spin fa-2x" style="color: #4e73df; margin-bottom: 10px;"></i>
                         <p style="color: var(--text-primary); font-weight: 600; margin: 0;">Memeriksa ke Server PPATK...</p>
                         <p style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 5px; margin-bottom: 0;">Sistem sedang melakukan sinkronisasi live.</p>
                     </div>
