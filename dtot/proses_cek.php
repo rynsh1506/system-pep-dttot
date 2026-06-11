@@ -166,11 +166,15 @@ if (!empty($search_name) || !empty($search_nik)) {
                     <label
                         style="display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-secondary);">Hasil
                         Pengecekan DTTOT</label>
+                    <?php 
+                        $auto_dttot = (!empty($results)) ? 'Terindikasi' : 'Tidak Terindikasi';
+                        $current_dttot = !empty($pengajuan['hasil_pengecekan']) ? $pengajuan['hasil_pengecekan'] : $auto_dttot;
+                    ?>
                     <select name="hasil_pengecekan" class="form-control" required
                         style="width: 100%; height: 42px; padding: 0 12px; border: 1px solid #d1d3e2; border-radius: 5px;">
                         <option value="">Pilih</option>
-                        <option value="Tidak Terindikasi" <?php echo $pengajuan['hasil_pengecekan'] == 'Tidak Terindikasi' ? 'selected' : ''; ?>>Tidak Terindikasi</option>
-                        <option value="Terindikasi" <?php echo $pengajuan['hasil_pengecekan'] == 'Terindikasi' ? 'selected' : ''; ?>>Terindikasi</option>
+                        <option value="Tidak Terindikasi" <?php echo $current_dttot == 'Tidak Terindikasi' ? 'selected' : ''; ?>>Tidak Terindikasi</option>
+                        <option value="Terindikasi" <?php echo $current_dttot == 'Terindikasi' ? 'selected' : ''; ?>>Terindikasi</option>
                     </select>
                 </div>
                 <div style="margin-bottom: 1rem;">
