@@ -97,7 +97,7 @@
                 <h2 class="text-base font-bold text-base-content mb-2">Data Terduga Terbaru</h2>
                 <div class="flex items-center gap-2">
                     <span class="text-xs text-base-content/60">Tampilkan</span>
-                    <select wire:model.live="perPage" class="select select-bordered select-xs w-20">
+                    <select wire:model.live="perPage" class="select select-bordered select-xs w-24">
                         <option value="5">5</option>
                         <option value="10">10</option>
                         <option value="25">25</option>

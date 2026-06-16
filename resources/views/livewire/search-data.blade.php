@@ -61,7 +61,7 @@
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 px-6 py-4 border-b border-base-200">
             <div class="flex items-center gap-2">
                 <span class="text-xs text-base-content/60">Tampilkan</span>
-                <select wire:model.live="perPage" class="select select-bordered select-xs w-20">
+                <select wire:model.live="perPage" class="select select-bordered select-xs w-24">
                     <option value="5">5</option>
                     <option value="10">10</option>
                     <option value="25">25</option>

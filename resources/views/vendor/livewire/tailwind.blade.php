@@ -39,13 +39,13 @@ $scrollIntoViewJsSnippet = ($scrollTo !== false)
                 @foreach ($elements as $element)
                     {{-- "Three Dots" Separator --}}
                     @if (is_string($element))
-                        <button class="join-item btn btn-sm btn-disabled border border-base-200 bg-base-100">{{ $element }}</button>
+                        <button class="join-item btn btn-sm btn-disabled border border-base-200 bg-base-100 hidden sm:inline-flex">{{ $element }}</button>
                     @endif
 
                     {{-- Array Of Links --}}
                     @if (is_array($element))
                         @foreach ($element as $page => $url)
-                            <span wire:key="paginator-{{ $paginator->getPageName() }}-page{{ $page }}">
+                            <span wire:key="paginator-{{ $paginator->getPageName() }}-page{{ $page }}" class="{{ $page == $paginator->currentPage() ? 'inline-block' : 'hidden sm:inline-block' }}">
                                 @if ($page == $paginator->currentPage())
                                     <button class="join-item btn btn-sm btn-primary border border-primary pointer-events-none" aria-current="page">{{ $page }}</button>
                                 @else
