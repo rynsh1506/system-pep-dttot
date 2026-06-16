@@ -307,6 +307,29 @@
                 });
             }
         });
+
+        document.addEventListener('livewire:initialized', () => {
+            Livewire.on('swal', (event) => {
+                const data = event[0];
+                Swal.fire({
+                    title: data.title,
+                    text: data.text,
+                    icon: data.icon,
+                });
+            });
+
+            Livewire.on('swal-redirect', (event) => {
+                const data = event[0];
+                Swal.fire({
+                    title: data.title,
+                    text: data.text,
+                    icon: data.icon,
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    Livewire.navigate(data.url);
+                });
+            });
+        });
     </script>
 </body>
 </html>

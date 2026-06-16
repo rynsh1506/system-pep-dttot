@@ -29,7 +29,10 @@
 
                     <div class="form-control">
                         <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">NIK / Identitas</span></label>
-                        <input wire:model.live.debounce.1000ms="nik" id="nik-input" type="text" class="input input-bordered input-sm focus:border-primary focus:outline-none w-full font-mono font-semibold" />
+                        <div class="join w-full">
+                            <input wire:model.live.debounce.1000ms="nik" id="nik-input" type="text" class="input input-bordered input-sm focus:border-primary focus:outline-none w-full font-mono font-semibold join-item" />
+                            <button type="button" class="btn btn-primary btn-sm join-item" onclick="triggerScrapper(document.getElementById('nik-input').value)">Cek</button>
+                        </div>
                     </div>
 
                     @if($pengajuan->nama_pasangan)

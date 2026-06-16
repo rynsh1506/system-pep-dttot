@@ -123,18 +123,17 @@ class PengajuanForm extends Component
             'checked_at'       => now(),
         ]);
 
-        $this->dispatch('swal', [
+        $this->dispatch('swal-redirect', [
             'icon'  => 'success',
             'title' => 'Berhasil!',
             'text'  => 'Hasil pengecekan berhasil disimpan.',
+            'url'   => route('pengajuan')
         ]);
 
         $this->reset([
             'tanggal', 'kategori', 'nama_cadeb', 'nik', 
             'hasil_pengecekan', 'hasil_pep', 'keterangan', 'bukti_ss', 'matchedRecords'
         ]);
-
-        $this->redirect(route('pengajuan'), navigate: true);
     }
 
     public function render()

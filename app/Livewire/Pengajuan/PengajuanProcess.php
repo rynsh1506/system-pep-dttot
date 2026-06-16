@@ -124,13 +124,12 @@ class PengajuanProcess extends Component
             'checked_at'       => now(),
         ]);
 
-        $this->dispatch('swal', [
+        $this->dispatch('swal-redirect', [
             'icon'  => 'success',
             'title' => 'Tersimpan!',
             'text'  => 'Hasil pengecekan berhasil disimpan.',
+            'url'   => route('pengajuan')
         ]);
-
-        $this->redirect(route('pengajuan'), navigate: true);
     }
 
     public function render()
