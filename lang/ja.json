@@ -122,5 +122,11 @@
     "Sistem Pengawasan": "監視システム",
     "Dashboard": "ダッシュボード",
     "Search Data": "データ検索",
-    "Approvals": "承認"
+    "Approvals": "承認",
+    "Menampilkan": "表示中:",
+    "hingga": "〜",
+    "dari": "/",
+    "hasil": "件",
+    "Export Excel": "Excelエクスポート",
+    "Upload": "アップロード"
 }
