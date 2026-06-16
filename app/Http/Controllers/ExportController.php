@@ -58,4 +58,57 @@ class ExportController extends Controller
 
         return $response;
     }
+
+    public function exportPengajuan(Request $request)
+    {
+        $startDate = $request->get('start_date');
+        $endDate = $request->get('end_date');
+        $dttot = $request->get('dttot', 'All');
+        $pep = $request->get('pep', 'All');
+
+        $query = \App\Models\PengajuanDtot::query();
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('tanggal', [$startDate, $endDate]);
+        }
+        
+        if ($dttot !== 'All') {
+            $query->where('hasil_pengecekan', $dttot);
+        }
+        
+        if ($pep !== 'All') {
+            $query->where('hasil_pep', $pep);
+        }
+
+        $pengajuans = $query->orderByDesc('tanggal')->get();
+
+        $response = new StreamedResponse(function() use ($pengajuans) {
+            $handle = fopen('php://output', 'w');
+            
+            // Add BOM for UTF-8 Excel compatibility
+            fputs($handle, chr(0xEF) . chr(0xBB) . chr(0xBF));
+            
+            fputcsv($handle, ['Tanggal', 'Nama CADEB', 'NIK', 'Kategori', 'Hasil DTTOT', 'Hasil PEP', 'Keterangan', 'Input By']);
+            
+            foreach ($pengajuans as $row) {
+                fputcsv($handle, [
+                    $row->tanggal,
+                    $row->nama_cadeb,
+                    $row->nik,
+                    $row->kategori,
+                    $row->hasil_pengecekan,
+                    $row->hasil_pep,
+                    $row->keterangan,
+                    $row->input_by
+                ]);
+            }
+            
+            fclose($handle);
+        });
+
+        $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
+        $response->headers->set('Content-Disposition', 'attachment; filename="Report_Hasil_Cek_'.date('Ymd_His').'.csv"');
+
+        return $response;
+    }
 }
