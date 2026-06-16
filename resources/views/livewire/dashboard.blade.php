@@ -93,8 +93,17 @@
     <div class="rounded-2xl bg-base-100 border border-base-200 shadow-sm">
         {{-- Tabel Header --}}
         <div class="flex flex-row flex-wrap items-center justify-between gap-4 px-6 py-4 border-b border-base-200">
-            <div>
-                <h2 class="text-base font-bold text-base-content mb-2">Data Terduga Terbaru</h2>
+            <div class="flex flex-col gap-3 w-full lg:w-auto">
+                <div class="flex flex-row items-center justify-between lg:justify-start gap-4">
+                    <h2 class="text-base font-bold text-base-content">Data Terduga Terbaru</h2>
+                    <a href="{{ route('search') }}"
+                        class="btn btn-xs btn-outline btn-primary rounded-full">
+                        Lihat Semua
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-3.5 h-3.5">
+                            <path fill-rule="evenodd" d="M2 8a.75.75 0 0 1 .75-.75h8.69L8.22 4.03a.75.75 0 0 1 1.06-1.06l4.5 4.5a.75.75 0 0 1 0 1.06l-4.5 4.5a.75.75 0 0 1-1.06-1.06l3.22-3.22H2.75A.75.75 0 0 1 2 8Z" clip-rule="evenodd"/>
+                        </svg>
+                    </a>
+                </div>
                 <div class="flex items-center gap-2">
                     <span class="text-xs text-base-content/60">Tampilkan</span>
                     <select wire:model.live="perPage" class="select select-bordered select-xs w-24">
@@ -107,17 +116,8 @@
                     <span class="text-xs text-base-content/60">baris</span>
                 </div>
             </div>
-            <div class="flex flex-row flex-wrap items-center gap-4">
-                <div class="w-auto">
-                    {{ $recentData->links() }}
-                </div>
-                <a href="{{ route('search') }}"
-                    class="inline-flex items-center gap-1.5 text-sm text-primary font-medium hover:underline shrink-0">
-                    Lihat Semua
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-3.5 h-3.5">
-                        <path fill-rule="evenodd" d="M2 8a.75.75 0 0 1 .75-.75h8.69L8.22 4.03a.75.75 0 0 1 1.06-1.06l4.5 4.5a.75.75 0 0 1 0 1.06l-4.5 4.5a.75.75 0 0 1-1.06-1.06l3.22-3.22H2.75A.75.75 0 0 1 2 8Z" clip-rule="evenodd"/>
-                    </svg>
-                </a>
+            <div class="w-full lg:w-auto">
+                {{ $recentData->links() }}
             </div>
         </div>
 
