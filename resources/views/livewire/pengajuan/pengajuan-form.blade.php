@@ -4,32 +4,19 @@
         <p class="text-sm text-base-content/60 mt-1">Tambah data CADEB/Pegawai untuk diperiksa terhadap database DTTOT & PEP secara manual.</p>
     </div>
 
-    {{-- Step Indicator --}}
-    <div class="flex items-center justify-center gap-4 mb-10 bg-base-100 p-4 rounded-xl border border-base-200 shadow-sm max-w-2xl mx-auto">
-        <div class="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors {{ $step === 1 ? 'bg-primary/10 text-primary font-bold' : 'text-base-content/50 font-semibold' }}">
-            <div class="w-6 h-6 flex items-center justify-center rounded-full border {{ $step === 1 ? 'border-primary' : 'border-base-content/30' }} text-xs">1</div>
-            Input Data
-        </div>
-        <div class="text-base-content/30">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" /></svg>
-        </div>
-        <div class="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors {{ $step === 2 ? 'bg-primary/10 text-primary font-bold' : 'text-base-content/50 font-semibold' }}">
-            <div class="w-6 h-6 flex items-center justify-center rounded-full border {{ $step === 2 ? 'border-primary' : 'border-base-content/30' }} text-xs">2</div>
-            Verifikasi & Simpan
-        </div>
-    </div>
-
-    @if ($step === 1)
-        {{-- STEP 1: INITIAL INPUT FORM --}}
-        <div class="flex justify-center mb-14">
-            <div class="card bg-base-100 border border-base-200 shadow-md w-full max-w-lg">
+    {{-- SPLIT SCREEN LAYOUT --}}
+    <div class="flex flex-col lg:flex-row gap-6 mb-14 items-stretch">
+        
+        {{-- LEFT: Input Form --}}
+        <div class="w-full lg:w-5/12 flex flex-col">
+            <div class="card bg-base-100 border border-base-200 shadow-md flex-1">
                 <div class="card-body p-6">
                     <h2 class="card-title text-base text-primary border-b border-base-200 pb-3 mb-4 flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003Z" /></svg>
                         Informasi Pegawai / Vendor
                     </h2>
-                    
-                    <form wire:submit.prevent="cekData">
+
+                    <form wire:submit.prevent="save">
                         <div class="form-control mb-4">
                             <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Kategori <span class="text-error">*</span></span></label>
                             <select wire:model="kategori" class="select select-bordered focus:border-primary focus:outline-none w-full @error('kategori') select-error @enderror">
@@ -41,269 +28,263 @@
                         </div>
 
                         <div class="form-control mb-4">
-                            <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Nama Lengkap <span class="text-error">*</span></span></label>
-                            <input wire:model="nama_cadeb" type="text" placeholder="Masukkan nama..." class="input input-bordered focus:border-primary focus:outline-none w-full @error('nama_cadeb') input-error @enderror" />
+                            <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Nama Terdaftar <span class="text-error">*</span></span></label>
+                            <input wire:model.live.debounce.1000ms="nama_cadeb" type="text" placeholder="Masukkan nama..." class="input input-bordered focus:border-primary focus:outline-none w-full font-bold" />
                             @error('nama_cadeb') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
                         </div>
 
-                        <div class="form-control mb-8">
+                        <div class="form-control mb-4">
                             <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">NIK / Identitas <span class="text-error">*</span></span></label>
-                            <input wire:model="nik" type="text" placeholder="Masukkan NIK 16 digit..." class="input input-bordered focus:border-primary focus:outline-none font-mono w-full @error('nik') input-error @enderror" />
+                            <input wire:model.live.debounce.1000ms="nik" id="nik-input" type="text" placeholder="Masukkan NIK 16 digit..." class="input input-bordered focus:border-primary focus:outline-none w-full font-mono font-semibold" />
                             @error('nik') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
+                        </div>
+                        
+                        <div class="form-control mb-4">
+                            <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Hasil Pengecekan DTTOT <span class="text-error">*</span></span></label>
+                            <select wire:model="hasil_pengecekan" class="select select-bordered focus:border-primary focus:outline-none w-full @error('hasil_pengecekan') select-error @enderror">
+                                <option value="">-- Hasil Manual DTOT --</option>
+                                <option value="Tidak Terindikasi">Tidak Terindikasi</option>
+                                <option value="Terindikasi">Terindikasi</option>
+                            </select>
+                            @error('hasil_pengecekan') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
+                        </div>
+
+                        <div class="form-control mb-4">
+                            <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Hasil Pengecekan PEP <span class="text-error">*</span></span></label>
+                            <select wire:model="hasil_pep" class="select select-bordered focus:border-primary focus:outline-none w-full @error('hasil_pep') select-error @enderror">
+                                <option value="">-- Hasil Manual PEP --</option>
+                                <option value="Tidak Terindikasi">Tidak Terindikasi</option>
+                                <option value="Terindikasi">Terindikasi</option>
+                            </select>
+                            @error('hasil_pep') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
+                        </div>
+
+                        <div class="form-control mb-4">
+                            <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Catatan Pemeriksaan</span></label>
+                            <textarea wire:model="keterangan" class="textarea textarea-bordered focus:border-primary focus:outline-none w-full" rows="3" placeholder="Tulis catatan jika diperlukan..."></textarea>
+                            @error('keterangan') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
+                        </div>
+
+                        <div class="form-control mb-6">
+                            <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Upload Bukti Screenshot</span></label>
+                            <input type="file" wire:model="bukti_ss" class="file-input file-input-bordered file-input-sm w-full focus:border-primary focus:outline-none" accept="image/*" />
+                            <div wire:loading wire:target="bukti_ss" class="text-xs text-primary mt-1">Mengunggah gambar...</div>
+                            @error('bukti_ss') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
+                            @if ($bukti_ss)
+                                <div class="mt-2 text-xs text-success flex items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg>
+                                    Gambar siap
+                                </div>
+                            @endif
                         </div>
 
                         <button type="submit" class="btn btn-primary w-full shadow-sm shadow-primary/30">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd" /></svg>
-                            Cari & Cek Data Similar
-                            <span wire:loading wire:target="cekData" class="loading loading-spinner loading-sm ml-2"></span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg>
+                            Simpan Hasil Pengecekan
                         </button>
                     </form>
                 </div>
             </div>
         </div>
-    @else
-        {{-- STEP 2: REVIEW & VERIFY --}}
-        <div class="flex flex-col lg:flex-row gap-6 mb-14 items-stretch">
+
+        {{-- RIGHT: Real-time API & Database Searches --}}
+        <div class="w-full lg:w-7/12 flex flex-col h-full space-y-6">
             
-            {{-- LEFT: Final Results Form --}}
-            <div class="w-full lg:w-5/12 flex flex-col">
-                <div class="card bg-base-100 border border-base-200 shadow-md flex-1">
-                    <div class="card-body p-6">
-                        <h2 class="card-title text-base text-primary border-b border-base-200 pb-3 mb-4 flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" /></svg>
-                            Finalisasi Hasil Pengecekan
+            {{-- API Scrapper Output --}}
+            <div class="card bg-base-100 border border-base-200 shadow-sm">
+                <div class="card-body p-5">
+                    <div class="flex items-center justify-between mb-3 border-b border-base-200 pb-2">
+                        <h2 class="card-title text-sm text-base-content/80 font-bold flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-secondary"><path fill-rule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zm-1.25 4.5a1.25 1.25 0 112.5 0v3.25h1.5a.75.75 0 010 1.5h-2.25a.75.75 0 01-.75-.75V6.5z" clip-rule="evenodd" /></svg>
+                            Hasil Pengecekan Otomatis (API Scrapper)
                         </h2>
-
-                        <form wire:submit.prevent="save">
-                            <div class="flex flex-col md:flex-row gap-4 mb-4">
-                                <div class="form-control flex-1">
-                                    <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Nama Terdaftar <span class="text-error">*</span></span></label>
-                                    <input wire:model="nama_cadeb" type="text" class="input input-bordered focus:border-primary focus:outline-none w-full font-bold" />
-                                    @error('nama_cadeb') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
-                                </div>
-                                <div class="form-control flex-1">
-                                    <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">NIK / Identitas <span class="text-error">*</span></span></label>
-                                    <input wire:model="nik" type="text" class="input input-bordered focus:border-primary focus:outline-none w-full font-mono font-semibold" />
-                                    @error('nik') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
-                                </div>
-                            </div>
-                            
-                            <div class="form-control mb-4">
-                                <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Hasil Pengecekan DTTOT <span class="text-error">*</span></span></label>
-                                <select wire:model="hasil_pengecekan" class="select select-bordered focus:border-primary focus:outline-none w-full @error('hasil_pengecekan') select-error @enderror">
-                                    <option value="">-- Hasil Manual DTOT --</option>
-                                    <option value="Tidak Terindikasi">Tidak Terindikasi</option>
-                                    <option value="Terindikasi">Terindikasi</option>
-                                </select>
-                                @error('hasil_pengecekan') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
-                            </div>
-
-                            <div class="form-control mb-4">
-                                <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Hasil Pengecekan PEP <span class="text-error">*</span></span></label>
-                                <select wire:model="hasil_pep" class="select select-bordered focus:border-primary focus:outline-none w-full @error('hasil_pep') select-error @enderror">
-                                    <option value="">-- Hasil Manual PEP --</option>
-                                    <option value="Tidak Terindikasi">Tidak Terindikasi</option>
-                                    <option value="Terindikasi">Terindikasi</option>
-                                </select>
-                                @error('hasil_pep') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
-                            </div>
-
-                            <div class="form-control mb-4">
-                                <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Catatan Pemeriksaan</span></label>
-                                <textarea wire:model="keterangan" class="textarea textarea-bordered focus:border-primary focus:outline-none w-full" rows="3" placeholder="Tulis catatan jika diperlukan..."></textarea>
-                                @error('keterangan') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
-                            </div>
-
-                            <div class="form-control mb-6">
-                                <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Upload Bukti Screenshot</span></label>
-                                <input type="file" wire:model="bukti_ss" class="file-input file-input-bordered file-input-sm w-full focus:border-primary focus:outline-none" accept="image/*" />
-                                <div wire:loading wire:target="bukti_ss" class="text-xs text-primary mt-1">Mengunggah gambar...</div>
-                                @error('bukti_ss') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
-                                @if ($bukti_ss)
-                                    <div class="mt-2 text-xs text-success flex items-center gap-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg>
-                                        Gambar siap
-                                    </div>
-                                @endif
-                            </div>
-
-                            <div class="flex gap-3 mt-8">
-                                <button type="button" wire:click="kembali" class="btn btn-ghost flex-1 border border-base-200">Kembali</button>
-                                <button type="submit" class="btn btn-primary flex-[2] shadow-sm shadow-primary/30">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg>
-                                    Simpan Hasil Pengecekan
-                                    <span wire:loading wire:target="save" class="loading loading-spinner loading-sm ml-2"></span>
-                                </button>
-                            </div>
-                        </form>
                     </div>
+
+                    <div id="pep-idle-block" class="text-center p-6 bg-base-200/50 border border-dashed border-base-300 rounded-lg mt-3">
+                        <p class="font-semibold text-base-content/50 m-0">Menunggu Input NIK...</p>
+                        <p class="text-xs text-base-content/40 mt-1 mb-0">API PPATK akan berjalan otomatis setelah NIK diketik.</p>
+                    </div>
+
+                    <!-- LOADING BLOCK -->
+                    <div id="pep-loading-block" class="hidden text-center p-6 bg-base-200/50 border border-dashed border-base-300 rounded-lg mt-3">
+                        <span class="loading loading-spinner loading-lg text-primary mb-3"></span>
+                        <p class="font-semibold text-base-content m-0">Memeriksa ke Server PPATK...</p>
+                        <p class="text-xs text-base-content/50 mt-1 mb-0">Sistem sedang melakukan sinkronisasi live.</p>
+                    </div>
+                    <!-- RESULT BLOCK -->
+                    <div id="pep-result-block" class="hidden text-center p-6 rounded-lg mt-3 border font-semibold"></div>
+                    
                 </div>
             </div>
 
-            {{-- RIGHT: Similarity Table & API Results --}}
-            <div class="w-full lg:w-7/12 flex flex-col gap-4">
-
-                {{-- API PPATK Scrapper Section --}}
-                <div class="card bg-base-100 border border-base-200 shadow-md">
-                    <div class="card-body p-5">
-                        <div class="flex items-center justify-between mb-3 border-b border-base-200 pb-2">
-                            <h2 class="card-title text-sm text-base-content/80 font-bold flex items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-secondary"><path fill-rule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zm-1.25 4.5a1.25 1.25 0 112.5 0v3.25h1.5a.75.75 0 010 1.5h-2.25a.75.75 0 01-.75-.75V6.5z" clip-rule="evenodd" /></svg>
-                                Hasil Pengecekan Otomatis (API Scrapper)
-                            </h2>
-                        </div>
-
-                        <!-- NEW BIG LOADING BLOCK -->
-                        <div id="pep-loading-block" class="text-center p-6 bg-base-200/50 border border-dashed border-base-300 rounded-lg mt-3">
-                            <span class="loading loading-spinner loading-lg text-primary mb-3"></span>
-                            <p class="font-semibold text-base-content m-0">Memeriksa ke Server PPATK...</p>
-                            <p class="text-xs text-base-content/50 mt-1 mb-0">Sistem sedang melakukan sinkronisasi live.</p>
-                        </div>
-                        <!-- NEW RESULT BLOCK -->
-                        <div id="pep-result-block" class="hidden text-center p-6 rounded-lg mt-3 border font-semibold"></div>
-                        
-                    </div>
-                </div>
-
-                {{-- Database DTTOT Matches --}}
-                <div class="card bg-base-100 border border-base-200 shadow-md flex-1">
-                    <div class="card-header p-5 pb-3 border-b border-base-200 flex items-center justify-between">
-                        <h2 class="card-title text-base text-primary flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path d="M4.464 5.166A5.25 5.25 0 004 8.5c0 3.136 2.162 5.86 5.14 6.645V17a.75.75 0 001.5 0v-1.855A6.711 6.711 0 0013.5 14c3.038 0 5.5-2.462 5.5-5.5s-2.462-5.5-5.5-5.5H4.464z" /></svg>
+            {{-- DTTOT MATCHES --}}
+            <div class="card bg-base-100 border border-base-200 shadow-sm flex-1">
+                <div class="card-body p-5 flex flex-col h-full">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 border-b border-base-200 pb-3 gap-3">
+                        <h2 class="card-title text-sm text-base-content/80 font-bold flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-info"><path fill-rule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zM5.5 10a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM10 6a4 4 0 100 8 4 4 0 000-8z" clip-rule="evenodd" /></svg>
                             Database DTTOT Matches
                         </h2>
-                        <a href="https://pep.ppatk.go.id/admin/user/login" target="_blank" class="btn btn-xs btn-outline hover:bg-secondary hover:border-secondary">
-                            Buka Portal PEP Official
-                        </a>
                     </div>
-                    <div class="card-body p-0">
-                        <div class="p-4 bg-base-50 text-xs text-base-content/60 italic border-b border-base-100">
-                            Pencarian data yang mirip dengan <strong class="text-primary not-italic">"{{ $nama_cadeb }}"</strong>.
-                        </div>
 
-                        <div class="overflow-x-auto max-h-[350px] overflow-y-auto w-full scrollbar-thin">
-                            <table class="table table-sm table-zebra w-full">
-                                <thead class="bg-base-200/80 sticky top-0">
+                    <p class="text-xs text-base-content/60 mb-3 bg-base-200 p-2 rounded-md">
+                        Pencarian data yang mirip dengan NAMA atau NIK yang diketik.
+                    </p>
+
+                    <div class="overflow-x-auto flex-1">
+                        <table class="table table-sm table-zebra w-full text-xs">
+                            <thead class="bg-base-200">
+                                <tr>
+                                    <th class="font-semibold text-base-content">NAMA LENGKAP</th>
+                                    <th class="font-semibold text-base-content w-24">TIPE</th>
+                                    <th class="font-semibold text-base-content max-w-xs">DESKRIPSI / IDENTITAS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (count($matchedRecords) > 0)
+                                    @foreach ($matchedRecords as $match)
                                     <tr>
-                                        <th class="text-xs uppercase">Nama Lengkap</th>
-                                        <th class="text-xs uppercase">Tipe</th>
-                                        <th class="text-xs uppercase">Deskripsi / Identitas</th>
+                                        <td class="font-semibold">{{ $match['nama'] }}</td>
+                                        <td>
+                                            <span class="badge badge-error badge-sm text-[10px]">{{ $match['tipe_entitas'] }}</span>
+                                        </td>
+                                        <td class="text-base-content/70 max-w-xs whitespace-normal">{{ $match['deskripsi'] }}</td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse ($matchedRecords as $item)
-                                        <tr class="hover">
-                                            <td class="font-bold text-error whitespace-nowrap">{{ $item['nama'] }}</td>
-                                            <td class="text-xs">{{ $item['terduga_type'] }}</td>
-                                            <td class="text-xs text-base-content/80 leading-snug">{{ Str::limit($item['deskripsi'], 100) }}</td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="3" class="text-center py-12 text-base-content/40 text-sm italic">
-                                                Data tidak ditemukan di database DTTOT lokal.
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
+                                    @endforeach
+                                @else
+                                    <tr>
+                                        <td colspan="3" class="text-center py-10 text-base-content/40">
+                                            Data tidak ditemukan di database DTTOT lokal.
+                                        </td>
+                                    </tr>
+                                @endif
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-
             </div>
+
         </div>
-        
-        <script>
-            document.addEventListener("livewire:navigated", function() {
-                initScrapper();
-            });
-            document.addEventListener("DOMContentLoaded", function() {
-                initScrapper();
-            });
+    </div>
+    
+    <script>
+        let scrapperDebounceTimeout = null;
+        let scrapperAbortController = null;
 
-            function initScrapper() {
-                // Ensure we only run this when step 2 is active
-                const loadingBlock = document.getElementById('pep-loading-block');
-                if (!loadingBlock || loadingBlock.dataset.ran === "true") return;
-                loadingBlock.dataset.ran = "true"; // Prevent duplicate runs
+        document.addEventListener("DOMContentLoaded", function() {
+            const nikInput = document.getElementById('nik-input');
+            if (nikInput) {
+                // Initial check if NIK is already filled
+                if (nikInput.value.length >= 10) {
+                    triggerScrapper(nikInput.value);
+                }
 
-                const searchNik = "{{ $nik }}";
-                const payload = new URLSearchParams();
-                payload.append("nik", searchNik);
-
-                const apiUrl = "http://10.27.19.243:3000/api/v1/search";
-
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 60000);
-
-                fetch(apiUrl, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/x-www-form-urlencoded"
-                        },
-                        body: payload,
-                        signal: controller.signal
-                    })
-                    .then(response => {
-                        clearTimeout(timeoutId);
-                        return response.json();
-                    })
-                    .then(res => {
+                // Add event listener for auto-check
+                nikInput.addEventListener('input', function(e) {
+                    const val = e.target.value.trim();
+                    clearTimeout(scrapperDebounceTimeout);
+                    
+                    if (val.length < 5) {
+                        document.getElementById('pep-idle-block').style.display = 'block';
                         document.getElementById('pep-loading-block').style.display = 'none';
-                        const resultBlock = document.getElementById('pep-result-block');
+                        document.getElementById('pep-result-block').style.display = 'none';
+                        return;
+                    }
 
-                        if (res.success && res.data && res.data.extracted_data) {
-                            const extracted = res.data.extracted_data;
-                            const records = extracted.data || [];
-
-                            if (records.length > 0) {
-                                // Update Livewire state directly
-                                @this.set('hasil_pep', 'Terindikasi');
-                                
-                                resultBlock.className = 'text-center p-6 rounded-lg mt-3 border font-semibold bg-error/10 border-error text-error';
-                                resultBlock.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-10 h-10 mx-auto mb-3"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span class="text-lg">Tercatat dalam Database PEP!</span>';
-                                resultBlock.style.display = 'block';
-                            } else {
-                                @this.set('hasil_pep', 'Tidak Terindikasi');
-                                
-                                resultBlock.className = 'text-center p-6 rounded-lg mt-3 border font-semibold bg-success/10 border-success text-success';
-                                resultBlock.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-10 h-10 mx-auto mb-3"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg><span class="text-lg">Tidak Terindikasi</span><br><span class="text-sm font-normal mt-1 block opacity-75">(Data tidak ditemukan di database PPATK)</span>';
-                                resultBlock.style.display = 'block';
-                            }
-                        } else {
-                            throw new Error(res.error || res.message || "Sistem PPATK merespon dengan format yang tidak dikenal.");
-                        }
-                    })
-                    .catch(err => {
-                        document.getElementById('pep-loading-block').style.display = 'none';
-                        const resultBlock = document.getElementById('pep-result-block');
-                        
-                        resultBlock.className = 'text-center p-6 rounded-lg mt-3 border font-semibold bg-error/10 border-error text-error';
-
-                        let userMessage = "";
-                        const errMsg = err.message ? err.message.toLowerCase() : "";
-
-                        if (errMsg.includes("failed to fetch") || errMsg.includes("networkerror")) {
-                            userMessage = "Service API Internal (Scraper) mati atau tidak bisa dihubungi. Pastikan server Node.js menyala.";
-                        } else if (errMsg.includes("timeout") || errMsg.includes("exceeded") || errMsg.includes("gagal mengakses") || errMsg.includes("abort") || err.name === 'AbortError') {
-                            userMessage = "Website PPATK sedang sangat lambat atau Server Down. Sistem menghentikan proses karena melebihi batas waktu (60 detik).";
-                        } else if (errMsg.includes("captcha")) {
-                            userMessage = "Sistem gagal menembus perlindungan CAPTCHA PPATK. Ini biasanya terjadi jika IP sedang dibatasi sementara oleh Google.";
-                        } else if (errMsg.includes("login")) {
-                            userMessage = "Gagal login otomatis ke sistem PPATK. Cek apakah password berubah atau web PPATK sedang maintenance.";
-                        } else {
-                            userMessage = err.message || "Terjadi kesalahan tidak dikenal."; 
-                        }
-
-                        resultBlock.innerHTML = `
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-10 h-10 mx-auto mb-3"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" /></svg>
-                            <span class="text-lg">Pengecekan Gagal / Timeout</span><br>
-                            <span class="text-sm font-normal mt-1 block opacity-80">Keterangan: ${userMessage}</span>
-                            <a href="https://pep.ppatk.go.id" target="_blank" class="btn btn-error btn-sm text-white mt-4 shadow-sm shadow-error/30">Cek Manual di Portal PPATK</a>
-                        `;
-                        resultBlock.style.display = 'block';
-                    });
+                    scrapperDebounceTimeout = setTimeout(() => {
+                        triggerScrapper(val);
+                    }, 1200); // Wait 1.2s after typing stops before hitting API
+                });
             }
-        </script>
-    @endif
+        });
+
+        function triggerScrapper(searchNik) {
+            document.getElementById('pep-idle-block').style.display = 'none';
+            document.getElementById('pep-loading-block').style.display = 'block';
+            document.getElementById('pep-result-block').style.display = 'none';
+
+            if (scrapperAbortController) {
+                scrapperAbortController.abort(); // Cancel previous request if still running
+            }
+
+            scrapperAbortController = new AbortController();
+            const payload = new URLSearchParams();
+            payload.append("nik", searchNik);
+
+            const apiUrl = "http://10.27.19.243:3000/api/v1/search";
+
+            const timeoutId = setTimeout(() => scrapperAbortController.abort(), 60000);
+
+            fetch(apiUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: payload,
+                    signal: scrapperAbortController.signal
+                })
+                .then(response => {
+                    clearTimeout(timeoutId);
+                    return response.json();
+                })
+                .then(res => {
+                    document.getElementById('pep-loading-block').style.display = 'none';
+                    const resultBlock = document.getElementById('pep-result-block');
+
+                    if (res.success && res.data && res.data.extracted_data) {
+                        const extracted = res.data.extracted_data;
+                        const records = extracted.data || [];
+
+                        // Auto-correct Nama field if PPATK returns a valid name
+                        if (extracted.name && extracted.name.trim() !== '') {
+                            @this.updateNamaFromApi(extracted.name);
+                        }
+
+                        if (records.length > 0) {
+                            @this.set('hasil_pep', 'Terindikasi');
+                            
+                            resultBlock.className = 'text-center p-6 rounded-lg mt-3 border font-semibold bg-error/10 border-error text-error';
+                            resultBlock.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-10 h-10 mx-auto mb-3"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span class="text-lg">Tercatat dalam Database PEP!</span>';
+                            resultBlock.style.display = 'block';
+                        } else {
+                            @this.set('hasil_pep', 'Tidak Terindikasi');
+                            
+                            resultBlock.className = 'text-center p-6 rounded-lg mt-3 border font-semibold bg-success/10 border-success text-success';
+                            resultBlock.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-10 h-10 mx-auto mb-3"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg><span class="text-lg">Tidak Terindikasi</span><br><span class="text-sm font-normal mt-1 block opacity-75">(Data tidak ditemukan di database PPATK)</span>';
+                            resultBlock.style.display = 'block';
+                        }
+                    } else {
+                        throw new Error(res.error || res.message || "Sistem PPATK merespon dengan format yang tidak dikenal.");
+                    }
+                })
+                .catch(err => {
+                    if (err.name === 'AbortError') return; // Ignore if it's a debounce cancellation
+
+                    document.getElementById('pep-loading-block').style.display = 'none';
+                    const resultBlock = document.getElementById('pep-result-block');
+                    
+                    resultBlock.className = 'text-center p-6 rounded-lg mt-3 border font-semibold bg-error/10 border-error text-error';
+
+                    let userMessage = "";
+                    const errMsg = err.message ? err.message.toLowerCase() : "";
+
+                    if (errMsg.includes("failed to fetch") || errMsg.includes("networkerror")) {
+                        userMessage = "Service API Internal (Scraper) mati atau tidak bisa dihubungi. Pastikan server Node.js menyala.";
+                    } else if (errMsg.includes("timeout") || errMsg.includes("exceeded") || errMsg.includes("gagal mengakses")) {
+                        userMessage = "Website PPATK sedang sangat lambat atau Server Down. Sistem menghentikan proses karena melebihi batas waktu (60 detik).";
+                    } else if (errMsg.includes("captcha")) {
+                        userMessage = "Sistem gagal menembus perlindungan CAPTCHA PPATK. Ini biasanya terjadi jika IP sedang dibatasi sementara oleh Google.";
+                    } else if (errMsg.includes("login")) {
+                        userMessage = "Gagal login otomatis ke sistem PPATK. Cek apakah password berubah atau web PPATK sedang maintenance.";
+                    } else {
+                        userMessage = err.message || "Terjadi kesalahan tidak dikenal."; 
+                    }
+
+                    resultBlock.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-10 h-10 mx-auto mb-3"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" /></svg>
+                        <span class="text-lg">Pengecekan Gagal / Timeout</span><br>
+                        <span class="text-sm font-normal mt-1 block opacity-80">Keterangan: ${userMessage}</span>
+                    `;
+                    resultBlock.style.display = 'block';
+                });
+        }
+    </script>
 </div>

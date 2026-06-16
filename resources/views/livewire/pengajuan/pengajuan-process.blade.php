@@ -14,29 +14,31 @@
     <div class="grid grid-cols-1 lg:grid-cols-5 gap-5">
         {{-- LEFT: Input Form --}}
         <div class="lg:col-span-2 flex flex-col gap-4">
-            {{-- CADEB Info Card --}}
+            {{-- CADEB Info Card (Editable) --}}
             <div class="card bg-base-100 border border-base-200 shadow-sm">
                 <div class="card-body p-4 gap-3">
-                    <h3 class="font-bold text-sm text-primary border-b border-base-200 pb-2">Data CADEB</h3>
-                    <div>
-                        <p class="text-xs text-base-content/50 font-semibold uppercase">Nama</p>
-                        <p class="font-bold text-base-content text-lg">{{ $pengajuan->nama_cadeb }}</p>
+                    <div class="flex items-center justify-between border-b border-base-200 pb-2">
+                        <h3 class="font-bold text-sm text-primary">Data CADEB</h3>
+                        <span class="text-xs text-base-content/50">Diubah terakhir: {{ \Carbon\Carbon::parse($pengajuan->tanggal)->isoFormat('D MMM Y') }}</span>
                     </div>
-                    <div>
-                        <p class="text-xs text-base-content/50 font-semibold uppercase">NIK</p>
-                        <p class="font-mono font-semibold">{{ $pengajuan->nik }}</p>
+                    
+                    <div class="form-control">
+                        <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Nama Lengkap</span></label>
+                        <input wire:model.live.debounce.1000ms="nama_cadeb" type="text" class="input input-bordered input-sm focus:border-primary focus:outline-none w-full font-bold" />
                     </div>
+
+                    <div class="form-control">
+                        <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">NIK / Identitas</span></label>
+                        <input wire:model.live.debounce.1000ms="nik" id="nik-input" type="text" class="input input-bordered input-sm focus:border-primary focus:outline-none w-full font-mono font-semibold" />
+                    </div>
+
                     @if($pengajuan->nama_pasangan)
-                    <div>
-                        <p class="text-xs text-base-content/50 font-semibold uppercase">Pasangan</p>
-                        <p class="font-semibold">{{ $pengajuan->nama_pasangan }}</p>
-                        <p class="font-mono text-sm">{{ $pengajuan->nik_pasangan }}</p>
+                    <div class="mt-2 p-3 bg-base-200/50 rounded-lg">
+                        <p class="text-[10px] text-base-content/50 font-semibold uppercase mb-1">Informasi Pasangan (Read-only)</p>
+                        <p class="text-xs font-semibold">{{ $pengajuan->nama_pasangan }}</p>
+                        <p class="text-xs font-mono">{{ $pengajuan->nik_pasangan }}</p>
                     </div>
                     @endif
-                    <div>
-                        <p class="text-xs text-base-content/50 font-semibold uppercase">Tanggal Pengajuan</p>
-                        <p class="text-sm">{{ \Carbon\Carbon::parse($pengajuan->tanggal)->isoFormat('D MMMM Y') }}</p>
-                    </div>
                 </div>
             </div>
 
@@ -127,7 +129,7 @@
                             </span>
                         @endif
                     </div>
-                    <p class="text-xs text-base-content/50">Menampilkan data yang cocok dengan nama <strong>"{{ $pengajuan->nama_cadeb }}"</strong> di database DTTOT.</p>
+                    <p class="text-xs text-base-content/50">Menampilkan data yang cocok dengan nama <strong>"{{ $nama_cadeb }}"</strong> di database DTTOT.</p>
 
                     <div class="overflow-x-auto">
                         <table class="table table-xs table-zebra w-full">
@@ -185,34 +187,56 @@
         </div>
         
         <script>
-            document.addEventListener("livewire:navigated", function() {
-                initScrapper();
-            });
+            let scrapperDebounceTimeout = null;
+            let scrapperAbortController = null;
+
             document.addEventListener("DOMContentLoaded", function() {
-                initScrapper();
+                const nikInput = document.getElementById('nik-input');
+                if (nikInput) {
+                    // Initial check if NIK is already filled
+                    if (nikInput.value.length >= 10) {
+                        triggerScrapper(nikInput.value);
+                    }
+
+                    // Add event listener for auto-check
+                    nikInput.addEventListener('input', function(e) {
+                        const val = e.target.value.trim();
+                        clearTimeout(scrapperDebounceTimeout);
+                        
+                        if (val.length < 5) {
+                            document.getElementById('pep-loading-block').style.display = 'none';
+                            document.getElementById('pep-result-block').style.display = 'none';
+                            return;
+                        }
+
+                        scrapperDebounceTimeout = setTimeout(() => {
+                            triggerScrapper(val);
+                        }, 1200); // Wait 1.2s after typing stops before hitting API
+                    });
+                }
             });
 
-            function initScrapper() {
-                const loadingBlock = document.getElementById('pep-loading-block');
-                if (!loadingBlock || loadingBlock.dataset.ran === "true") return;
-                loadingBlock.dataset.ran = "true"; // Prevent duplicate runs
+            function triggerScrapper(searchNik) {
+                document.getElementById('pep-loading-block').style.display = 'block';
+                document.getElementById('pep-result-block').style.display = 'none';
 
-                const searchNik = "{{ $pengajuan->nik }}";
+                if (scrapperAbortController) {
+                    scrapperAbortController.abort(); // Cancel previous request if still running
+                }
+
+                scrapperAbortController = new AbortController();
                 const payload = new URLSearchParams();
                 payload.append("nik", searchNik);
 
                 const apiUrl = "http://10.27.19.243:3000/api/v1/search";
 
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 60000);
+                const timeoutId = setTimeout(() => scrapperAbortController.abort(), 60000);
 
                 fetch(apiUrl, {
                         method: "POST",
-                        headers: {
-                            "Content-Type": "application/x-www-form-urlencoded"
-                        },
+                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
                         body: payload,
-                        signal: controller.signal
+                        signal: scrapperAbortController.signal
                     })
                     .then(response => {
                         clearTimeout(timeoutId);
@@ -226,8 +250,12 @@
                             const extracted = res.data.extracted_data;
                             const records = extracted.data || [];
 
+                            // Auto-correct Nama field if PPATK returns a valid name
+                            if (extracted.name && extracted.name.trim() !== '') {
+                                @this.updateNamaFromApi(extracted.name);
+                            }
+
                             if (records.length > 0) {
-                                // Update Livewire state directly
                                 @this.set('hasil_pep', 'Terindikasi');
                                 
                                 resultBlock.className = 'text-center p-6 rounded-lg mt-3 border font-semibold bg-error/10 border-error text-error';
@@ -245,6 +273,8 @@
                         }
                     })
                     .catch(err => {
+                        if (err.name === 'AbortError') return; // Ignore if it's a debounce cancellation
+
                         document.getElementById('pep-loading-block').style.display = 'none';
                         const resultBlock = document.getElementById('pep-result-block');
                         
@@ -255,7 +285,7 @@
 
                         if (errMsg.includes("failed to fetch") || errMsg.includes("networkerror")) {
                             userMessage = "Service API Internal (Scraper) mati atau tidak bisa dihubungi. Pastikan server Node.js menyala.";
-                        } else if (errMsg.includes("timeout") || errMsg.includes("exceeded") || errMsg.includes("gagal mengakses") || errMsg.includes("abort") || err.name === 'AbortError') {
+                        } else if (errMsg.includes("timeout") || errMsg.includes("exceeded") || errMsg.includes("gagal mengakses")) {
                             userMessage = "Website PPATK sedang sangat lambat atau Server Down. Sistem menghentikan proses karena melebihi batas waktu (60 detik).";
                         } else if (errMsg.includes("captcha")) {
                             userMessage = "Sistem gagal menembus perlindungan CAPTCHA PPATK. Ini biasanya terjadi jika IP sedang dibatasi sementara oleh Google.";
@@ -269,7 +299,6 @@
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-10 h-10 mx-auto mb-3"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" /></svg>
                             <span class="text-lg">Pengecekan Gagal / Timeout</span><br>
                             <span class="text-sm font-normal mt-1 block opacity-80">Keterangan: ${userMessage}</span>
-                            <a href="https://pep.ppatk.go.id" target="_blank" class="btn btn-error btn-sm text-white mt-4 shadow-sm shadow-error/30">Cek Manual di Portal PPATK</a>
                         `;
                         resultBlock.style.display = 'block';
                     });

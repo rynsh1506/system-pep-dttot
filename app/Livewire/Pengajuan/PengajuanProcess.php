@@ -16,6 +16,9 @@ class PengajuanProcess extends Component
     public ?PengajuanDtot $pengajuan = null;
     public array $matchedRecords = [];
 
+    public string $nama_cadeb = '';
+    public string $nik = '';
+
     public string $hasil_pengecekan = '';
     public string $hasil_pep = '';
     public string $keterangan = '';
@@ -24,6 +27,8 @@ class PengajuanProcess extends Component
     protected function rules(): array
     {
         return [
+            'nama_cadeb'       => 'required|string|max:255',
+            'nik'              => 'required|string|max:50',
             'hasil_pengecekan' => 'required|in:Terindikasi,Tidak Terindikasi',
             'hasil_pep'        => 'required|in:Terindikasi,Tidak Terindikasi',
             'keterangan'       => 'nullable|string|max:2000',
@@ -41,6 +46,9 @@ class PengajuanProcess extends Component
             return;
         }
 
+        $this->nama_cadeb = $this->pengajuan->nama_cadeb ?? '';
+        $this->nik = $this->pengajuan->nik ?? '';
+
         // Pre-fill if already checked
         $this->hasil_pengecekan = ($this->pengajuan->hasil_pengecekan && $this->pengajuan->hasil_pengecekan !== 'Belum Dicek')
             ? $this->pengajuan->hasil_pengecekan
@@ -50,16 +58,45 @@ class PengajuanProcess extends Component
             : '';
         $this->keterangan = $this->pengajuan->keterangan ?? '';
 
-        // Auto-search against terduga table
+        $this->checkDttotDB();
+    }
+
+    public function updatedNamaCadeb(): void
+    {
+        $this->checkDttotDB();
+    }
+
+    public function updatedNik(): void
+    {
+        $this->checkDttotDB();
+    }
+
+    public function updateNamaFromApi(string $nama): void
+    {
+        if (!empty($nama) && strtoupper(trim($this->nama_cadeb)) !== strtoupper(trim($nama))) {
+            $this->nama_cadeb = strtoupper(trim($nama));
+            $this->checkDttotDB();
+        }
+    }
+
+    public function checkDttotDB(): void
+    {
+        if (empty(trim($this->nama_cadeb)) && empty(trim($this->nik))) {
+            $this->matchedRecords = [];
+            return;
+        }
+
         $this->matchedRecords = Terduga::where(function ($q) {
-            $q->where('nama', 'like', '%' . $this->pengajuan->nama_cadeb . '%')
-              ->orWhere('deskripsi', 'like', '%' . $this->pengajuan->nama_cadeb . '%');
-            if ($this->pengajuan->nik) {
-                $q->orWhere('deskripsi', 'like', '%' . $this->pengajuan->nik . '%');
+            if (!empty(trim($this->nama_cadeb))) {
+                $q->where('nama', 'like', '%' . $this->nama_cadeb . '%')
+                  ->orWhere('deskripsi', 'like', '%' . $this->nama_cadeb . '%');
+            }
+            if (!empty(trim($this->nik))) {
+                $q->orWhere('deskripsi', 'like', '%' . $this->nik . '%');
             }
         })->get()->toArray();
 
-        // Auto-suggest based on match
+        // Auto-suggest based on match if not set
         if (empty($this->hasil_pengecekan)) {
             $this->hasil_pengecekan = count($this->matchedRecords) > 0
                 ? 'Terindikasi'
@@ -77,6 +114,8 @@ class PengajuanProcess extends Component
         }
 
         $this->pengajuan->update([
+            'nama_cadeb'       => strtoupper(trim($this->nama_cadeb)),
+            'nik'              => trim($this->nik),
             'hasil_pengecekan' => $this->hasil_pengecekan,
             'hasil_pep'        => $this->hasil_pep,
             'keterangan'       => $this->keterangan,

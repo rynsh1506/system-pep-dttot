@@ -14,10 +14,7 @@ class PengajuanForm extends Component
 {
     use WithFileUploads;
 
-    #[Session]
-    public int $step = 1;
-
-    // Step 1 Inputs
+    // Step Inputs
     #[Session]
     public string $tanggal = '';
     #[Session]
@@ -27,7 +24,7 @@ class PengajuanForm extends Component
     #[Session]
     public string $nik = '';
 
-    // Step 2 Inputs
+    // Results
     #[Session]
     public string $hasil_pengecekan = '';
     #[Session]
@@ -40,26 +37,21 @@ class PengajuanForm extends Component
     // Data Holds
     #[Session]
     public array $matchedRecords = [];
-    public array $apiResult = [];
-    public bool $isApiChecked = false;
 
     public function mount(): void
     {
-        $this->tanggal = now()->format('Y-m-d');
+        if (empty($this->tanggal)) {
+            $this->tanggal = now()->format('Y-m-d');
+        }
     }
 
     protected function rules(): array
     {
-        if ($this->step === 1) {
-            return [
-                'tanggal'       => 'required|date',
-                'kategori'      => 'required|string',
-                'nama_cadeb'    => 'required|string|min:3|max:255',
-                'nik'           => 'required|string|min:5|max:50',
-            ];
-        }
-
         return [
+            'tanggal'          => 'required|date',
+            'kategori'         => 'required|string',
+            'nama_cadeb'       => 'required|string|min:3|max:255',
+            'nik'              => 'required|string|min:5|max:50',
             'hasil_pengecekan' => 'required|in:Terindikasi,Tidak Terindikasi',
             'hasil_pep'        => 'required|in:Terindikasi,Tidak Terindikasi',
             'keterangan'       => 'nullable|string|max:1000',
@@ -67,31 +59,44 @@ class PengajuanForm extends Component
         ];
     }
 
-    public function cekData(): void
+    public function updatedNamaCadeb(): void
     {
-        $this->validate();
+        $this->checkDttotDB();
+    }
 
-        // 1. Cek dari Database Lokal (DTTOT)
+    public function updatedNik(): void
+    {
+        $this->checkDttotDB();
+    }
+
+    public function checkDttotDB(): void
+    {
+        if (empty(trim($this->nama_cadeb)) && empty(trim($this->nik))) {
+            $this->matchedRecords = [];
+            return;
+        }
+
         $this->matchedRecords = Terduga::where(function ($q) {
-            $q->where('nama', 'like', '%' . $this->nama_cadeb . '%')
-              ->orWhere('deskripsi', 'like', '%' . $this->nama_cadeb . '%');
-            if ($this->nik) {
+            if (!empty(trim($this->nama_cadeb))) {
+                $q->where('nama', 'like', '%' . $this->nama_cadeb . '%')
+                  ->orWhere('deskripsi', 'like', '%' . $this->nama_cadeb . '%');
+            }
+            if (!empty(trim($this->nik))) {
                 $q->orWhere('deskripsi', 'like', '%' . $this->nik . '%');
             }
         })->get()->toArray();
 
-        // 3. Auto-suggest Hasil (Bisa diganti manual oleh user)
+        // Auto-suggest Hasil (Bisa diganti manual oleh user)
         $this->hasil_pengecekan = count($this->matchedRecords) > 0 ? 'Terindikasi' : 'Tidak Terindikasi';
-        
-        // Biarkan kosong, Javascript Scrapper yang akan mengisi ini secara otomatis!
-        $this->hasil_pep = '';
-
-        $this->step = 2;
     }
 
-    public function kembali(): void
+    public function updateNamaFromApi(string $nama): void
     {
-        $this->step = 1;
+        // Only update if it's different and not empty
+        if (!empty($nama) && strtoupper(trim($this->nama_cadeb)) !== strtoupper(trim($nama))) {
+            $this->nama_cadeb = strtoupper(trim($nama));
+            $this->checkDttotDB(); // Re-trigger DTTOT match with new name
+        }
     }
 
     public function save(): void
@@ -125,7 +130,7 @@ class PengajuanForm extends Component
         ]);
 
         $this->reset([
-            'step', 'tanggal', 'kategori', 'nama_cadeb', 'nik', 
+            'tanggal', 'kategori', 'nama_cadeb', 'nik', 
             'hasil_pengecekan', 'hasil_pep', 'keterangan', 'bukti_ss', 'matchedRecords'
         ]);
 
