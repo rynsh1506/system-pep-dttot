@@ -92,7 +92,7 @@
     {{-- ===== TABEL DATA TERBARU ===== --}}
     <div class="rounded-2xl bg-base-100 border border-base-200 shadow-sm">
         {{-- Tabel Header --}}
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 px-6 py-4 border-b border-base-200">
+        <div class="flex flex-row flex-wrap items-center justify-between gap-4 px-6 py-4 border-b border-base-200">
             <div>
                 <h2 class="text-base font-bold text-base-content mb-2">Data Terduga Terbaru</h2>
                 <div class="flex items-center gap-2">
@@ -107,8 +107,8 @@
                     <span class="text-xs text-base-content/60">baris</span>
                 </div>
             </div>
-            <div class="flex flex-col sm:flex-row items-center gap-4">
-                <div class="w-full sm:w-auto">
+            <div class="flex flex-row flex-wrap items-center gap-4">
+                <div class="w-auto">
                     {{ $recentData->links() }}
                 </div>
                 <a href="{{ route('search') }}"

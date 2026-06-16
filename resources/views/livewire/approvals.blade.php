@@ -17,7 +17,7 @@
     @endif
 
     <div class="card bg-base-100 shadow-sm">
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 px-6 py-4 border-b border-base-200">
+        <div class="flex flex-row flex-wrap items-center justify-between gap-4 px-6 py-4 border-b border-base-200">
             <div class="flex items-center gap-2">
                 <span class="text-xs text-base-content/60">Tampilkan</span>
                 <select wire:model.live="perPage" class="select select-bordered select-xs w-24">
@@ -29,7 +29,7 @@
                 </select>
                 <span class="text-xs text-base-content/60">baris</span>
             </div>
-            <div class="w-full lg:w-auto">
+            <div class="w-auto">
                 {{ $requests->links() }}
             </div>
         </div>
