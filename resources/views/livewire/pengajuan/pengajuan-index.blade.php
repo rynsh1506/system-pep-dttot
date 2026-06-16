@@ -23,8 +23,14 @@
                     </svg>
                     <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari nama atau NIK..." class="grow bg-transparent text-sm outline-none" />
                 </label>
-                <select wire:model.live="filterStatus" class="select select-bordered select-sm">
-                    <option value="">Semua Status</option>
+                <select wire:model.live="filterDttot" class="select select-bordered select-sm">
+                    <option value="">Status DTTOT</option>
+                    <option value="Belum Dicek">Belum Dicek</option>
+                    <option value="Tidak Terindikasi">Tidak Terindikasi</option>
+                    <option value="Terindikasi">Terindikasi</option>
+                </select>
+                <select wire:model.live="filterPep" class="select select-bordered select-sm">
+                    <option value="">Status PEP</option>
                     <option value="Belum Dicek">Belum Dicek</option>
                     <option value="Tidak Terindikasi">Tidak Terindikasi</option>
                     <option value="Terindikasi">Terindikasi</option>

@@ -4,7 +4,7 @@
             <h1 class="text-xl font-bold text-base-content">Report Hasil Cek DTTOT & PEP</h1>
             <p class="text-sm text-base-content/50 mt-0.5">Laporan hasil pengecekan CADEB berdasarkan rentang tanggal.</p>
         </div>
-        <a href="{{ route('report.export', ['start_date' => $startDate, 'end_date' => $endDate, 'hasil' => $filterHasil]) }}" class="btn btn-success btn-sm gap-2 text-white shrink-0">
+        <a href="{{ route('report.export', ['start_date' => $startDate, 'end_date' => $endDate, 'dttot' => $filterDttot, 'pep' => $filterPep]) }}" class="btn btn-success btn-sm gap-2 text-white shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
                 <path fill-rule="evenodd" d="M10 3a.75.75 0 0 1 .75.75v7.69l2.25-2.22a.75.75 0 1 1 1.06 1.06l-3.5 3.47a.75.75 0 0 1-1.06 0L5.94 10.28a.75.75 0 1 1 1.06-1.06l2.25 2.22V3.75A.75.75 0 0 1 10 3Zm-6 13a.75.75 0 0 1 .75-.75h10.5a.75.75 0 0 1 0 1.5H4.75A.75.75 0 0 1 4 16Z" clip-rule="evenodd" />
             </svg>
@@ -26,7 +26,16 @@
                 </div>
                 <div class="form-control">
                     <label class="label pb-1"><span class="label-text text-xs font-semibold uppercase">Hasil DTTOT</span></label>
-                    <select wire:model.live="filterHasil" class="select select-bordered select-sm">
+                    <select wire:model.live="filterDttot" class="select select-bordered select-sm">
+                        <option value="All">Semua</option>
+                        <option value="Terindikasi">Terindikasi</option>
+                        <option value="Tidak Terindikasi">Tidak Terindikasi</option>
+                        <option value="Belum Dicek">Belum Dicek</option>
+                    </select>
+                </div>
+                <div class="form-control">
+                    <label class="label pb-1"><span class="label-text text-xs font-semibold uppercase">Hasil PEP</span></label>
+                    <select wire:model.live="filterPep" class="select select-bordered select-sm">
                         <option value="All">Semua</option>
                         <option value="Terindikasi">Terindikasi</option>
                         <option value="Tidak Terindikasi">Tidak Terindikasi</option>

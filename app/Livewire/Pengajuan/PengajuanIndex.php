@@ -11,16 +11,22 @@ class PengajuanIndex extends Component
     use WithPagination;
 
     public string $search = '';
-    public string $filterStatus = '';
+    public string $filterDttot = '';
+    public string $filterPep = '';
 
-    protected $queryString = ['search', 'filterStatus'];
+    protected $queryString = ['search', 'filterDttot', 'filterPep'];
 
     public function updatingSearch(): void
     {
         $this->resetPage();
     }
 
-    public function updatingFilterStatus(): void
+    public function updatingFilterDttot(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatingFilterPep(): void
     {
         $this->resetPage();
     }
@@ -32,7 +38,8 @@ class PengajuanIndex extends Component
                 $q->where('nama_cadeb', 'like', '%' . $this->search . '%')
                   ->orWhere('nik', 'like', '%' . $this->search . '%');
             }))
-            ->when($this->filterStatus, fn($q) => $q->where('hasil_pengecekan', $this->filterStatus))
+            ->when($this->filterDttot, fn($q) => $q->where('hasil_pengecekan', $this->filterDttot))
+            ->when($this->filterPep, fn($q) => $q->where('hasil_pep', $this->filterPep))
             ->orderByDesc('tanggal')
             ->orderByDesc('created_at');
 

@@ -12,7 +12,8 @@ class ReportPengajuan extends Component
 
     public string $startDate = '';
     public string $endDate = '';
-    public string $filterHasil = 'All';
+    public string $filterDttot = 'All';
+    public string $filterPep = 'All';
 
     public function mount(): void
     {
@@ -22,17 +23,25 @@ class ReportPengajuan extends Component
 
     public function updatingStartDate(): void { $this->resetPage(); }
     public function updatingEndDate(): void { $this->resetPage(); }
-    public function updatingFilterHasil(): void { $this->resetPage(); }
+    public function updatingFilterDttot(): void { $this->resetPage(); }
+    public function updatingFilterPep(): void { $this->resetPage(); }
 
     public function render()
     {
         $query = PengajuanDtot::query()
             ->whereBetween('tanggal', [$this->startDate, $this->endDate])
-            ->when($this->filterHasil !== 'All', fn($q) => $q->where('hasil_pengecekan', $this->filterHasil));
+            ->when($this->filterDttot !== 'All', fn($q) => $q->where('hasil_pengecekan', $this->filterDttot))
+            ->when($this->filterPep !== 'All', fn($q) => $q->where('hasil_pep', $this->filterPep));
 
         $total            = $query->count();
-        $terindikasi      = PengajuanDtot::whereBetween('tanggal', [$this->startDate, $this->endDate])->where('hasil_pengecekan', 'Terindikasi')->count();
-        $tidakTerindikasi = PengajuanDtot::whereBetween('tanggal', [$this->startDate, $this->endDate])->where('hasil_pengecekan', 'Tidak Terindikasi')->count();
+        $terindikasi      = PengajuanDtot::whereBetween('tanggal', [$this->startDate, $this->endDate])
+                                ->where(function($q) {
+                                    $q->where('hasil_pengecekan', 'Terindikasi')
+                                      ->orWhere('hasil_pep', 'Terindikasi');
+                                })->count();
+        $tidakTerindikasi = PengajuanDtot::whereBetween('tanggal', [$this->startDate, $this->endDate])
+                                ->where('hasil_pengecekan', 'Tidak Terindikasi')
+                                ->where('hasil_pep', 'Tidak Terindikasi')->count();
 
         return view('livewire.report-pengajuan', [
             'data'              => $query->orderByDesc('tanggal')->orderByDesc('created_at')->paginate(15),
