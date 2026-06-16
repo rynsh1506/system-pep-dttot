@@ -275,5 +275,4 @@
                     });
             }
         </script>
-    @endif
 </div>

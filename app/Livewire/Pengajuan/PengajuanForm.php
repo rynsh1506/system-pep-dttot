@@ -108,6 +108,8 @@ class PengajuanForm extends Component
             'kategori'         => $this->kategori,
             'nama_cadeb'       => strtoupper($this->nama_cadeb),
             'nik'              => $this->nik,
+            'nama_pasangan'    => '',
+            'nik_pasangan'     => '',
             'hasil_pengecekan' => $this->hasil_pengecekan,
             'hasil_pep'        => $this->hasil_pep,
             'keterangan'       => $this->keterangan,
