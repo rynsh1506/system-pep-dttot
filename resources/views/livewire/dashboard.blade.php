@@ -152,7 +152,7 @@
                             </td>
                             {{-- Kode Densus --}}
                             <td class="px-4 py-3.5">
-                                <span class="font-mono text-xs bg-base-200 px-2 py-1 rounded-lg text-base-content/70 whitespace-nowrap">
+                                <span class="font-mono text-xs bg-base-200 px-2 py-1 rounded-lg text-base-content/70 inline-block whitespace-nowrap min-w-max">
                                     {{ $row->kode_densus ?: '-' }}
                                 </span>
                             </td>
