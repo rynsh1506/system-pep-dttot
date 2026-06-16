@@ -24,13 +24,13 @@
                     
                     <div class="form-control">
                         <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Nama Lengkap</span></label>
-                        <input wire:model.live.debounce.1000ms="nama_cadeb" type="text" class="input input-bordered input-sm focus:border-primary focus:outline-none w-full font-bold" />
+                        <input wire:model.blur="nama_cadeb" type="text" class="input input-bordered input-sm focus:border-primary focus:outline-none w-full font-bold" />
                     </div>
 
                     <div class="form-control">
                         <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">NIK / Identitas</span></label>
                         <div class="join w-full">
-                            <input wire:model.live.debounce.1000ms="nik" id="nik-input" type="text" class="input input-bordered input-sm focus:border-primary focus:outline-none w-full font-mono font-semibold join-item" />
+                            <input wire:model.blur="nik" id="nik-input" type="text" class="input input-bordered input-sm focus:border-primary focus:outline-none w-full font-mono font-semibold join-item" />
                             <button type="button" class="btn btn-primary btn-sm join-item" onclick="triggerScrapper(document.getElementById('nik-input').value)">Cek</button>
                         </div>
                     </div>
@@ -200,22 +200,6 @@
                     if (nikInput.value.length >= 10) {
                         triggerScrapper(nikInput.value);
                     }
-
-                    // Add event listener for auto-check
-                    nikInput.addEventListener('input', function(e) {
-                        const val = e.target.value.trim();
-                        clearTimeout(scrapperDebounceTimeout);
-                        
-                        if (val.length < 5) {
-                            document.getElementById('pep-loading-block').style.display = 'none';
-                            document.getElementById('pep-result-block').style.display = 'none';
-                            return;
-                        }
-
-                        scrapperDebounceTimeout = setTimeout(() => {
-                            triggerScrapper(val);
-                        }, 1200); // Wait 1.2s after typing stops before hitting API
-                    });
                 }
             });
 

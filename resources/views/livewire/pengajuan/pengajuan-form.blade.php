@@ -29,14 +29,14 @@
 
                         <div class="form-control mb-4">
                             <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Nama Terdaftar <span class="text-error">*</span></span></label>
-                            <input wire:model.live.debounce.1000ms="nama_cadeb" type="text" placeholder="Masukkan nama..." class="input input-bordered focus:border-primary focus:outline-none w-full font-bold" />
+                            <input wire:model.blur="nama_cadeb" type="text" placeholder="Masukkan nama..." class="input input-bordered focus:border-primary focus:outline-none w-full font-bold" />
                             @error('nama_cadeb') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
                         </div>
 
                         <div class="form-control mb-4">
                             <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">NIK / Identitas <span class="text-error">*</span></span></label>
                             <div class="join w-full">
-                                <input wire:model.live.debounce.1000ms="nik" id="nik-input" type="text" placeholder="Masukkan NIK 16 digit..." class="input input-bordered focus:border-primary focus:outline-none w-full font-mono font-semibold join-item @error('nik') input-error @enderror" />
+                                <input wire:model.blur="nik" id="nik-input" type="text" placeholder="Masukkan NIK 16 digit..." class="input input-bordered focus:border-primary focus:outline-none w-full font-mono font-semibold join-item @error('nik') input-error @enderror" />
                                 <button type="button" class="btn btn-primary join-item" onclick="triggerScrapper(document.getElementById('nik-input').value)">Cek</button>
                             </div>
                             @error('nik') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
@@ -180,23 +180,6 @@
                 if (nikInput.value.length >= 10) {
                     triggerScrapper(nikInput.value);
                 }
-
-                // Add event listener for auto-check
-                nikInput.addEventListener('input', function(e) {
-                    const val = e.target.value.trim();
-                    clearTimeout(scrapperDebounceTimeout);
-                    
-                    if (val.length < 5) {
-                        document.getElementById('pep-idle-block').style.display = 'block';
-                        document.getElementById('pep-loading-block').style.display = 'none';
-                        document.getElementById('pep-result-block').style.display = 'none';
-                        return;
-                    }
-
-                    scrapperDebounceTimeout = setTimeout(() => {
-                        triggerScrapper(val);
-                    }, 1200); // Wait 1.2s after typing stops before hitting API
-                });
             }
         });
 
