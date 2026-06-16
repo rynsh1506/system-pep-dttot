@@ -66,7 +66,9 @@
 
                     <div class="form-control w-full">
                         <label class="label pb-1"><span class="label-text font-semibold text-base-content/80">Tanggal Lahir / Berdiri</span></label>
-                        <input type="date" wire:model="tanggal_lahir" class="input input-bordered w-full" />
+                        <div x-data x-init="flatpickr($refs.picker, { dateFormat: 'Y-m-d', locale: 'id' })">
+                            <input x-ref="picker" type="text" wire:model="tanggal_lahir" class="input input-bordered w-full" placeholder="Pilih tanggal..." />
+                        </div>
                         @error('tanggal_lahir') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
                     </div>
 

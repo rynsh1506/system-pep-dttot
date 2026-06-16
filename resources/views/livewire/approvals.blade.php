@@ -19,7 +19,7 @@
     <div class="card bg-base-100 shadow-sm">
         <div class="card-body">
             <div class="overflow-x-auto">
-                <table class="table table-zebra w-full">
+                <table class="table table-zebra w-full min-w-[800px]">
                     <thead>
                         <tr>
                             <th>Tanggal</th>

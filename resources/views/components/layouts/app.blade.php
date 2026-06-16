@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title ?? 'System PEP & DTTOT' }}</title>
     @vite('resources/css/app.css')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css" id="flatpickr-dark-theme" disabled>
     @livewireStyles
 </head>
 <body class="bg-base-200">
@@ -221,14 +223,28 @@
     </div>
 
     @livewireScripts
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const themeToggle = document.getElementById('theme-toggle');
+            const flatpickrDarkTheme = document.getElementById('flatpickr-dark-theme');
+
+            function updateFlatpickrTheme(theme) {
+                if (flatpickrDarkTheme) {
+                    flatpickrDarkTheme.disabled = theme !== 'dark';
+                }
+            }
+
+            // Init flatpickr theme
+            updateFlatpickrTheme(document.documentElement.getAttribute('data-theme'));
+
             if (themeToggle) {
                 themeToggle.addEventListener('change', function() {
                     const theme = this.checked ? 'dark' : 'light';
                     document.documentElement.setAttribute('data-theme', theme);
                     document.cookie = "theme=" + theme + "; path=/; max-age=31536000";
+                    updateFlatpickrTheme(theme);
                 });
             }
         });

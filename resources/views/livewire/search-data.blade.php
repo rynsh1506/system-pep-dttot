@@ -60,7 +60,7 @@
     <div class="card bg-base-100 shadow-sm">
         <div class="card-body p-0">
             <div class="overflow-x-auto">
-                <table class="w-full text-sm">
+                <table class="w-full text-sm min-w-[800px]">
                     <thead>
                         <tr class="border-b border-base-200 bg-base-200/50">
                             <th class="text-left px-6 py-4 text-xs font-semibold text-base-content/50 uppercase tracking-wide">NAMA</th>

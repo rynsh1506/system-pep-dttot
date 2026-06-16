@@ -108,7 +108,7 @@
 
         {{-- Tabel --}}
         <div class="overflow-x-auto">
-            <table class="w-full text-sm">
+            <table class="w-full text-sm min-w-[800px]">
                 <thead>
                     <tr class="border-b border-base-200 bg-base-200/50">
                         <th class="text-left px-6 py-3 text-xs font-semibold text-base-content/50 uppercase tracking-wide">Nama</th>

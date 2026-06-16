@@ -22,7 +22,8 @@ $scrollIntoViewJsSnippet = ($scrollTo !== false)
             </div>
 
             {{-- Pagination buttons (DaisyUI Join) --}}
-            <div class="join shadow-sm">
+            <div class="w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0">
+                <div class="join shadow-sm flex-nowrap">
                 {{-- Previous Page Link --}}
                 @if ($paginator->onFirstPage())
                     <button class="join-item btn btn-sm btn-disabled" aria-disabled="true">
@@ -67,6 +68,7 @@ $scrollIntoViewJsSnippet = ($scrollTo !== false)
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                     </button>
                 @endif
+            </div>
             </div>
 
         </nav>
