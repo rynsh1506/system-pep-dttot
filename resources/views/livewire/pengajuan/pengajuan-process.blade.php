@@ -29,7 +29,10 @@
                     <form wire:submit.prevent="saveResult">
                         <div class="form-control mb-4">
                             <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Nama Lengkap <span class="text-error">*</span></span></label>
-                            <input wire:model.blur="nama_cadeb" type="text" class="input input-bordered focus:border-primary focus:outline-none w-full font-bold" />
+                            <div class="join w-full">
+                                <input wire:model.blur="nama_cadeb" type="text" class="input input-bordered focus:border-primary focus:outline-none w-full font-bold join-item" />
+                                <button type="button" wire:click="$refresh" class="btn btn-primary join-item">Cek</button>
+                            </div>
                             @error('nama_cadeb') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
                         </div>
 

@@ -46,19 +46,40 @@ class PengajuanProcess extends Component
             return;
         }
 
-        $this->nama_cadeb = $this->pengajuan->nama_cadeb ?? '';
-        $this->nik = $this->pengajuan->nik ?? '';
+        $draft = session()->get('pengajuan_draft_' . $this->id);
 
-        // Pre-fill if already checked
-        $this->hasil_pengecekan = ($this->pengajuan->hasil_pengecekan && $this->pengajuan->hasil_pengecekan !== 'Belum Dicek')
-            ? $this->pengajuan->hasil_pengecekan
-            : '';
-        $this->hasil_pep = ($this->pengajuan->hasil_pep && $this->pengajuan->hasil_pep !== 'Belum Dicek')
-            ? $this->pengajuan->hasil_pep
-            : '';
-        $this->keterangan = $this->pengajuan->keterangan ?? '';
+        if ($draft) {
+            $this->nama_cadeb = $draft['nama_cadeb'] ?? '';
+            $this->nik = $draft['nik'] ?? '';
+            $this->hasil_pengecekan = $draft['hasil_pengecekan'] ?? '';
+            $this->hasil_pep = $draft['hasil_pep'] ?? '';
+            $this->keterangan = $draft['keterangan'] ?? '';
+        } else {
+            $this->nama_cadeb = $this->pengajuan->nama_cadeb ?? '';
+            $this->nik = $this->pengajuan->nik ?? '';
+
+            // Pre-fill if already checked
+            $this->hasil_pengecekan = ($this->pengajuan->hasil_pengecekan && $this->pengajuan->hasil_pengecekan !== 'Belum Dicek')
+                ? $this->pengajuan->hasil_pengecekan
+                : '';
+            $this->hasil_pep = ($this->pengajuan->hasil_pep && $this->pengajuan->hasil_pep !== 'Belum Dicek')
+                ? $this->pengajuan->hasil_pep
+                : '';
+            $this->keterangan = $this->pengajuan->keterangan ?? '';
+        }
 
         $this->checkDttotDB();
+    }
+
+    public function updated($property, $value)
+    {
+        session()->put('pengajuan_draft_' . $this->id, [
+            'nama_cadeb' => $this->nama_cadeb,
+            'nik' => $this->nik,
+            'hasil_pengecekan' => $this->hasil_pengecekan,
+            'hasil_pep' => $this->hasil_pep,
+            'keterangan' => $this->keterangan,
+        ]);
     }
 
     public function updatedNamaCadeb(): void
@@ -123,6 +144,8 @@ class PengajuanProcess extends Component
             'checked_by'       => Auth::id(),
             'checked_at'       => now(),
         ]);
+
+        session()->forget('pengajuan_draft_' . $this->id);
 
         $this->dispatch('swal-redirect', [
             'icon'  => 'success',
