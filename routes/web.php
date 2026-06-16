@@ -32,6 +32,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/reksaloan', App\Livewire\Reksaloan\ReksaloanIndex::class)->name('reksaloan');
     Route::get('/reksaloan/proses/{id}', App\Livewire\Reksaloan\ReksaloanProcess::class)->name('reksaloan.proses');
 
+    // PEP Dashboard Routes
+    Route::get('/pep', App\Livewire\Pep\PepDashboard::class)->name('pep.dashboard');
+    Route::get('/pep/search', App\Livewire\Pep\PepSearch::class)->name('pep.search');
+
+    // Report
+    Route::get('/report', App\Livewire\ReportPengajuan::class)->name('report');
+    Route::get('/report/export', [App\Http\Controllers\ExportController::class, 'exportPengajuan'])->name('report.export');
+
     // User Management
     Route::get('/users', App\Livewire\UserManagement::class)->name('users')->middleware('can:manage-users');
     

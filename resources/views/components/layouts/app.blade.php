@@ -179,9 +179,32 @@
                     </a>
                     @endif
 
-                    {{-- Section: PEP --}}
+                    {{-- Section: Dashboard PEP --}}
                     <div class="text-xs font-semibold text-base-content/40 uppercase tracking-widest px-3 pb-1 pt-4">
                         Dashboard PEP
+                    </div>
+
+                    <a href="{{ route('pep.dashboard') }}"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors
+                        {{ request()->routeIs('pep.dashboard') ? 'bg-primary/10 text-primary border-l-2 border-primary' : 'text-base-content/70 hover:bg-base-200 hover:text-base-content' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 shrink-0">
+                            <path fill-rule="evenodd" d="M4.25 2A2.25 2.25 0 0 0 2 4.25v2.5A2.25 2.25 0 0 0 4.25 9h2.5A2.25 2.25 0 0 0 9 6.75v-2.5A2.25 2.25 0 0 0 6.75 2h-2.5Zm0 9A2.25 2.25 0 0 0 2 13.25v2.5A2.25 2.25 0 0 0 4.25 18h2.5A2.25 2.25 0 0 0 9 15.75v-2.5A2.25 2.25 0 0 0 6.75 11h-2.5Zm9-9A2.25 2.25 0 0 0 11 4.25v2.5A2.25 2.25 0 0 0 13.25 9h2.5A2.25 2.25 0 0 0 18 6.75v-2.5A2.25 2.25 0 0 0 15.75 2h-2.5Zm0 9A2.25 2.25 0 0 0 11 13.25v2.5A2.25 2.25 0 0 0 13.25 18h2.5A2.25 2.25 0 0 0 18 15.75v-2.5A2.25 2.25 0 0 0 15.75 11h-2.5Z" clip-rule="evenodd"/>
+                        </svg>
+                        Dashboard PEP
+                    </a>
+
+                    <a href="{{ route('pep.search') }}"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors
+                        {{ request()->routeIs('pep.search') ? 'bg-primary/10 text-primary border-l-2 border-primary' : 'text-base-content/70 hover:bg-base-200 hover:text-base-content' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 shrink-0">
+                            <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd"/>
+                        </svg>
+                        Search Data PEP
+                    </a>
+
+                    {{-- Section: Pengajuan & Operasional --}}
+                    <div class="text-xs font-semibold text-base-content/40 uppercase tracking-widest px-3 pb-1 pt-4">
+                        Operasional
                     </div>
 
                     <a href="{{ route('pengajuan') }}"
@@ -200,6 +223,15 @@
                             <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 9a.75.75 0 0 0 0 1.5h.253a.25.25 0 0 1 .244.304l-.459 2.066A1.75 1.75 0 0 0 10.747 15H11a.75.75 0 0 0 0-1.5h-.253a.25.25 0 0 1-.244-.304l.459-2.066A1.75 1.75 0 0 0 9.253 9H9Z" clip-rule="evenodd" />
                         </svg>
                         {{ __('Cek Reksaloan & HRD') }}
+                    </a>
+
+                    <a href="{{ route('report') }}"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors
+                        {{ request()->routeIs('report*') ? 'bg-primary/10 text-primary border-l-2 border-primary' : 'text-base-content/70 hover:bg-base-200 hover:text-base-content' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 shrink-0">
+                            <path fill-rule="evenodd" d="M6 2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7.414A2 2 0 0 0 15.414 6L12 2.586A2 2 0 0 0 10.586 2H6Zm5 6a1 1 0 1 0-2 0v3.586l-1.293-1.293a1 1 0 1 0-1.414 1.414l3 3a1 1 0 0 0 1.414 0l3-3a1 1 0 0 0-1.414-1.414L11 11.586V8Z" clip-rule="evenodd" />
+                        </svg>
+                        {{ __('Report Hasil Cek') }}
                     </a>
 
                     @can('manage-users')
