@@ -22,7 +22,7 @@ $scrollIntoViewJsSnippet = ($scrollTo !== false)
             </div>
 
             {{-- Pagination buttons (DaisyUI Join) --}}
-            <div class="w-full sm:w-auto overflow-x-auto overflow-y-hidden pb-2 sm:pb-0">
+            <div class="w-full sm:w-auto overflow-x-auto sm:overflow-visible pb-2 sm:pb-0">
                 <div class="join shadow-sm flex-nowrap">
                 {{-- Previous Page Link --}}
                 @if ($paginator->onFirstPage())
@@ -39,16 +39,16 @@ $scrollIntoViewJsSnippet = ($scrollTo !== false)
                 @foreach ($elements as $element)
                     {{-- "Three Dots" Separator --}}
                     @if (is_string($element))
-                        <button class="join-item btn btn-sm btn-disabled border border-base-200 bg-base-100 hidden sm:inline-flex">{{ $element }}</button>
+                        <button class="join-item btn btn-sm min-w-[2.5rem] btn-disabled border border-base-200 bg-base-100 hidden sm:inline-flex">{{ $element }}</button>
                     @endif
 
                     {{-- Array Of Links --}}
                     @if (is_array($element))
                         @foreach ($element as $page => $url)
                             @if ($page == $paginator->currentPage())
-                                <button wire:key="paginator-{{ $paginator->getPageName() }}-page{{ $page }}" class="join-item btn btn-sm btn-primary border border-primary pointer-events-none {{ $page == $paginator->currentPage() ? 'inline-flex' : 'hidden sm:inline-flex' }}" aria-current="page">{{ $page }}</button>
+                                <button wire:key="paginator-{{ $paginator->getPageName() }}-page{{ $page }}" class="join-item btn btn-sm min-w-[2.5rem] btn-primary border border-primary pointer-events-none {{ $page == $paginator->currentPage() ? 'inline-flex' : 'hidden sm:inline-flex' }}" aria-current="page">{{ $page }}</button>
                             @else
-                                <button wire:key="paginator-{{ $paginator->getPageName() }}-page{{ $page }}" type="button" wire:click="gotoPage({{ $page }}, '{{ $paginator->getPageName() }}')" wire:loading.attr="disabled" class="join-item btn btn-sm btn-ghost hover:bg-base-200 border border-base-200 bg-base-100 hidden sm:inline-flex" aria-label="{{ __('Go to page :page', ['page' => $page]) }}">
+                                <button wire:key="paginator-{{ $paginator->getPageName() }}-page{{ $page }}" type="button" wire:click="gotoPage({{ $page }}, '{{ $paginator->getPageName() }}')" wire:loading.attr="disabled" class="join-item btn btn-sm min-w-[2.5rem] btn-ghost hover:bg-base-200 border border-base-200 bg-base-100 hidden sm:inline-flex" aria-label="{{ __('Go to page :page', ['page' => $page]) }}">
                                     {{ $page }}
                                 </button>
                             @endif
