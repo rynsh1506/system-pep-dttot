@@ -1,58 +1,130 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <h1 align="center">PEP & DTTOT Verification System</h1>
+  <p align="center">Sistem Terintegrasi Pengecekan CADEB terhadap Database DTTOT dan Portal PEP PPATK.</p>
 </p>
 
-## About Laravel
+## 📋 Tentang Sistem
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Aplikasi ini adalah hasil migrasi dan modernisasi dari sistem *legacy* CodeIgniter 3 ke ekosistem **Laravel 11**. Sistem ini dirancang khusus untuk memenuhi standar kepatuhan (*compliance*) AML/CFT (Anti-Money Laundering and Combating the Financing of Terrorism) dengan memverifikasi calon debitur (CADEB) atau karyawan.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Fitur Utama:
+- **Manajemen DTTOT:** Upload masif, pencarian terintegrasi, dan sistem persetujuan (*Maker-Checker*).
+- **Pengecekan CADEB:** Pencocokan *real-time* ke database DTTOT lokal dan *scrapping* otomatis ke portal PEP eksternal.
+- **Reksaloan (HRD):** Verifikasi data karyawan yang terhubung langsung dengan *view* database eksternal perusahaan.
+- **Laporan & Ekspor:** *Filter* lanjutan berdasarkan status terindikasi DTTOT/PEP dan ekspor data CSV.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 🚀 Teknologi yang Digunakan
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **Backend:** Laravel 11 (PHP 8.2)
+- **Frontend:** Livewire 3 + Alpine.js
+- **Styling:** Tailwind CSS + DaisyUI (Glassmorphism UI)
+- **Database:** MariaDB / MySQL 8.0
+- **Deployment:** Docker & Nginx Alpine
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## ⚙️ Persyaratan Sistem (Prerequisites)
 
-## Agentic Development
+Sebelum menginstal, pastikan mesin Anda telah memiliki perangkat lunak berikut:
+1. **Docker Desktop / Docker Engine** (versi terbaru)
+2. **Docker Compose**
+3. **Database Server Lokal (XAMPP / Laragon / MariaDB native)** - *Jika tidak menggunakan container DB.*
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+---
 
+## 🛠️ Instalasi & Setup Lokal (Docker)
+
+Ikuti langkah-langkah di bawah ini untuk menjalankan sistem di lingkungan pengembangan lokal Anda.
+
+### 1. Kloning Repositori
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone https://github.com/rynsh1506/system-pep-dttot.git
+cd system-pep-dttot
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### 2. Persiapkan Konfigurasi Environment (`.env`)
+Salin file konfigurasi bawaan.
+```bash
+cp .env.example .env
+```
+Buka file `.env` dan pastikan konfigurasi database sudah mengarah ke server MariaDB lokal Anda (biasanya `172.17.0.1` jika dari dalam Docker ke Host).
+```env
+DB_DTOT_CONNECTION=mariadb
+DB_DTOT_HOST=172.17.0.1
+DB_DTOT_PORT=3306
+DB_DTOT_DATABASE=db_dtot
+DB_DTOT_USERNAME=root
+DB_DTOT_PASSWORD=
 
-## Contributing
+DB_CADEB_CONNECTION=mariadb
+DB_CADEB_HOST=172.17.0.1
+DB_CADEB_PORT=3306
+DB_CADEB_DATABASE=cadeb_db
+DB_CADEB_USERNAME=root
+DB_CADEB_PASSWORD=
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 3. Build & Jalankan Docker Containers
+```bash
+docker-compose up -d --build
+```
+*Perintah ini akan menjalankan dua container: `system-pep-dttot-app-1` (PHP 8.2 FPM) dan webserver Nginx.*
 
-## Code of Conduct
+### 4. Instalasi Dependensi PHP (Composer)
+```bash
+docker exec system-pep-dttot-app-1 composer install
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 5. Instalasi Dependensi Node.js & Build Aset
+```bash
+docker exec system-pep-dttot-app-1 npm install
+docker exec system-pep-dttot-app-1 npm run build
+```
 
-## Security Vulnerabilities
+### 6. Generate Application Key
+```bash
+docker exec system-pep-dttot-app-1 php artisan key:generate
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 7. Migrasi Database & Seeding Data Awal
+```bash
+docker exec system-pep-dttot-app-1 php artisan migrate --seed
+```
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 🌐 Mengakses Aplikasi
+
+Setelah semua langkah selesai, aplikasi dapat diakses melalui peramban (browser) di:
+**http://localhost:8000**
+
+### Akun Uji Coba (Bawaan Seeder)
+Gunakan akun berikut untuk menguji *Role-Based Access Control* (RBAC) pada sistem:
+
+- **Super Admin**
+  - Email: `superadmin@example.com`
+  - Password: `password`
+- **Admin**
+  - Email: `admin@example.com`
+  - Password: `password`
+
+---
+
+## 🖥️ Command Berguna Tambahan
+
+Jika Anda melakukan perubahan pada antarmuka Livewire atau *view* Blade, Anda mungkin perlu membersihkan *cache*:
+```bash
+# Membersihkan Cache View
+docker exec system-pep-dttot-app-1 php artisan view:clear
+
+# Menjalankan Vite Hot Reloading (saat development CSS/JS)
+docker exec system-pep-dttot-app-1 npm run dev
+```
+
+---
+
+## 📝 Catatan Migrasi Legacy
+- **Data Session / Draft:** Proses input pencarian sudah dilengkapi sistem *persistence*. Data Anda tidak akan hilang jika secara tak sengaja berpindah halaman.
+- **Scrapper NIK:** API scrapper lama ke PPATK berjalan menggunakan Javascript murni di latar belakang demi menjaga stabilitas sesi Livewire. JANGAN hapus script integrasi di dalam form pencarian.
