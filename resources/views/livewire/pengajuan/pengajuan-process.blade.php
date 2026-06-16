@@ -31,7 +31,7 @@
                             <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Nama Lengkap <span class="text-error">*</span></span></label>
                             <div class="join w-full">
                                 <input wire:model.live.debounce.500ms="nama_cadeb" type="text" class="input input-bordered focus:border-primary focus:outline-none w-full font-bold join-item" />
-                                <button type="button" wire:click="$refresh" class="btn btn-primary join-item">Cek</button>
+                                <button type="button" wire:click="checkDttotDB" class="btn btn-primary join-item">Cek</button>
                             </div>
                             @error('nama_cadeb') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
                         </div>
@@ -40,7 +40,7 @@
                             <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">NIK / Identitas <span class="text-error">*</span></span></label>
                             <div class="join w-full">
                                 <input wire:model.live.debounce.500ms="nik" id="nik-input" type="text" class="input input-bordered focus:border-primary focus:outline-none w-full font-mono font-semibold join-item @error('nik') input-error @enderror" />
-                                <button type="button" wire:click="$refresh" class="btn btn-primary join-item" onclick="triggerScrapper(document.getElementById('nik-input').value)">Cek</button>
+                                <button type="button" wire:click="checkDttotDB" class="btn btn-primary join-item" onclick="triggerScrapper(document.getElementById('nik-input').value)">Cek</button>
                             </div>
                             @error('nik') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
                         </div>
