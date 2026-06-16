@@ -41,19 +41,19 @@
                         }
                     });
                 }
-            }" x-on:submit.prevent="confirmSubmit">
+            }" x-on:submit.prevent="confirmSubmit" novalidate>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                     
                     {{-- Row 1 --}}
                     <div class="form-control w-full">
                         <label class="label pb-1"><span class="label-text font-semibold text-base-content/80">Nama Lengkap / Entitas <span class="text-error">*</span></span></label>
-                        <input type="text" wire:model="nama" class="input input-bordered w-full" placeholder="Contoh: Budi Santoso / PT. Fiktif" required />
+                        <input type="text" wire:model="nama" class="input input-bordered w-full @error('nama') input-error @enderror" placeholder="Contoh: Budi Santoso / PT. Fiktif" />
                         @error('nama') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="form-control w-full">
                         <label class="label pb-1"><span class="label-text font-semibold text-base-content/80">Tipe Terduga <span class="text-error">*</span></span></label>
-                        <select wire:model="terduga_type" class="select select-bordered w-full" required>
+                        <select wire:model="terduga_type" class="select select-bordered w-full @error('terduga_type') select-error @enderror">
                             <option value="">-- Pilih Tipe --</option>
                             <option value="Orang">Individu (Orang)</option>
                             <option value="Korporasi">Organisasi / Korporasi</option>
@@ -64,27 +64,27 @@
                     {{-- Row 2 --}}
                     <div class="form-control w-full">
                         <label class="label pb-1"><span class="label-text font-semibold text-base-content/80">Kode Densus</span></label>
-                        <input type="text" wire:model="kode_densus" class="input input-bordered w-full font-mono" placeholder="Contoh: DNS-2023-XYZ" />
+                        <input type="text" wire:model="kode_densus" class="input input-bordered w-full font-mono @error('kode_densus') input-error @enderror" placeholder="Contoh: DNS-2023-XYZ" />
                         @error('kode_densus') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="form-control w-full">
                         <label class="label pb-1"><span class="label-text font-semibold text-base-content/80">WN / Asal Negara <span class="text-error">*</span></span></label>
-                        <input type="text" wire:model="wn_asal_negara" class="input input-bordered w-full" placeholder="Contoh: Indonesia" required />
+                        <input type="text" wire:model="wn_asal_negara" class="input input-bordered w-full @error('wn_asal_negara') input-error @enderror" placeholder="Contoh: Indonesia" />
                         @error('wn_asal_negara') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
                     </div>
 
                     {{-- Row 3 --}}
                     <div class="form-control w-full">
                         <label class="label pb-1"><span class="label-text font-semibold text-base-content/80">Tempat Lahir</span></label>
-                        <input type="text" wire:model="tempat_lahir" class="input input-bordered w-full" placeholder="Contoh: Jakarta" />
+                        <input type="text" wire:model="tempat_lahir" class="input input-bordered w-full @error('tempat_lahir') input-error @enderror" placeholder="Contoh: Jakarta" />
                         @error('tempat_lahir') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="form-control w-full">
                         <label class="label pb-1"><span class="label-text font-semibold text-base-content/80">Tanggal Lahir / Berdiri</span></label>
                         <div x-data x-init="flatpickr($refs.picker, { dateFormat: 'Y-m-d', locale: 'id' })">
-                            <input x-ref="picker" type="text" wire:model="tanggal_lahir" class="input input-bordered w-full" placeholder="Pilih tanggal..." />
+                            <input x-ref="picker" type="text" wire:model="tanggal_lahir" class="input input-bordered w-full @error('tanggal_lahir') input-error @enderror" placeholder="Pilih tanggal..." />
                         </div>
                         @error('tanggal_lahir') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
                     </div>
@@ -92,13 +92,13 @@
                     {{-- Row 4 (Full Width Textareas) --}}
                     <div class="form-control w-full md:col-span-2 mt-2">
                         <label class="label pb-1"><span class="label-text font-semibold text-base-content/80">Alamat Lengkap</span></label>
-                        <textarea wire:model="alamat" class="textarea textarea-bordered min-h-[120px] w-full text-sm leading-relaxed" placeholder="Alamat lengkap terduga..."></textarea>
+                        <textarea wire:model="alamat" class="textarea textarea-bordered min-h-[120px] w-full text-sm leading-relaxed @error('alamat') textarea-error @enderror" placeholder="Alamat lengkap terduga..."></textarea>
                         @error('alamat') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="form-control w-full md:col-span-2">
                         <label class="label pb-1"><span class="label-text font-semibold text-base-content/80">Deskripsi / Catatan Kejahatan</span></label>
-                        <textarea wire:model="deskripsi" class="textarea textarea-bordered min-h-[140px] w-full text-sm leading-relaxed" placeholder="Detail kasus, alasan dimasukkan ke dalam daftar, atau catatan penting lainnya..."></textarea>
+                        <textarea wire:model="deskripsi" class="textarea textarea-bordered min-h-[140px] w-full text-sm leading-relaxed @error('deskripsi') textarea-error @enderror" placeholder="Detail kasus, alasan dimasukkan ke dalam daftar, atau catatan penting lainnya..."></textarea>
                         @error('deskripsi') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
                     </div>
                 </div>
