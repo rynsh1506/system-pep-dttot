@@ -1,0 +1,21 @@
+buatkan issue.md yang berisi perencanaan untuk nanti di implementasikan oleh junior programmer atau ai model yang lebih murah
+
+isi dari planing nya sebagai berikut:
+
+
+migrasikan code php native ini menggunakan TALL Stack:
+tailwind dengan tailwind murni tapi di atur kaya dari warna dan ukuran menggikuti kaidah golden ratio warna nya juga ada 2 tema gelap dan terang ini juga sudah di atur pewarnaan nya tinggal di masukan saja ke tailwind config nya di atur berdasarkan kaidah golden ratio dan juga typography nya di atur menggunakan typographic scale berdasarkan kaidah golden ratio
+
+ini pakai laravel dan blade dan juga diwajibkan agar server prove dapat jalan di docker dan juga support untuk livewire dan alpinejs 
+
+semua setting di taruh di env seperti yang ada di folder /config
+
+bikin tampilan semoderent mungkin tapi masih ringgan jangan terlalu berat saat diakses
+
+untuk docker database tidak udah di pikirkan biarkan saya nembak database luar karena sudah ada
+
+jangan lupa di docker nya nanti ada install seperit untuk accsess sql server nya odbcnya di dalam docker dan juga seperti composer nya juga
+
+terakhir tambahkan promt.txt dan issue.md tidak di include pada saat push nanti
+
+tolong jelaskan dengan sangat detail tahapan - tahapan yang harus dilakukan untuk mengimplementasikan fitur ini anggap yang implementasi adalah junior programmer atau model AI yang lebih murah
