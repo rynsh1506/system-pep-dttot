@@ -169,14 +169,14 @@
                             </h2>
                         </div>
 
-                        <!-- NEW BIG LOADING BLOCK (Legacy Style) -->
-                        <div id="pep-loading-block" style="text-align: center; padding: 1.5rem; background: #f8f9fc; border: 1px dashed #d1d3e2; border-radius: 5px; margin-top: 10px;">
-                            <i class="fas fa-spinner fa-spin fa-2x" style="color: #4e73df; margin-bottom: 10px;"></i>
-                            <p style="color: #333; font-weight: 600; margin: 0;">Memeriksa ke Server PPATK...</p>
-                            <p style="color: #888; font-size: 0.75rem; margin-top: 5px; margin-bottom: 0;">Sistem sedang melakukan sinkronisasi live.</p>
+                        <!-- NEW BIG LOADING BLOCK -->
+                        <div id="pep-loading-block" class="text-center p-6 bg-base-200/50 border border-dashed border-base-300 rounded-lg mt-3">
+                            <span class="loading loading-spinner loading-lg text-primary mb-3"></span>
+                            <p class="font-semibold text-base-content m-0">Memeriksa ke Server PPATK...</p>
+                            <p class="text-xs text-base-content/50 mt-1 mb-0">Sistem sedang melakukan sinkronisasi live.</p>
                         </div>
-                        <!-- NEW RESULT BLOCK (Legacy Style) -->
-                        <div id="pep-result-block" style="display: none; text-align: center; padding: 1.5rem; border-radius: 5px; margin-top: 10px; font-weight: 600;"></div>
+                        <!-- NEW RESULT BLOCK -->
+                        <div id="pep-result-block" class="hidden text-center p-6 rounded-lg mt-3 border font-semibold"></div>
                         
                     </div>
                 </div>
@@ -230,18 +230,14 @@
                                 // Update Livewire state directly
                                 @this.set('hasil_pep', 'Terindikasi');
                                 
-                                resultBlock.style.background = 'rgba(231, 74, 59, 0.1)';
-                                resultBlock.style.border = '1px solid #e74a3b';
-                                resultBlock.style.color = '#e74a3b';
-                                resultBlock.innerHTML = '<i class="fas fa-exclamation-triangle fa-2x" style="margin-bottom: 10px;"></i><br><span style="font-size: 1.1rem;">Tercatat dalam Database PEP!</span>';
+                                resultBlock.className = 'text-center p-6 rounded-lg mt-3 border font-semibold bg-error/10 border-error text-error';
+                                resultBlock.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-10 h-10 mx-auto mb-3"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span class="text-lg">Tercatat dalam Database PEP!</span>';
                                 resultBlock.style.display = 'block';
                             } else {
                                 @this.set('hasil_pep', 'Tidak Terindikasi');
                                 
-                                resultBlock.style.background = 'rgba(28, 200, 138, 0.1)';
-                                resultBlock.style.border = '1px solid #1cc88a';
-                                resultBlock.style.color = '#1cc88a';
-                                resultBlock.innerHTML = '<i class="fas fa-check-circle fa-2x" style="margin-bottom: 10px;"></i><br><span style="font-size: 1.1rem;">Tidak Terindikasi</span><br><span style="font-size: 0.85rem; font-weight: normal; margin-top: 5px; display: inline-block;">(Data tidak ditemukan di database PPATK)</span>';
+                                resultBlock.className = 'text-center p-6 rounded-lg mt-3 border font-semibold bg-success/10 border-success text-success';
+                                resultBlock.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-10 h-10 mx-auto mb-3"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg><span class="text-lg">Tidak Terindikasi</span><br><span class="text-sm font-normal mt-1 block opacity-75">(Data tidak ditemukan di database PPATK)</span>';
                                 resultBlock.style.display = 'block';
                             }
                         } else {
@@ -251,9 +247,8 @@
                     .catch(err => {
                         document.getElementById('pep-loading-block').style.display = 'none';
                         const resultBlock = document.getElementById('pep-result-block');
-                        resultBlock.style.background = 'rgba(231, 74, 59, 0.1)';
-                        resultBlock.style.border = '1px solid #e74a3b';
-                        resultBlock.style.color = '#e74a3b';
+                        
+                        resultBlock.className = 'text-center p-6 rounded-lg mt-3 border font-semibold bg-error/10 border-error text-error';
 
                         let userMessage = "";
                         const errMsg = err.message ? err.message.toLowerCase() : "";
@@ -271,10 +266,10 @@
                         }
 
                         resultBlock.innerHTML = `
-                            <i class="fas fa-server fa-2x" style="margin-bottom: 10px;"></i><br>
-                            <span style="font-size: 1.1rem;">Pengecekan Gagal / Timeout</span><br>
-                            <span style="font-size: 0.9rem; font-weight: normal; margin-top: 5px; display: inline-block;">Keterangan: ${userMessage}</span><br>
-                            <a href="https://pep.ppatk.go.id" target="_blank" style="display: inline-block; margin-top: 15px; padding: 8px 15px; background: #e74a3b; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 0.85rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><i class="fas fa-external-link-alt"></i> Cek Manual di Portal PPATK</a>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-10 h-10 mx-auto mb-3"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" /></svg>
+                            <span class="text-lg">Pengecekan Gagal / Timeout</span><br>
+                            <span class="text-sm font-normal mt-1 block opacity-80">Keterangan: ${userMessage}</span>
+                            <a href="https://pep.ppatk.go.id" target="_blank" class="btn btn-error btn-sm text-white mt-4 shadow-sm shadow-error/30">Cek Manual di Portal PPATK</a>
                         `;
                         resultBlock.style.display = 'block';
                     });
