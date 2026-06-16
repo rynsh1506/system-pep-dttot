@@ -1,18 +1,9 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
-/* Override default DaisyUI themes to inject our brand colors */
-@plugin "daisyui/theme" {
-  name: "light";
-  default: true;
+/* Overriding primary colors for all themes */
+:root {
   --color-primary: #3b82f6;
   --color-secondary: #245098;
   --color-accent: #f6af3b;
-}
-
-@plugin "daisyui/theme" {
-  name: "dark";
-  --color-primary: #3b82f6;
-  --color-secondary: #245098;
-  --color-accent: #f8c575;
 }
