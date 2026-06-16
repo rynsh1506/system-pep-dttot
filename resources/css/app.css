@@ -61,3 +61,22 @@
 .flatpickr-day {
   border-radius: 0.5rem !important;
 }
+
+/* SweetAlert2 DaisyUI Adaptation */
+.swal2-popup {
+  background: var(--fallback-b1,oklch(var(--b1))) !important;
+  color: var(--fallback-bc,oklch(var(--bc))) !important;
+  border: 1px solid var(--fallback-b2,oklch(var(--b2))) !important;
+  border-radius: 1.5rem !important;
+}
+.swal2-title, .swal2-html-container {
+  color: var(--fallback-bc,oklch(var(--bc))) !important;
+}
+.swal2-icon.swal2-warning {
+  border-color: var(--fallback-wa,oklch(var(--wa))) !important;
+  color: var(--fallback-wa,oklch(var(--wa))) !important;
+}
+.swal2-icon.swal2-question {
+  border-color: var(--fallback-in,oklch(var(--in))) !important;
+  color: var(--fallback-in,oklch(var(--in))) !important;
+}
