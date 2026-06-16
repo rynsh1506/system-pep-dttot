@@ -182,7 +182,7 @@
                                     <tr class="bg-error/5 border-b border-error/10">
                                         <td class="font-bold text-error">{{ $item['nama'] }}</td>
                                         <td>
-                                            <span class="badge badge-error badge-sm text-[10px]">{{ $item['tipe_entitas'] ?? '-' }}</span>
+                                            <span class="badge badge-error badge-sm text-[10px]">{{ $item['terduga_type'] ?? '-' }}</span>
                                         </td>
                                         <td class="text-base-content/70 max-w-xs whitespace-normal">{{ $item['deskripsi'] ?? '-' }}</td>
                                     </tr>

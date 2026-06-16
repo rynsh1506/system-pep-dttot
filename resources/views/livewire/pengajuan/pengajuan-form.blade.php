@@ -153,12 +153,12 @@
                             <tbody>
                                 @if (count($matchedRecords) > 0)
                                     @foreach ($matchedRecords as $match)
-                                    <tr>
-                                        <td class="font-semibold">{{ $match['nama'] }}</td>
+                                    <tr class="bg-error/5 border-b border-error/10">
+                                        <td class="font-bold text-error">{{ $match['nama'] }}</td>
                                         <td>
-                                            <span class="badge badge-error badge-sm text-[10px]">{{ $match['tipe_entitas'] }}</span>
+                                            <span class="badge badge-error badge-sm text-[10px]">{{ $match['terduga_type'] ?? '-' }}</span>
                                         </td>
-                                        <td class="text-base-content/70 max-w-xs whitespace-normal">{{ $match['deskripsi'] }}</td>
+                                        <td class="text-base-content/70 max-w-xs whitespace-normal">{{ $match['deskripsi'] ?? '-' }}</td>
                                     </tr>
                                     @endforeach
                                 @else
