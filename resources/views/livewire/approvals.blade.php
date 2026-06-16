@@ -17,7 +17,23 @@
     @endif
 
     <div class="card bg-base-100 shadow-sm">
-        <div class="card-body">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 px-6 py-4 border-b border-base-200">
+            <div class="flex items-center gap-2">
+                <span class="text-xs text-base-content/60">Tampilkan</span>
+                <select wire:model.live="perPage" class="select select-bordered select-xs w-20">
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+                <span class="text-xs text-base-content/60">baris</span>
+            </div>
+            <div class="w-full lg:w-auto">
+                {{ $requests->links() }}
+            </div>
+        </div>
+        <div class="card-body p-0">
             <div class="overflow-x-auto">
                 <table class="table table-zebra w-full min-w-[800px]">
                     <thead>
@@ -108,6 +124,10 @@
                         @endforelse
                     </tbody>
                 </table>
+            </div>
+            
+            <div class="mt-4 px-6 pb-6">
+                {{ $requests->links() }}
             </div>
         </div>
     </div>
