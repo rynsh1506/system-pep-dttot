@@ -30,13 +30,13 @@
                     {{-- Row 1 --}}
                     <div class="form-control w-full">
                         <label class="label pb-1"><span class="label-text font-semibold text-base-content/80">Nama Lengkap / Entitas <span class="text-error">*</span></span></label>
-                        <input type="text" wire:model="nama" class="input input-bordered w-full bg-base-100/50 focus:bg-base-100" placeholder="Contoh: Budi Santoso / PT. Fiktif" required />
+                        <input type="text" wire:model="nama" class="input input-bordered w-full" placeholder="Contoh: Budi Santoso / PT. Fiktif" required />
                         @error('nama') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="form-control w-full">
                         <label class="label pb-1"><span class="label-text font-semibold text-base-content/80">Tipe Terduga <span class="text-error">*</span></span></label>
-                        <select wire:model="terduga_type" class="select select-bordered w-full bg-base-100/50 focus:bg-base-100" required>
+                        <select wire:model="terduga_type" class="select select-bordered w-full" required>
                             <option value="">-- Pilih Tipe --</option>
                             <option value="Orang">Individu (Orang)</option>
                             <option value="Korporasi">Organisasi / Korporasi</option>
@@ -47,48 +47,48 @@
                     {{-- Row 2 --}}
                     <div class="form-control w-full">
                         <label class="label pb-1"><span class="label-text font-semibold text-base-content/80">Kode Densus</span></label>
-                        <input type="text" wire:model="kode_densus" class="input input-bordered w-full bg-base-100/50 focus:bg-base-100 font-mono" placeholder="Contoh: DNS-2023-XYZ" />
+                        <input type="text" wire:model="kode_densus" class="input input-bordered w-full font-mono" placeholder="Contoh: DNS-2023-XYZ" />
                         @error('kode_densus') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="form-control w-full">
                         <label class="label pb-1"><span class="label-text font-semibold text-base-content/80">WN / Asal Negara <span class="text-error">*</span></span></label>
-                        <input type="text" wire:model="wn_asal_negara" class="input input-bordered w-full bg-base-100/50 focus:bg-base-100" placeholder="Contoh: Indonesia" required />
+                        <input type="text" wire:model="wn_asal_negara" class="input input-bordered w-full" placeholder="Contoh: Indonesia" required />
                         @error('wn_asal_negara') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
                     </div>
 
                     {{-- Row 3 --}}
                     <div class="form-control w-full">
                         <label class="label pb-1"><span class="label-text font-semibold text-base-content/80">Tempat Lahir</span></label>
-                        <input type="text" wire:model="tempat_lahir" class="input input-bordered w-full bg-base-100/50 focus:bg-base-100" placeholder="Contoh: Jakarta" />
+                        <input type="text" wire:model="tempat_lahir" class="input input-bordered w-full" placeholder="Contoh: Jakarta" />
                         @error('tempat_lahir') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="form-control w-full">
                         <label class="label pb-1"><span class="label-text font-semibold text-base-content/80">Tanggal Lahir / Berdiri</span></label>
-                        <input type="date" wire:model="tanggal_lahir" class="input input-bordered w-full bg-base-100/50 focus:bg-base-100" />
+                        <input type="date" wire:model="tanggal_lahir" class="input input-bordered w-full" />
                         @error('tanggal_lahir') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
                     </div>
 
                     {{-- Row 4 (Full Width Textareas) --}}
                     <div class="form-control w-full md:col-span-2 mt-2">
                         <label class="label pb-1"><span class="label-text font-semibold text-base-content/80">Alamat Lengkap</span></label>
-                        <textarea wire:model="alamat" class="textarea textarea-bordered min-h-[120px] w-full bg-base-100/50 focus:bg-base-100 text-sm leading-relaxed" placeholder="Alamat lengkap terduga..."></textarea>
+                        <textarea wire:model="alamat" class="textarea textarea-bordered min-h-[120px] w-full text-sm leading-relaxed" placeholder="Alamat lengkap terduga..."></textarea>
                         @error('alamat') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="form-control w-full md:col-span-2">
                         <label class="label pb-1"><span class="label-text font-semibold text-base-content/80">Deskripsi / Catatan Kejahatan</span></label>
-                        <textarea wire:model="deskripsi" class="textarea textarea-bordered min-h-[140px] w-full bg-base-100/50 focus:bg-base-100 text-sm leading-relaxed" placeholder="Detail kasus, alasan dimasukkan ke dalam daftar, atau catatan penting lainnya..."></textarea>
+                        <textarea wire:model="deskripsi" class="textarea textarea-bordered min-h-[140px] w-full text-sm leading-relaxed" placeholder="Detail kasus, alasan dimasukkan ke dalam daftar, atau catatan penting lainnya..."></textarea>
                         @error('deskripsi') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
                     </div>
                 </div>
 
                 {{-- Action Buttons --}}
                 <div class="mt-10 pt-6 border-t border-base-200 flex flex-col-reverse sm:flex-row justify-end items-center gap-3">
-                    <a href="{{ route('home') }}" class="btn btn-ghost w-full sm:w-auto">Batal</a>
-                    <button type="submit" class="btn btn-primary w-full sm:w-auto min-w-[160px] shadow-sm">
-                        <span wire:loading.remove wire:target="submit" class="flex items-center gap-2">
+                    <a href="{{ route('home') }}" class="btn btn-outline w-full sm:w-auto">Batal</a>
+                    <button type="submit" class="btn btn-primary w-full sm:w-auto min-w-[160px] shadow-sm flex items-center justify-center gap-2">
+                        <span wire:loading.remove wire:target="submit">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M10 1c3.866 0 7 1.79 7 4s-3.134 4-7 4-7-1.79-7-4 3.134-4 7-4Zm5.694 8.13c.464-.264.91-.583 1.306-.952V10c0 2.21-3.134 4-7 4s-7-1.79-7-4V8.178c.396.37.842.688 1.306.953C5.838 10.006 7.854 10.5 10 10.5s4.162-.494 5.694-1.37ZM3 13.179V15c0 2.21 3.134 4 7 4s7-1.79 7-4v-1.822c-.396.37-.842.688-1.306.953-1.532.875-3.548 1.369-5.694 1.369s-4.162-.494-5.694-1.37A6.597 6.597 0 0 1 3 13.179Z" clip-rule="evenodd" /></svg>
                             {{ $terdugaId ? 'Simpan Perubahan' : 'Simpan Data Baru' }}
                         </span>
