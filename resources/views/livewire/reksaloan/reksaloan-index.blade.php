@@ -148,6 +148,21 @@
                     </tbody>
                 </table>
             </div>
+            
+            @if ($totalRows > $perPage)
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 border-t border-base-200 bg-base-50">
+                <span class="text-xs text-base-content/70">
+                    Menampilkan <span class="font-semibold">{{ ($page - 1) * $perPage + 1 }}</span> - 
+                    <span class="font-semibold">{{ min($page * $perPage, $totalRows) }}</span> 
+                    dari <span class="font-semibold">{{ number_format($totalRows) }}</span> data
+                </span>
+                <div class="join">
+                    <button wire:click="prevPage" class="join-item btn btn-sm" {{ $page <= 1 ? 'disabled' : '' }}>«</button>
+                    <button class="join-item btn btn-sm no-animation bg-base-100 pointer-events-none">Halaman {{ $page }} dari {{ $this->totalPages() }}</button>
+                    <button wire:click="nextPage" class="join-item btn btn-sm" {{ $page >= $this->totalPages() ? 'disabled' : '' }}>»</button>
+                </div>
+            </div>
+            @endif
         </div>
     @endif
 </div>
