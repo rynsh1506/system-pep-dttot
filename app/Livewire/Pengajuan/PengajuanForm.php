@@ -4,6 +4,7 @@ namespace App\Livewire\Pengajuan;
 
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Livewire\Attributes\Session;
 use App\Models\PengajuanDtot;
 use App\Models\Terduga;
 use Illuminate\Support\Facades\Http;
@@ -13,21 +14,31 @@ class PengajuanForm extends Component
 {
     use WithFileUploads;
 
+    #[Session]
     public int $step = 1;
 
     // Step 1 Inputs
+    #[Session]
     public string $tanggal = '';
+    #[Session]
     public string $kategori = 'Manual';
+    #[Session]
     public string $nama_cadeb = '';
+    #[Session]
     public string $nik = '';
 
     // Step 2 Inputs
+    #[Session]
     public string $hasil_pengecekan = '';
+    #[Session]
     public string $hasil_pep = '';
+    #[Session]
     public string $keterangan = '';
+    
     public $bukti_ss = null;
 
     // Data Holds
+    #[Session]
     public array $matchedRecords = [];
     public array $apiResult = [];
     public bool $isApiChecked = false;
@@ -109,6 +120,11 @@ class PengajuanForm extends Component
             'icon'  => 'success',
             'title' => 'Berhasil!',
             'text'  => 'Hasil pengecekan berhasil disimpan.',
+        ]);
+
+        $this->reset([
+            'step', 'tanggal', 'kategori', 'nama_cadeb', 'nik', 
+            'hasil_pengecekan', 'hasil_pep', 'keterangan', 'bukti_ss', 'matchedRecords'
         ]);
 
         $this->redirect(route('pengajuan'), navigate: true);
