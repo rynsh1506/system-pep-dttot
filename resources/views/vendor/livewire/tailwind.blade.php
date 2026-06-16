@@ -16,9 +16,9 @@ $scrollIntoViewJsSnippet = ($scrollTo !== false)
             
             {{-- Results info --}}
             <div class="text-sm text-base-content/70 hidden sm:block">
-                Menampilkan <span class="font-semibold text-base-content">{{ $paginator->firstItem() }}</span> 
-                hingga <span class="font-semibold text-base-content">{{ $paginator->lastItem() }}</span> 
-                dari <span class="font-semibold text-base-content">{{ $paginator->total() }}</span> hasil
+                {{ __('Menampilkan') }} <span class="font-semibold text-base-content">{{ $paginator->firstItem() }}</span> 
+                {{ __('hingga') }} <span class="font-semibold text-base-content">{{ $paginator->lastItem() }}</span> 
+                {{ __('dari') }} <span class="font-semibold text-base-content">{{ $paginator->total() }}</span> {{ __('hasil') }}
             </div>
 
             {{-- Pagination buttons (DaisyUI Join) --}}
