@@ -1,1 +1,25 @@
-@tailwind base;\n@tailwind components;\n@tailwind utilities;
+@import "tailwindcss";
+@plugin "daisyui";
+
+/* Custom Golden Themes for DaisyUI 5 */
+@plugin "daisyui/theme" {
+  name: "goldenlight";
+  default: true;
+  --color-primary: #3b82f6;
+  --color-secondary: #245098;
+  --color-accent: #f6af3b;
+  --color-neutral: #1a1a1a;
+  --color-base-100: #f7f7f7;
+  --color-base-content: #1a1a1a;
+}
+
+@plugin "daisyui/theme" {
+  name: "goldendark";
+  default: false;
+  --color-primary: #60a5fa;
+  --color-secondary: #9bc3fb;
+  --color-accent: #f8c575;
+  --color-neutral: #f7f7f7;
+  --color-base-100: #1a1a1a;
+  --color-base-content: #f7f7f7;
+}
