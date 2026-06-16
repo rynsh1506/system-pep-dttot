@@ -128,5 +128,21 @@
     "dari": "of",
     "hasil": "results",
     "Export Excel": "Export Excel",
-    "Upload": "Upload"
+    "Upload": "Upload",
+    "Upload Data Massal": "Mass Data Upload",
+    "Impor data Terduga Teroris dari file Excel atau CSV.": "Import Suspected Terrorist data from Excel or CSV files.",
+    "Tarik & Lepas File ke Sini": "Drag & Drop File Here",
+    "atau klik untuk menelusuri dari perangkat": "or click to browse from device",
+    "Batal": "Cancel",
+    "Mulai Impor": "Start Import",
+    "Petunjuk Format": "Format Guidelines",
+    "Pastikan file Excel Anda memiliki urutan kolom berikut (tanpa header diperbolehkan, tapi urutan harus sama):": "Ensure your Excel file has the following column order (without headers is allowed, but the order must be the same):",
+    "Nama": "Name",
+    "Deskripsi": "Description",
+    "Terduga (Orang/Korporasi)": "Suspect (Person/Corporation)",
+    "Kode Densus": "Densus Code",
+    "Tempat Lahir": "Place of Birth",
+    "Tanggal Lahir (DD/MM/YYYY)": "Date of Birth (DD/MM/YYYY)",
+    "WN / Asal Negara": "Nationality / Country of Origin",
+    "Alamat": "Address"
 }
