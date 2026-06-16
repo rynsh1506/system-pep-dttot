@@ -12,4 +12,5 @@ class Terduga extends Model
     protected $connection = 'dtot';
     protected $table = 'terduga';
     protected $guarded = ['id'];
+    const UPDATED_AT = null;
 }
