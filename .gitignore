@@ -1,0 +1,4 @@
+/vendor
+/dtot/vendor
+*.sql
+/uploads
