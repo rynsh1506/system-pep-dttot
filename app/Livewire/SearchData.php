@@ -58,7 +58,7 @@ class SearchData extends Component
             $query->where('kode_densus', 'like', '%' . $this->kode . '%');
         }
 
-        $data = $query->orderBy('nama', 'asc')->paginate($this->perPage);
+        $data = $query->orderBy('nama', 'asc')->paginate($this->perPage)->onEachSide(1);
 
         return view('livewire.search-data', [
             'data' => $data
