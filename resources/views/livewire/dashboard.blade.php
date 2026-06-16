@@ -5,13 +5,22 @@
             <h1 class="text-2xl font-bold text-base-content">Dashboard DTTOT</h1>
             <p class="text-sm text-base-content/60 mt-0.5">Daftar Terduga Teroris dan Organisasi Teroris</p>
         </div>
-        <a href="{{ route('add-data') }}"
-            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary hover:bg-primary/90 active:scale-[0.98] text-primary-content text-sm font-semibold transition-all shadow-sm shadow-primary/20 self-start sm:self-auto">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
-                <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z"/>
-            </svg>
-            Add Data
-        </a>
+        <div class="flex items-center gap-2 self-start sm:self-auto">
+            <a href="{{ route('upload-data') }}"
+                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-base-100 hover:bg-base-200 border border-base-300 text-base-content text-sm font-semibold transition-all shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                    <path fill-rule="evenodd" d="M5.5 17a4.5 4.5 0 0 1-1.44-8.765 4.5 4.5 0 0 1 8.302-3.046 3.5 3.5 0 0 1 4.504 4.272A4 4 0 0 1 15 17H5.5Zm3.75-2.75a.75.75 0 0 0 1.5 0V9.66l1.95 2.1a.75.75 0 1 0 1.1-1.02l-3.25-3.5a.75.75 0 0 0-1.1 0l-3.25 3.5a.75.75 0 1 0 1.1 1.02l1.95-2.1v4.59Z" clip-rule="evenodd"/>
+                </svg>
+                Upload
+            </a>
+            <a href="{{ route('add-data') }}"
+                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary hover:bg-primary/90 active:scale-[0.98] text-primary-content text-sm font-semibold transition-all shadow-sm shadow-primary/20">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                    <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z"/>
+                </svg>
+                Add Data
+            </a>
+        </div>
     </div>
 
     {{-- ===== STAT CARDS (4 kolom) ===== --}}
