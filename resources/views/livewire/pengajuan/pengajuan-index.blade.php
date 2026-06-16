@@ -61,23 +61,23 @@
                                 @php
                                     $dttot = $row->hasil_pengecekan ?? 'Belum Dicek';
                                     $dttotClass = match($dttot) {
-                                        'Terindikasi' => 'badge-error',
-                                        'Tidak Terindikasi' => 'badge-success',
-                                        default => 'badge-warning',
+                                        'Terindikasi' => 'badge-error text-white',
+                                        'Tidak Terindikasi' => 'badge-success text-white',
+                                        default => 'badge-outline text-base-content',
                                     };
                                 @endphp
-                                <span class="badge {{ $dttotClass }} badge-sm text-white font-medium">{{ $dttot }}</span>
+                                <span class="badge {{ $dttotClass }} badge-sm font-medium">{{ $dttot }}</span>
                             </td>
                             <td>
                                 @php
-                                    $pep = $row->hasil_pep ?? '-';
+                                    $pep = $row->hasil_pep ?? 'Belum Dicek';
                                     $pepClass = match($pep) {
-                                        'Terindikasi' => 'badge-error',
-                                        'Tidak Terindikasi' => 'badge-success',
-                                        default => 'badge-ghost',
+                                        'Terindikasi' => 'badge-error text-white',
+                                        'Tidak Terindikasi' => 'badge-success text-white',
+                                        default => 'badge-outline text-base-content',
                                     };
                                 @endphp
-                                <span class="badge {{ $pepClass }} badge-sm {{ $pep !== '-' ? 'text-white font-medium' : '' }}">{{ $pep }}</span>
+                                <span class="badge {{ $pepClass }} badge-sm font-medium">{{ $pep }}</span>
                             </td>
                             <td class="text-center">
                                 <a href="{{ route('pengajuan.proses', $row->id) }}" class="btn btn-xs btn-primary gap-1">

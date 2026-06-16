@@ -76,12 +76,20 @@
                             <td class="font-mono text-xs">{{ $row->nik }}</td>
                             <td><span class="badge badge-ghost badge-sm">{{ $row->kategori ?? 'Mobile' }}</span></td>
                             <td>
-                                @php $dttotClass = match($row->hasil_pengecekan) { 'Terindikasi' => 'badge-error', 'Tidak Terindikasi' => 'badge-success', default => 'badge-warning' }; @endphp
-                                <span class="badge {{ $dttotClass }} badge-sm text-white font-medium">{{ $row->hasil_pengecekan ?? 'Belum Dicek' }}</span>
+                                @php $dttotClass = match($row->hasil_pengecekan ?? '') {
+                                    'Terindikasi' => 'badge-error text-white',
+                                    'Tidak Terindikasi' => 'badge-success text-white',
+                                    default => 'badge-outline text-base-content',
+                                }; @endphp
+                                <span class="badge {{ $dttotClass }} badge-sm font-medium">{{ $row->hasil_pengecekan ?? 'Belum Dicek' }}</span>
                             </td>
                             <td>
-                                @php $pepClass = match($row->hasil_pep) { 'Terindikasi' => 'badge-error', 'Tidak Terindikasi' => 'badge-success', default => 'badge-ghost' }; @endphp
-                                <span class="badge {{ $pepClass }} badge-sm {{ $row->hasil_pep && $row->hasil_pep !== '-' ? 'text-white font-medium' : '' }}">{{ $row->hasil_pep ?? '-' }}</span>
+                                @php $pepClass = match($row->hasil_pep ?? '') {
+                                    'Terindikasi' => 'badge-error text-white',
+                                    'Tidak Terindikasi' => 'badge-success text-white',
+                                    default => 'badge-outline text-base-content',
+                                }; @endphp
+                                <span class="badge {{ $pepClass }} badge-sm font-medium">{{ $row->hasil_pep ?? '-' }}</span>
                             </td>
                             <td class="text-xs text-base-content/60">{{ Str::limit($row->keterangan, 60) ?? '-' }}</td>
                         </tr>

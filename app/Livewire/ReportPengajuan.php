@@ -26,18 +26,16 @@ class ReportPengajuan extends Component
 
     public function render()
     {
-        $query = PengajuanDtot::with('checker')
+        $query = PengajuanDtot::query()
             ->whereBetween('tanggal', [$this->startDate, $this->endDate])
-            ->when($this->filterHasil !== 'All', fn($q) => $q->where('hasil_pengecekan', $this->filterHasil))
-            ->orderByDesc('tanggal')
-            ->orderByDesc('created_at');
+            ->when($this->filterHasil !== 'All', fn($q) => $q->where('hasil_pengecekan', $this->filterHasil));
 
-        $total          = (clone $query)->count();
-        $terindikasi    = (clone $query)->where('hasil_pengecekan', 'Terindikasi')->count();
-        $tidakTerindikasi = (clone $query)->where('hasil_pengecekan', 'Tidak Terindikasi')->count();
+        $total            = $query->count();
+        $terindikasi      = PengajuanDtot::whereBetween('tanggal', [$this->startDate, $this->endDate])->where('hasil_pengecekan', 'Terindikasi')->count();
+        $tidakTerindikasi = PengajuanDtot::whereBetween('tanggal', [$this->startDate, $this->endDate])->where('hasil_pengecekan', 'Tidak Terindikasi')->count();
 
         return view('livewire.report-pengajuan', [
-            'data'              => $query->paginate(15),
+            'data'              => $query->orderByDesc('tanggal')->orderByDesc('created_at')->paginate(15),
             'total'             => $total,
             'terindikasi'       => $terindikasi,
             'tidakTerindikasi'  => $tidakTerindikasi,
