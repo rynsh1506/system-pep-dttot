@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="goldenlight">
+<html lang="id" data-theme="{{ $_COOKIE['theme'] ?? 'light' }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title ?? 'System PEP & DTTOT' }}</title>
     @vite('resources/css/app.css')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css" id="flatpickr-dark-theme" disabled>
     @livewireStyles
 </head>
 <body class="bg-base-200">
@@ -56,7 +58,7 @@
 
                     {{-- Theme Controller --}}
                     <label class="swap swap-rotate btn btn-sm btn-ghost px-2">
-                        <input type="checkbox" class="theme-controller" value="goldendark" />
+                        <input type="checkbox" id="theme-toggle" class="theme-controller" value="dark" {{ ($_COOKIE['theme'] ?? 'light') == 'dark' ? 'checked' : '' }} />
                         {{-- Sun icon (visible when light) --}}
                         <svg class="swap-off fill-current w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"/></svg>
                         {{-- Moon icon (visible when dark) --}}
@@ -221,5 +223,31 @@
     </div>
 
     @livewireScripts
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggle = document.getElementById('theme-toggle');
+            const flatpickrDarkTheme = document.getElementById('flatpickr-dark-theme');
+
+            function updateFlatpickrTheme(theme) {
+                if (flatpickrDarkTheme) {
+                    flatpickrDarkTheme.disabled = theme !== 'dark';
+                }
+            }
+
+            // Init flatpickr theme
+            updateFlatpickrTheme(document.documentElement.getAttribute('data-theme'));
+
+            if (themeToggle) {
+                themeToggle.addEventListener('change', function() {
+                    const theme = this.checked ? 'dark' : 'light';
+                    document.documentElement.setAttribute('data-theme', theme);
+                    document.cookie = "theme=" + theme + "; path=/; max-age=31536000";
+                    updateFlatpickrTheme(theme);
+                });
+            }
+        });
+    </script>
 </body>
 </html>

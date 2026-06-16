@@ -10,6 +10,17 @@ class Dashboard extends Component
 {
     use WithPagination;
 
+    public $perPage = 5;
+
+    protected $queryString = [
+        'perPage' => ['except' => 5],
+    ];
+
+    public function updatingPerPage()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
         $totalTerduga   = Terduga::count();
@@ -17,7 +28,7 @@ class Dashboard extends Component
         $totalKorporasi = Terduga::where('terduga_type', 'Korporasi')->count();
         $todayCount     = Terduga::whereDate('created_at', today())->count();
 
-        $recentData = Terduga::orderBy('created_at', 'desc')->paginate(10);
+        $recentData = Terduga::orderBy('created_at', 'desc')->paginate($this->perPage)->onEachSide(1);
 
         return view('livewire.dashboard', [
             'totalTerduga'   => $totalTerduga,

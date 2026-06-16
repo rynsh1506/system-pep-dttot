@@ -6,9 +6,22 @@ use Livewire\Component;
 use App\Models\ChangeRequest;
 use App\Models\Terduga;
 use Illuminate\Support\Facades\DB;
+use Livewire\WithPagination;
 
 class Approvals extends Component
 {
+    use WithPagination;
+
+    public $perPage = 10;
+
+    protected $queryString = [
+        'perPage' => ['except' => 10],
+    ];
+
+    public function updatingPerPage()
+    {
+        $this->resetPage();
+    }
     public function approve($id)
     {
         $role = session('role_level');
@@ -79,7 +92,7 @@ class Approvals extends Component
             $query->whereIn('status', ['PENDING_SPV', 'PENDING_MANAGER']);
         }
 
-        $requests = $query->orderBy('created_at', 'asc')->get();
+        $requests = $query->orderBy('created_at', 'asc')->paginate($this->perPage)->onEachSide(1);
 
         return view('livewire.approvals', [
             'requests' => $requests

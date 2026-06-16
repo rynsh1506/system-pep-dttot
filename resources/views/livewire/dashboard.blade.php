@@ -92,23 +92,37 @@
     {{-- ===== TABEL DATA TERBARU ===== --}}
     <div class="rounded-2xl bg-base-100 border border-base-200 shadow-sm">
         {{-- Tabel Header --}}
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-6 py-4 border-b border-base-200">
-            <div>
+        <div class="px-6 py-4 border-b border-base-200">
+            <div class="flex flex-row items-center justify-between mb-4">
                 <h2 class="text-base font-bold text-base-content">Data Terduga Terbaru</h2>
-                <p class="text-xs text-base-content/50 mt-0.5">Menampilkan 10 data terakhir</p>
+                <a href="{{ route('search') }}" class="btn btn-xs btn-outline btn-primary rounded-full">
+                    Lihat Semua
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-3.5 h-3.5">
+                        <path fill-rule="evenodd" d="M2 8a.75.75 0 0 1 .75-.75h8.69L8.22 4.03a.75.75 0 0 1 1.06-1.06l4.5 4.5a.75.75 0 0 1 0 1.06l-4.5 4.5a.75.75 0 0 1-1.06-1.06l3.22-3.22H2.75A.75.75 0 0 1 2 8Z" clip-rule="evenodd"/>
+                    </svg>
+                </a>
             </div>
-            <a href="{{ route('search') }}"
-                class="inline-flex items-center gap-1.5 text-sm text-primary font-medium hover:underline self-start">
-                Lihat Semua
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-3.5 h-3.5">
-                    <path fill-rule="evenodd" d="M2 8a.75.75 0 0 1 .75-.75h8.69L8.22 4.03a.75.75 0 0 1 1.06-1.06l4.5 4.5a.75.75 0 0 1 0 1.06l-4.5 4.5a.75.75 0 0 1-1.06-1.06l3.22-3.22H2.75A.75.75 0 0 1 2 8Z" clip-rule="evenodd"/>
-                </svg>
-            </a>
+            <div class="flex flex-row flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-base-content/60">Tampilkan</span>
+                    <select wire:model.live="perPage" class="select select-bordered select-xs w-24">
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                    <span class="text-xs text-base-content/60">baris</span>
+                </div>
+                <div class="w-full lg:w-auto">
+                    {{ $recentData->links() }}
+                </div>
+            </div>
         </div>
 
         {{-- Tabel --}}
         <div class="overflow-x-auto">
-            <table class="w-full text-sm">
+            <table class="w-full text-sm min-w-[800px]">
                 <thead>
                     <tr class="border-b border-base-200 bg-base-200/50">
                         <th class="text-left px-6 py-3 text-xs font-semibold text-base-content/50 uppercase tracking-wide">Nama</th>

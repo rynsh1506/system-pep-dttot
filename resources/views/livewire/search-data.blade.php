@@ -58,9 +58,25 @@
     </div>
 
     <div class="card bg-base-100 shadow-sm">
+        <div class="flex flex-row flex-wrap items-center justify-between gap-4 px-6 py-4 border-b border-base-200">
+            <div class="flex items-center gap-2">
+                <span class="text-xs text-base-content/60">Tampilkan</span>
+                <select wire:model.live="perPage" class="select select-bordered select-xs w-24">
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+                <span class="text-xs text-base-content/60">baris</span>
+            </div>
+            <div class="w-auto">
+                {{ $data->links() }}
+            </div>
+        </div>
         <div class="card-body p-0">
             <div class="overflow-x-auto">
-                <table class="w-full text-sm">
+                <table class="w-full text-sm min-w-[800px]">
                     <thead>
                         <tr class="border-b border-base-200 bg-base-200/50">
                             <th class="text-left px-6 py-4 text-xs font-semibold text-base-content/50 uppercase tracking-wide">NAMA</th>

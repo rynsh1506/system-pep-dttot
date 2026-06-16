@@ -1,25 +1,63 @@
 @import "tailwindcss";
+@source "../views/vendor";
 @plugin "daisyui";
 
-/* Custom Golden Themes for DaisyUI 5 */
-@plugin "daisyui/theme" {
-  name: "goldenlight";
-  default: true;
+/* Overriding primary colors for all themes */
+:root {
   --color-primary: #3b82f6;
   --color-secondary: #245098;
   --color-accent: #f6af3b;
-  --color-neutral: #1a1a1a;
-  --color-base-100: #f7f7f7;
-  --color-base-content: #1a1a1a;
 }
 
-@plugin "daisyui/theme" {
-  name: "goldendark";
-  default: false;
-  --color-primary: #60a5fa;
-  --color-secondary: #9bc3fb;
-  --color-accent: #f8c575;
-  --color-neutral: #f7f7f7;
-  --color-base-100: #1a1a1a;
-  --color-base-content: #f7f7f7;
+/* Modernize Flatpickr UI */
+.flatpickr-calendar {
+  border: none !important;
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1) !important;
+  border-radius: 1rem !important;
+  width: auto !important;
+}
+.flatpickr-current-month {
+  padding-top: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.25rem;
+}
+.flatpickr-monthDropdown-months {
+  font-weight: 700 !important;
+  border-radius: 0.5rem !important;
+  padding: 0.25rem 0.5rem !important;
+  background: var(--fallback-b1,oklch(var(--b1))) !important;
+  color: var(--fallback-bc,oklch(var(--bc))) !important;
+  cursor: pointer !important;
+  border: 1px solid var(--fallback-b2,oklch(var(--b2))) !important;
+}
+.flatpickr-monthDropdown-months:hover {
+  background: var(--fallback-b2,oklch(var(--b2))) !important;
+}
+/* Restore up/down arrows for year but style them better */
+.numInputWrapper span {
+  border: 1px solid var(--fallback-b2,oklch(var(--b2))) !important;
+  background: var(--fallback-b1,oklch(var(--b1))) !important;
+}
+.numInputWrapper span:hover {
+  background: var(--fallback-b2,oklch(var(--b2))) !important;
+}
+.flatpickr-current-month .numInputWrapper {
+  width: 9ch !important;
+  border-radius: 0.5rem !important;
+  transition: all 0.2s !important;
+  background: var(--fallback-b1,oklch(var(--b1))) !important;
+  border: 1px solid var(--fallback-b2,oklch(var(--b2))) !important;
+}
+.flatpickr-current-month .numInputWrapper:hover {
+  background: rgba(150, 150, 150, 0.1) !important;
+}
+.flatpickr-current-month input.cur-year {
+  font-weight: 700 !important;
+  padding: 0.25rem !important;
+  cursor: text !important;
+}
+.flatpickr-day {
+  border-radius: 0.5rem !important;
 }

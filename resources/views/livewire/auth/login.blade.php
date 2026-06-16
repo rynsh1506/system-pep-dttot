@@ -86,7 +86,7 @@
                     Username
                 </label>
                 {{-- Custom flex-wrapper input (bukan DaisyUI input agar icon dijamin kelihatan) --}}
-                <div class="flex items-center h-12 rounded-xl border border-base-300 bg-white focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all duration-200 overflow-hidden @error('username') border-red-400 bg-red-50 @enderror">
+                <div class="flex items-center h-12 rounded-xl border border-base-300 bg-base-100 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all duration-200 overflow-hidden @error('username') border-error bg-error/10 @enderror">
                     {{-- Icon orang di kiri --}}
                     <div class="flex items-center justify-center w-12 shrink-0 text-base-content/50">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
@@ -107,7 +107,7 @@
                     />
                 </div>
                 @error('username')
-                    <p class="text-red-500 text-xs mt-1.5 flex items-center gap-1">
+                    <p class="text-error text-xs mt-1.5 flex items-center gap-1">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-3.5 h-3.5 shrink-0">
                             <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14Zm0-4a.75.75 0 0 1-.75-.75v-2.5a.75.75 0 0 1 1.5 0v2.5A.75.75 0 0 1 8 11Zm0-6a.875.875 0 1 1 0 1.75A.875.875 0 0 1 8 5Z" clip-rule="evenodd"/>
                         </svg>
@@ -121,7 +121,7 @@
                 <label class="block text-xs font-semibold text-base-content/60 uppercase tracking-widest mb-2" for="password">
                     Password
                 </label>
-                <div class="flex items-center h-12 rounded-xl border border-base-300 bg-white focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all duration-200 overflow-hidden @error('password') border-red-400 bg-red-50 @enderror">
+                <div class="flex items-center h-12 rounded-xl border border-base-300 bg-base-100 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all duration-200 overflow-hidden @error('password') border-error bg-error/10 @enderror">
                     {{-- Icon gembok di kiri --}}
                     <div class="flex items-center justify-center w-12 shrink-0 text-base-content/50">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
@@ -159,7 +159,7 @@
                     </button>
                 </div>
                 @error('password')
-                    <p class="text-red-500 text-xs mt-1.5 flex items-center gap-1">
+                    <p class="text-error text-xs mt-1.5 flex items-center gap-1">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-3.5 h-3.5 shrink-0">
                             <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14Zm0-4a.75.75 0 0 1-.75-.75v-2.5a.75.75 0 0 1 1.5 0v2.5A.75.75 0 0 1 8 11Zm0-6a.875.875 0 1 1 0 1.75A.875.875 0 0 1 8 5Z" clip-rule="evenodd"/>
                         </svg>

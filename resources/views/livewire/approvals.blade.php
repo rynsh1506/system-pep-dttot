@@ -17,9 +17,25 @@
     @endif
 
     <div class="card bg-base-100 shadow-sm">
-        <div class="card-body">
+        <div class="flex flex-row flex-wrap items-center justify-between gap-4 px-6 py-4 border-b border-base-200">
+            <div class="flex items-center gap-2">
+                <span class="text-xs text-base-content/60">Tampilkan</span>
+                <select wire:model.live="perPage" class="select select-bordered select-xs w-24">
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+                <span class="text-xs text-base-content/60">baris</span>
+            </div>
+            <div class="w-auto">
+                {{ $requests->links() }}
+            </div>
+        </div>
+        <div class="card-body p-0">
             <div class="overflow-x-auto">
-                <table class="table table-zebra w-full">
+                <table class="table table-zebra w-full min-w-[800px]">
                     <thead>
                         <tr>
                             <th>Tanggal</th>
@@ -83,10 +99,16 @@
                                 </td>
                                 <td>
                                     <div class="flex gap-2">
-                                        <button wire:click="approve({{ $row->id }})" wire:confirm="Setujui permintaan ini?" class="btn btn-sm btn-success text-white">
+                                        <button wire:click="approve({{ $row->id }})" wire:confirm="Setujui permintaan ini?" class="btn btn-sm btn-success text-white shadow-sm gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                                              <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
+                                            </svg>
                                             {{ session('role_level') == 2 ? 'Teruskan' : 'Approve' }}
                                         </button>
-                                        <button wire:click="reject({{ $row->id }})" wire:confirm="Tolak permintaan ini?" class="btn btn-sm btn-error text-white">
+                                        <button wire:click="reject({{ $row->id }})" wire:confirm="Tolak permintaan ini?" class="btn btn-sm btn-error text-white shadow-sm gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                                              <path fill-rule="evenodd" d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" clip-rule="evenodd" />
+                                            </svg>
                                             Reject
                                         </button>
                                     </div>
@@ -102,6 +124,10 @@
                         @endforelse
                     </tbody>
                 </table>
+            </div>
+            
+            <div class="mt-4 px-6 pb-6">
+                {{ $requests->links() }}
             </div>
         </div>
     </div>

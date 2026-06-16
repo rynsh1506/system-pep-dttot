@@ -13,11 +13,13 @@ class SearchData extends Component
     public $search = '';
     public $type = '';
     public $kode = '';
+    public $perPage = 10;
 
     protected $queryString = [
         'search' => ['except' => ''],
         'type' => ['except' => ''],
         'kode' => ['except' => ''],
+        'perPage' => ['except' => 10],
     ];
 
     public function updatingSearch()
@@ -31,6 +33,11 @@ class SearchData extends Component
     }
 
     public function updatingKode()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingPerPage()
     {
         $this->resetPage();
     }
@@ -51,7 +58,7 @@ class SearchData extends Component
             $query->where('kode_densus', 'like', '%' . $this->kode . '%');
         }
 
-        $data = $query->orderBy('nama', 'asc')->paginate(15);
+        $data = $query->orderBy('nama', 'asc')->paginate($this->perPage)->onEachSide(1);
 
         return view('livewire.search-data', [
             'data' => $data
