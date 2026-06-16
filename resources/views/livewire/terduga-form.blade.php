@@ -24,7 +24,24 @@
 
     <div class="card bg-base-100 shadow-sm border border-base-200 w-full max-w-5xl">
         <div class="card-body p-6 md:p-8">
-            <form wire:submit.prevent="submit">
+            <form x-data="{
+                confirmSubmit() {
+                    Swal.fire({
+                        title: 'Konfirmasi Simpan',
+                        text: 'Apakah Anda yakin ingin menyimpan data ini?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3b82f6',
+                        cancelButtonColor: '#ef4444',
+                        confirmButtonText: 'Ya, Simpan',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            @this.submit();
+                        }
+                    });
+                }
+            }" x-on:submit.prevent="confirmSubmit">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                     
                     {{-- Row 1 --}}
