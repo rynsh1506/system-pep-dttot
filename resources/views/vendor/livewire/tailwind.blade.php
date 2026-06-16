@@ -22,7 +22,7 @@ $scrollIntoViewJsSnippet = ($scrollTo !== false)
             </div>
 
             {{-- Pagination buttons (DaisyUI Join) --}}
-            <div class="w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0">
+            <div class="w-full sm:w-auto overflow-x-auto overflow-y-hidden pb-2 sm:pb-0">
                 <div class="join shadow-sm flex-nowrap">
                 {{-- Previous Page Link --}}
                 @if ($paginator->onFirstPage())
