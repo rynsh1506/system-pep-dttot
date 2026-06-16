@@ -126,11 +126,11 @@
                 <thead class="bg-base-200/50 text-base-content/70">
                     <tr>
                         <th>{{ __('NAMA') }}</th>
-                        <th class="hidden md:table-cell">{{ __('TIPE') }}</th>
-                        <th class="hidden lg:table-cell">{{ __('KODE DENSUS') }}</th>
-                        <th class="hidden md:table-cell">{{ __('TTL') }}</th>
-                        <th class="hidden sm:table-cell">{{ __('WN / NEGARA') }}</th>
-                        <th class="hidden xl:table-cell">{{ __('DESKRIPSI') }}</th>
+                        <th>{{ __('TIPE') }}</th>
+                        <th>{{ __('KODE DENSUS') }}</th>
+                        <th>{{ __('TTL') }}</th>
+                        <th>{{ __('WN / NEGARA') }}</th>
+                        <th>{{ __('DESKRIPSI') }}</th>
                         <th class="text-center">{{ __('AKSI') }}</th>
                     </tr>
                 </thead>
