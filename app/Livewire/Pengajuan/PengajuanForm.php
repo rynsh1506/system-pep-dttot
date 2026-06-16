@@ -3,17 +3,34 @@
 namespace App\Livewire\Pengajuan;
 
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use App\Models\PengajuanDtot;
+use App\Models\Terduga;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Auth;
 
 class PengajuanForm extends Component
 {
+    use WithFileUploads;
+
+    public int $step = 1;
+
+    // Step 1 Inputs
     public string $tanggal = '';
+    public string $kategori = 'Manual';
     public string $nama_cadeb = '';
     public string $nik = '';
-    public string $nama_pasangan = '';
-    public string $nik_pasangan = '';
-    public string $kategori = 'Manual';
+
+    // Step 2 Inputs
+    public string $hasil_pengecekan = '';
+    public string $hasil_pep = '';
     public string $keterangan = '';
+    public $bukti_ss = null;
+
+    // Data Holds
+    public array $matchedRecords = [];
+    public array $apiResult = [];
+    public bool $isApiChecked = false;
 
     public function mount(): void
     {
@@ -22,37 +39,108 @@ class PengajuanForm extends Component
 
     protected function rules(): array
     {
+        if ($this->step === 1) {
+            return [
+                'tanggal'       => 'required|date',
+                'kategori'      => 'required|string',
+                'nama_cadeb'    => 'required|string|min:3|max:255',
+                'nik'           => 'required|string|min:5|max:50',
+            ];
+        }
+
         return [
-            'tanggal'       => 'required|date',
-            'nama_cadeb'    => 'required|string|min:3|max:255',
-            'nik'           => 'required|string|min:5|max:50',
-            'nama_pasangan' => 'nullable|string|max:255',
-            'nik_pasangan'  => 'nullable|string|max:50',
-            'kategori'      => 'required|string',
-            'keterangan'    => 'nullable|string|max:1000',
+            'hasil_pengecekan' => 'required|in:Terindikasi,Tidak Terindikasi',
+            'hasil_pep'        => 'required|in:Terindikasi,Tidak Terindikasi',
+            'keterangan'       => 'nullable|string|max:1000',
+            'bukti_ss'         => 'nullable|image|max:5120',
         ];
+    }
+
+    public function cekData(): void
+    {
+        $this->validate();
+
+        // 1. Cek dari Database Lokal (DTTOT)
+        $this->matchedRecords = Terduga::where(function ($q) {
+            $q->where('nama', 'like', '%' . $this->nama_cadeb . '%')
+              ->orWhere('deskripsi', 'like', '%' . $this->nama_cadeb . '%');
+            if ($this->nik) {
+                $q->orWhere('deskripsi', 'like', '%' . $this->nik . '%');
+            }
+        })->get()->toArray();
+
+        // 2. Cek dari API Eksternal (PPATK Scrapper)
+        $this->checkApiPpatkScrapper();
+
+        // 3. Auto-suggest Hasil (Bisa diganti manual oleh user)
+        $this->hasil_pengecekan = count($this->matchedRecords) > 0 ? 'Terindikasi' : 'Tidak Terindikasi';
+        
+        // Auto-suggest PEP berdasarkan API (jika ada hasilnya)
+        if (!empty($this->apiResult) && isset($this->apiResult['pep_status'])) {
+            $this->hasil_pep = $this->apiResult['pep_status'];
+        } else {
+            $this->hasil_pep = 'Tidak Terindikasi'; // Default
+        }
+
+        $this->step = 2;
+    }
+
+    private function checkApiPpatkScrapper(): void
+    {
+        try {
+            // [MOCKUP / PLACEHOLDER API CALL]
+            // Silakan sesuaikan URL dan Payload di bawah ini sesuai spesifikasi API asli ppatk_scrapper
+            $url = env('PPATK_SCRAPPER_URL', 'http://localhost:5000/api/check');
+            
+            $response = Http::timeout(10)->post($url, [
+                'nama' => $this->nama_cadeb,
+                'nik'  => $this->nik
+            ]);
+
+            if ($response->successful()) {
+                $this->apiResult = $response->json();
+                $this->isApiChecked = true;
+            } else {
+                $this->apiResult = ['error' => 'API Error: ' . $response->status()];
+                $this->isApiChecked = false;
+            }
+        } catch (\Exception $e) {
+            $this->apiResult = ['error' => 'Gagal terhubung ke API Scrapper: ' . $e->getMessage()];
+            $this->isApiChecked = false;
+        }
+    }
+
+    public function kembali(): void
+    {
+        $this->step = 1;
     }
 
     public function save(): void
     {
         $this->validate();
 
+        $buktiPath = null;
+        if ($this->bukti_ss) {
+            $buktiPath = $this->bukti_ss->store('bukti-ss', 'public');
+        }
+
         PengajuanDtot::create([
-            'tanggal'       => $this->tanggal,
-            'nama_cadeb'    => strtoupper($this->nama_cadeb),
-            'nik'           => $this->nik,
-            'nama_pasangan' => $this->nama_pasangan ? strtoupper($this->nama_pasangan) : '',
-            'nik_pasangan'  => $this->nik_pasangan ?? '',
-            'kategori'      => $this->kategori,
-            'keterangan'    => $this->keterangan,
-            'hasil_pengecekan' => 'Belum Dicek',
-            'hasil_pep'     => 'Belum Dicek',
+            'tanggal'          => $this->tanggal,
+            'kategori'         => $this->kategori,
+            'nama_cadeb'       => strtoupper($this->nama_cadeb),
+            'nik'              => $this->nik,
+            'hasil_pengecekan' => $this->hasil_pengecekan,
+            'hasil_pep'        => $this->hasil_pep,
+            'keterangan'       => $this->keterangan,
+            'bukti_ss'         => $buktiPath,
+            'checked_by'       => Auth::id(),
+            'checked_at'       => now(),
         ]);
 
         $this->dispatch('swal', [
             'icon'  => 'success',
             'title' => 'Berhasil!',
-            'text'  => 'Pengajuan berhasil disimpan.',
+            'text'  => 'Hasil pengecekan berhasil disimpan.',
         ]);
 
         $this->redirect(route('pengajuan'), navigate: true);
