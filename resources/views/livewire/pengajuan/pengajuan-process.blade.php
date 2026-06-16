@@ -180,9 +180,11 @@
                             <tbody>
                                 @forelse ($matchedRecords as $item)
                                     <tr class="bg-error/5 border-b border-error/10">
-                                        <td class="font-bold text-error whitespace-nowrap">{{ $item['nama'] }}</td>
-                                        <td class="whitespace-nowrap">{{ $item['terduga_type'] ?? '-' }}</td>
-                                        <td class="text-base-content/70 max-w-xs whitespace-normal">{{ Str::limit($item['deskripsi'] ?? '-', 100) }}</td>
+                                        <td class="font-bold text-error">{{ $item['nama'] }}</td>
+                                        <td>
+                                            <span class="badge badge-error badge-sm text-[10px]">{{ $item['tipe_entitas'] ?? '-' }}</span>
+                                        </td>
+                                        <td class="text-base-content/70 max-w-xs whitespace-normal">{{ $item['deskripsi'] ?? '-' }}</td>
                                     </tr>
                                 @empty
                                     <tr>
