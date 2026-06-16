@@ -159,7 +159,126 @@
                         </table>
                     </div>
                 </div>
+                {{-- API PPATK Scrapper Section --}}
+                <div class="card bg-base-100 border border-base-200 shadow-sm mt-5 h-full">
+                    <div class="card-body p-5">
+                        <div class="flex items-center justify-between mb-3 border-b border-base-200 pb-2">
+                            <h2 class="card-title text-sm text-base-content/80 font-bold flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-secondary"><path fill-rule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zm-1.25 4.5a1.25 1.25 0 112.5 0v3.25h1.5a.75.75 0 010 1.5h-2.25a.75.75 0 01-.75-.75V6.5z" clip-rule="evenodd" /></svg>
+                                Hasil Pengecekan Otomatis (API Scrapper)
+                            </h2>
+                        </div>
+
+                        <!-- NEW BIG LOADING BLOCK (Legacy Style) -->
+                        <div id="pep-loading-block" style="text-align: center; padding: 1.5rem; background: #f8f9fc; border: 1px dashed #d1d3e2; border-radius: 5px; margin-top: 10px;">
+                            <i class="fas fa-spinner fa-spin fa-2x" style="color: #4e73df; margin-bottom: 10px;"></i>
+                            <p style="color: #333; font-weight: 600; margin: 0;">Memeriksa ke Server PPATK...</p>
+                            <p style="color: #888; font-size: 0.75rem; margin-top: 5px; margin-bottom: 0;">Sistem sedang melakukan sinkronisasi live.</p>
+                        </div>
+                        <!-- NEW RESULT BLOCK (Legacy Style) -->
+                        <div id="pep-result-block" style="display: none; text-align: center; padding: 1.5rem; border-radius: 5px; margin-top: 10px; font-weight: 600;"></div>
+                        
+                    </div>
+                </div>
+
             </div>
         </div>
-    </div>
+        
+        <script>
+            document.addEventListener("livewire:navigated", function() {
+                initScrapper();
+            });
+            document.addEventListener("DOMContentLoaded", function() {
+                initScrapper();
+            });
+
+            function initScrapper() {
+                const loadingBlock = document.getElementById('pep-loading-block');
+                if (!loadingBlock || loadingBlock.dataset.ran === "true") return;
+                loadingBlock.dataset.ran = "true"; // Prevent duplicate runs
+
+                const searchNik = "{{ $pengajuan->nik }}";
+                const payload = new URLSearchParams();
+                payload.append("nik", searchNik);
+
+                const apiUrl = "http://10.27.19.243:3000/api/v1/search";
+
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 60000);
+
+                fetch(apiUrl, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded"
+                        },
+                        body: payload,
+                        signal: controller.signal
+                    })
+                    .then(response => {
+                        clearTimeout(timeoutId);
+                        return response.json();
+                    })
+                    .then(res => {
+                        document.getElementById('pep-loading-block').style.display = 'none';
+                        const resultBlock = document.getElementById('pep-result-block');
+
+                        if (res.success && res.data && res.data.extracted_data) {
+                            const extracted = res.data.extracted_data;
+                            const records = extracted.data || [];
+
+                            if (records.length > 0) {
+                                // Update Livewire state directly
+                                @this.set('hasil_pep', 'Terindikasi');
+                                
+                                resultBlock.style.background = 'rgba(231, 74, 59, 0.1)';
+                                resultBlock.style.border = '1px solid #e74a3b';
+                                resultBlock.style.color = '#e74a3b';
+                                resultBlock.innerHTML = '<i class="fas fa-exclamation-triangle fa-2x" style="margin-bottom: 10px;"></i><br><span style="font-size: 1.1rem;">Tercatat dalam Database PEP!</span>';
+                                resultBlock.style.display = 'block';
+                            } else {
+                                @this.set('hasil_pep', 'Tidak Terindikasi');
+                                
+                                resultBlock.style.background = 'rgba(28, 200, 138, 0.1)';
+                                resultBlock.style.border = '1px solid #1cc88a';
+                                resultBlock.style.color = '#1cc88a';
+                                resultBlock.innerHTML = '<i class="fas fa-check-circle fa-2x" style="margin-bottom: 10px;"></i><br><span style="font-size: 1.1rem;">Tidak Terindikasi</span><br><span style="font-size: 0.85rem; font-weight: normal; margin-top: 5px; display: inline-block;">(Data tidak ditemukan di database PPATK)</span>';
+                                resultBlock.style.display = 'block';
+                            }
+                        } else {
+                            throw new Error(res.error || res.message || "Sistem PPATK merespon dengan format yang tidak dikenal.");
+                        }
+                    })
+                    .catch(err => {
+                        document.getElementById('pep-loading-block').style.display = 'none';
+                        const resultBlock = document.getElementById('pep-result-block');
+                        resultBlock.style.background = 'rgba(231, 74, 59, 0.1)';
+                        resultBlock.style.border = '1px solid #e74a3b';
+                        resultBlock.style.color = '#e74a3b';
+
+                        let userMessage = "";
+                        const errMsg = err.message ? err.message.toLowerCase() : "";
+
+                        if (errMsg.includes("failed to fetch") || errMsg.includes("networkerror")) {
+                            userMessage = "Service API Internal (Scraper) mati atau tidak bisa dihubungi. Pastikan server Node.js menyala.";
+                        } else if (errMsg.includes("timeout") || errMsg.includes("exceeded") || errMsg.includes("gagal mengakses") || errMsg.includes("abort") || err.name === 'AbortError') {
+                            userMessage = "Website PPATK sedang sangat lambat atau Server Down. Sistem menghentikan proses karena melebihi batas waktu (60 detik).";
+                        } else if (errMsg.includes("captcha")) {
+                            userMessage = "Sistem gagal menembus perlindungan CAPTCHA PPATK. Ini biasanya terjadi jika IP sedang dibatasi sementara oleh Google.";
+                        } else if (errMsg.includes("login")) {
+                            userMessage = "Gagal login otomatis ke sistem PPATK. Cek apakah password berubah atau web PPATK sedang maintenance.";
+                        } else {
+                            userMessage = err.message || "Terjadi kesalahan tidak dikenal."; 
+                        }
+
+                        resultBlock.innerHTML = `
+                            <i class="fas fa-server fa-2x" style="margin-bottom: 10px;"></i><br>
+                            <span style="font-size: 1.1rem;">Pengecekan Gagal / Timeout</span><br>
+                            <span style="font-size: 0.9rem; font-weight: normal; margin-top: 5px; display: inline-block;">Keterangan: ${userMessage}</span><br>
+                            <a href="https://pep.ppatk.go.id" target="_blank" style="display: inline-block; margin-top: 15px; padding: 8px 15px; background: #e74a3b; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 0.85rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><i class="fas fa-external-link-alt"></i> Cek Manual di Portal PPATK</a>
+                        `;
+                        resultBlock.style.display = 'block';
+                    });
+            }
+        </script>
+    @endif
 </div>
