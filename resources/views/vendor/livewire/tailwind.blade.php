@@ -46,9 +46,9 @@ $scrollIntoViewJsSnippet = ($scrollTo !== false)
                     @if (is_array($element))
                         @foreach ($element as $page => $url)
                             @if ($page == $paginator->currentPage())
-                                <button wire:key="paginator-{{ $paginator->getPageName() }}-page{{ $page }}" class="join-item btn btn-sm btn-primary border border-primary pointer-events-none {{ $page == $paginator->currentPage() ? 'inline-block' : 'hidden sm:inline-block' }}" aria-current="page">{{ $page }}</button>
+                                <button wire:key="paginator-{{ $paginator->getPageName() }}-page{{ $page }}" class="join-item btn btn-sm btn-primary border border-primary pointer-events-none {{ $page == $paginator->currentPage() ? 'inline-flex' : 'hidden sm:inline-flex' }}" aria-current="page">{{ $page }}</button>
                             @else
-                                <button wire:key="paginator-{{ $paginator->getPageName() }}-page{{ $page }}" type="button" wire:click="gotoPage({{ $page }}, '{{ $paginator->getPageName() }}')" wire:loading.attr="disabled" class="join-item btn btn-sm btn-ghost hover:bg-base-200 border border-base-200 bg-base-100 hidden sm:inline-block" aria-label="{{ __('Go to page :page', ['page' => $page]) }}">
+                                <button wire:key="paginator-{{ $paginator->getPageName() }}-page{{ $page }}" type="button" wire:click="gotoPage({{ $page }}, '{{ $paginator->getPageName() }}')" wire:loading.attr="disabled" class="join-item btn btn-sm btn-ghost hover:bg-base-200 border border-base-200 bg-base-100 hidden sm:inline-flex" aria-label="{{ __('Go to page :page', ['page' => $page]) }}">
                                     {{ $page }}
                                 </button>
                             @endif
