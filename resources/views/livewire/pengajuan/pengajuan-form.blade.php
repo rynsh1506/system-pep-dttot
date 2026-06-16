@@ -74,17 +74,20 @@
                             Finalisasi Hasil Pengecekan
                         </h2>
 
-                        {{-- High-quality data box --}}
-                        <div class="relative bg-gradient-to-br from-base-200 to-base-100 rounded-xl p-5 mb-6 border-l-4 border-primary">
-                            <div class="absolute top-4 right-4 text-[10px] font-extrabold bg-primary/10 text-primary px-3 py-1 rounded-full uppercase tracking-wider">
-                                {{ $kategori }}
-                            </div>
-                            <div class="text-[11px] font-bold text-base-content/50 uppercase tracking-widest mb-1">Nama & NIK Terdaftar:</div>
-                            <div class="text-lg font-extrabold text-base-content">{{ $nama_cadeb }}</div>
-                            <div class="text-sm text-base-content/70 font-mono font-semibold mt-0.5">{{ $nik }}</div>
-                        </div>
-
                         <form wire:submit.prevent="save">
+                            <div class="flex flex-col md:flex-row gap-4 mb-4">
+                                <div class="form-control flex-1">
+                                    <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Nama Terdaftar <span class="text-error">*</span></span></label>
+                                    <input wire:model="nama_cadeb" type="text" class="input input-bordered focus:border-primary focus:outline-none w-full font-bold" />
+                                    @error('nama_cadeb') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
+                                </div>
+                                <div class="form-control flex-1">
+                                    <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">NIK / Identitas <span class="text-error">*</span></span></label>
+                                    <input wire:model="nik" type="text" class="input input-bordered focus:border-primary focus:outline-none w-full font-mono font-semibold" />
+                                    @error('nik') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
+                                </div>
+                            </div>
+                            
                             <div class="form-control mb-4">
                                 <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Hasil Pengecekan DTTOT <span class="text-error">*</span></span></label>
                                 <select wire:model="hasil_pengecekan" class="select select-bordered focus:border-primary focus:outline-none w-full @error('hasil_pengecekan') select-error @enderror">

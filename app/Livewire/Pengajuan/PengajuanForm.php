@@ -69,45 +69,13 @@ class PengajuanForm extends Component
             }
         })->get()->toArray();
 
-        // 2. Cek dari API Eksternal (PPATK Scrapper)
-        $this->checkApiPpatkScrapper();
-
         // 3. Auto-suggest Hasil (Bisa diganti manual oleh user)
         $this->hasil_pengecekan = count($this->matchedRecords) > 0 ? 'Terindikasi' : 'Tidak Terindikasi';
         
-        // Auto-suggest PEP berdasarkan API (jika ada hasilnya)
-        if (!empty($this->apiResult) && isset($this->apiResult['pep_status'])) {
-            $this->hasil_pep = $this->apiResult['pep_status'];
-        } else {
-            $this->hasil_pep = 'Tidak Terindikasi'; // Default
-        }
+        // Biarkan kosong, Javascript Scrapper yang akan mengisi ini secara otomatis!
+        $this->hasil_pep = '';
 
         $this->step = 2;
-    }
-
-    private function checkApiPpatkScrapper(): void
-    {
-        try {
-            // [MOCKUP / PLACEHOLDER API CALL]
-            // Silakan sesuaikan URL dan Payload di bawah ini sesuai spesifikasi API asli ppatk_scrapper
-            $url = env('PPATK_SCRAPPER_URL', 'http://localhost:5000/api/check');
-            
-            $response = Http::timeout(10)->post($url, [
-                'nama' => $this->nama_cadeb,
-                'nik'  => $this->nik
-            ]);
-
-            if ($response->successful()) {
-                $this->apiResult = $response->json();
-                $this->isApiChecked = true;
-            } else {
-                $this->apiResult = ['error' => 'API Error: ' . $response->status()];
-                $this->isApiChecked = false;
-            }
-        } catch (\Exception $e) {
-            $this->apiResult = ['error' => 'Gagal terhubung ke API Scrapper: ' . $e->getMessage()];
-            $this->isApiChecked = false;
-        }
     }
 
     public function kembali(): void
