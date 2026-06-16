@@ -30,7 +30,7 @@
                         <div class="form-control mb-4">
                             <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Nama Terdaftar <span class="text-error">*</span></span></label>
                             <div class="join w-full">
-                                <input wire:model.blur="nama_cadeb" type="text" placeholder="Masukkan nama..." class="input input-bordered focus:border-primary focus:outline-none w-full font-bold join-item" />
+                                <input wire:model.live.debounce.500ms="nama_cadeb" type="text" placeholder="Masukkan nama..." class="input input-bordered focus:border-primary focus:outline-none w-full font-bold join-item" />
                                 <button type="button" wire:click="$refresh" class="btn btn-primary join-item">Cek</button>
                             </div>
                             @error('nama_cadeb') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
@@ -39,8 +39,8 @@
                         <div class="form-control mb-4">
                             <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">NIK / Identitas <span class="text-error">*</span></span></label>
                             <div class="join w-full">
-                                <input wire:model.blur="nik" id="nik-input" type="text" placeholder="Masukkan NIK 16 digit..." class="input input-bordered focus:border-primary focus:outline-none w-full font-mono font-semibold join-item @error('nik') input-error @enderror" />
-                                <button type="button" class="btn btn-primary join-item" onclick="triggerScrapper(document.getElementById('nik-input').value)">Cek</button>
+                                <input wire:model.live.debounce.500ms="nik" id="nik-input" type="text" placeholder="Masukkan NIK 16 digit..." class="input input-bordered focus:border-primary focus:outline-none w-full font-mono font-semibold join-item @error('nik') input-error @enderror" />
+                                <button type="button" wire:click="$refresh" class="btn btn-primary join-item" onclick="triggerScrapper(document.getElementById('nik-input').value)">Cek</button>
                             </div>
                             @error('nik') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
                         </div>
