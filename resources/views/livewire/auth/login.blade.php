@@ -11,7 +11,6 @@
 
         {{-- Top: Logo --}}
         <div class="relative z-10 flex items-center gap-3">
-            {{-- Shield icon (Heroicon inline SVG) --}}
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-9 h-9 text-blue-400">
                 <path fill-rule="evenodd" d="M12.516 2.17a.75.75 0 0 0-1.032 0 11.209 11.209 0 0 1-7.877 3.08.75.75 0 0 0-.722.515A12.74 12.74 0 0 0 2.25 9.75c0 5.942 4.064 10.933 9.563 12.348a.749.749 0 0 0 .374 0c5.499-1.415 9.563-6.406 9.563-12.348 0-1.39-.223-2.73-.635-3.985a.75.75 0 0 0-.722-.516l-.143.001c-2.996 0-5.717-1.17-7.734-3.08Z" clip-rule="evenodd" />
             </svg>
@@ -64,7 +63,7 @@
     {{-- RIGHT PANEL: Login Form --}}
     <div class="w-full lg:w-2/5 xl:w-1/3 flex flex-col justify-center px-8 sm:px-12 lg:px-16 bg-base-100">
 
-        {{-- Mobile logo (only on small screens) --}}
+        {{-- Mobile logo --}}
         <div class="lg:hidden flex items-center gap-2 mb-8">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7 text-primary">
                 <path fill-rule="evenodd" d="M12.516 2.17a.75.75 0 0 0-1.032 0 11.209 11.209 0 0 1-7.877 3.08.75.75 0 0 0-.722.515A12.74 12.74 0 0 0 2.25 9.75c0 5.942 4.064 10.933 9.563 12.348a.749.749 0 0 0 .374 0c5.499-1.415 9.563-6.406 9.563-12.348 0-1.39-.223-2.73-.635-3.985a.75.75 0 0 0-.722-.516l-.143.001c-2.996 0-5.717-1.17-7.734-3.08Z" clip-rule="evenodd" />
@@ -79,33 +78,37 @@
         </div>
 
         {{-- Login form --}}
-        <form wire:submit.prevent="login" class="space-y-5">
+        <form wire:submit.prevent="login" class="space-y-4">
 
-            {{-- Username field --}}
+            {{-- USERNAME FIELD --}}
             <div>
-                <label class="block text-sm font-medium text-base-content/80 mb-1.5" for="username">
+                <label class="block text-xs font-semibold text-base-content/60 uppercase tracking-widest mb-2" for="username">
                     Username
                 </label>
-                <div class="relative">
-                    {{-- Icon user di kiri --}}
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-base-content/60">
+                {{-- Custom flex-wrapper input (bukan DaisyUI input agar icon dijamin kelihatan) --}}
+                <div class="flex items-center h-12 rounded-xl border border-base-300 bg-white focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all duration-200 overflow-hidden @error('username') border-red-400 bg-red-50 @enderror">
+                    {{-- Icon orang di kiri --}}
+                    <div class="flex items-center justify-center w-12 shrink-0 text-base-content/50">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
                             <path d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003Z"/>
                         </svg>
                     </div>
+                    {{-- Separator --}}
+                    <div class="w-px h-6 bg-base-200 shrink-0"></div>
+                    {{-- Input teks --}}
                     <input
                         id="username"
                         type="text"
                         wire:model="username"
-                        class="input input-bordered w-full pl-10 @error('username') input-error @enderror"
+                        class="flex-1 h-full px-4 text-sm bg-transparent outline-none text-base-content placeholder-base-content/30"
                         placeholder="Masukkan username"
                         autofocus
                         autocomplete="username"
                     />
                 </div>
                 @error('username')
-                    <p class="text-error text-xs mt-1.5 flex items-center gap-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-3.5 h-3.5">
+                    <p class="text-red-500 text-xs mt-1.5 flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-3.5 h-3.5 shrink-0">
                             <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14Zm0-4a.75.75 0 0 1-.75-.75v-2.5a.75.75 0 0 1 1.5 0v2.5A.75.75 0 0 1 8 11Zm0-6a.875.875 0 1 1 0 1.75A.875.875 0 0 1 8 5Z" clip-rule="evenodd"/>
                         </svg>
                         {{ $message }}
@@ -113,48 +116,51 @@
                 @enderror
             </div>
 
-            {{-- Password field --}}
-            <div>
-                <label class="block text-sm font-medium text-base-content/80 mb-1.5" for="password">
+            {{-- PASSWORD FIELD --}}
+            <div x-data="{ show: false }">
+                <label class="block text-xs font-semibold text-base-content/60 uppercase tracking-widest mb-2" for="password">
                     Password
                 </label>
-                <div class="relative" x-data="{ show: false }">
+                <div class="flex items-center h-12 rounded-xl border border-base-300 bg-white focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all duration-200 overflow-hidden @error('password') border-red-400 bg-red-50 @enderror">
                     {{-- Icon gembok di kiri --}}
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-base-content/60">
+                    <div class="flex items-center justify-center w-12 shrink-0 text-base-content/50">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
                             <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 0 0-4.5 4.5V9H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-.5V5.5A4.5 4.5 0 0 0 10 1Zm3 8V5.5a3 3 0 1 0-6 0V9h6Z" clip-rule="evenodd"/>
                         </svg>
                     </div>
+                    {{-- Separator --}}
+                    <div class="w-px h-6 bg-base-200 shrink-0"></div>
+                    {{-- Input password --}}
                     <input
                         id="password"
                         :type="show ? 'text' : 'password'"
                         wire:model="password"
-                        class="input input-bordered w-full pl-10 pr-10 @error('password') input-error @enderror"
+                        class="flex-1 h-full px-4 text-sm bg-transparent outline-none text-base-content placeholder-base-content/30"
                         placeholder="••••••••"
                         autocomplete="current-password"
                     />
-                    {{-- Icon mata di kanan (toggle show/hide) --}}
+                    {{-- Icon mata toggle di kanan --}}
                     <button
                         type="button"
                         @click="show = !show"
-                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-base-content/50 hover:text-primary transition-colors cursor-pointer"
+                        class="flex items-center justify-center w-12 shrink-0 h-full text-base-content/40 hover:text-primary transition-colors"
                         :aria-label="show ? 'Sembunyikan password' : 'Tampilkan password'"
                     >
-                        {{-- Eye-slash: password disembunyikan (default) --}}
-                        <svg x-show="!show" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                        {{-- Eye-slash: saat password tersembunyi --}}
+                        <svg x-show="!show" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
                             <path fill-rule="evenodd" d="M3.28 2.22a.75.75 0 0 0-1.06 1.06l14.5 14.5a.75.75 0 1 0 1.06-1.06l-1.745-1.745a10.029 10.029 0 0 0 3.3-4.38 1.651 1.651 0 0 0 0-1.185A10.004 10.004 0 0 0 9.999 3a9.956 9.956 0 0 0-4.744 1.194L3.28 2.22ZM7.752 6.69l1.092 1.092a2.5 2.5 0 0 1 3.374 3.373l1.091 1.092a4 4 0 0 0-5.557-5.557Z" clip-rule="evenodd"/>
                             <path d="m10.748 13.93 2.523 2.524a10.049 10.049 0 0 1-6.958-.22l1.06-1.06a8.5 8.5 0 0 0 3.375-1.244Zm5.53-2.55a8.5 8.5 0 0 1-.972 1.472l1.06 1.06a10.004 10.004 0 0 0 1.386-2.11 1.65 1.65 0 0 0 0-1.186A10.004 10.004 0 0 0 10 3c-.47 0-.93.033-1.38.097l1.34 1.34A8.5 8.5 0 0 1 16.278 11.38Z"/>
                         </svg>
-                        {{-- Eye: password tampil --}}
-                        <svg x-show="show" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                        {{-- Eye: saat password terlihat --}}
+                        <svg x-show="show" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
                             <path d="M10 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>
                             <path fill-rule="evenodd" d="M.664 10.59a1.651 1.651 0 0 1 0-1.186A10.004 10.004 0 0 1 10 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0 1 10 17c-4.257 0-7.893-2.66-9.336-6.41ZM14 10a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z" clip-rule="evenodd"/>
                         </svg>
                     </button>
                 </div>
                 @error('password')
-                    <p class="text-error text-xs mt-1.5 flex items-center gap-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-3.5 h-3.5">
+                    <p class="text-red-500 text-xs mt-1.5 flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-3.5 h-3.5 shrink-0">
                             <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14Zm0-4a.75.75 0 0 1-.75-.75v-2.5a.75.75 0 0 1 1.5 0v2.5A.75.75 0 0 1 8 11Zm0-6a.875.875 0 1 1 0 1.75A.875.875 0 0 1 8 5Z" clip-rule="evenodd"/>
                         </svg>
                         {{ $message }}
@@ -162,11 +168,10 @@
                 @enderror
             </div>
 
-            {{-- Submit button --}}
+            {{-- SUBMIT BUTTON --}}
             <button
                 type="submit"
-                class="btn btn-primary w-full mt-2"
-                style="height: 3rem;"
+                class="w-full h-12 mt-2 rounded-xl bg-primary hover:bg-primary/90 active:scale-[0.98] text-primary-content font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-150 shadow-md shadow-primary/25"
             >
                 <span wire:loading.remove wire:target="login" class="flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
