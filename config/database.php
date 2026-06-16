@@ -17,7 +17,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'sqlite'),
+    'default' => env('DB_CONNECTION', 'dtot'),
 
     /*
     |--------------------------------------------------------------------------
@@ -42,6 +42,44 @@ return [
             'journal_mode' => null,
             'synchronous' => null,
             'transaction_mode' => 'DEFERRED',
+        ],
+
+        'dtot' => [
+            'driver' => env('DB_DTOT_CONNECTION', 'mysql'),
+            'host' => env('DB_DTOT_HOST', '127.0.0.1'),
+            'port' => env('DB_DTOT_PORT', '3306'),
+            'database' => env('DB_DTOT_DATABASE', 'db_dtot'),
+            'username' => env('DB_DTOT_USERNAME', 'root'),
+            'password' => env('DB_DTOT_PASSWORD', ''),
+            'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => env('DB_CHARSET', 'utf8mb4'),
+            'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
+        'cadeb' => [
+            'driver' => env('DB_CADEB_CONNECTION', 'mysql'),
+            'host' => env('DB_CADEB_HOST', '127.0.0.1'),
+            'port' => env('DB_CADEB_PORT', '3306'),
+            'database' => env('DB_CADEB_DATABASE', 'cadeb_db'),
+            'username' => env('DB_CADEB_USERNAME', 'root'),
+            'password' => env('DB_CADEB_PASSWORD', ''),
+            'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => env('DB_CHARSET', 'utf8mb4'),
+            'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
         ],
 
         'mysql' => [
