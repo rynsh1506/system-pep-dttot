@@ -24,24 +24,31 @@
   gap: 0.25rem;
 }
 .flatpickr-monthDropdown-months {
-  appearance: none !important;
-  -webkit-appearance: none !important;
   font-weight: 700 !important;
   border-radius: 0.5rem !important;
   padding: 0.25rem 0.5rem !important;
-  background: transparent !important;
+  background: var(--fallback-b1,oklch(var(--b1))) !important;
+  color: var(--fallback-bc,oklch(var(--bc))) !important;
   cursor: pointer !important;
+  border: 1px solid var(--fallback-b2,oklch(var(--b2))) !important;
 }
 .flatpickr-monthDropdown-months:hover {
-  background: rgba(150, 150, 150, 0.1) !important;
+  background: var(--fallback-b2,oklch(var(--b2))) !important;
 }
+/* Restore up/down arrows for year but style them better */
 .numInputWrapper span {
-  display: none !important; /* Hide old up/down arrows */
+  border: 1px solid var(--fallback-b2,oklch(var(--b2))) !important;
+  background: var(--fallback-b1,oklch(var(--b1))) !important;
+}
+.numInputWrapper span:hover {
+  background: var(--fallback-b2,oklch(var(--b2))) !important;
 }
 .flatpickr-current-month .numInputWrapper {
   width: 7ch !important;
   border-radius: 0.5rem !important;
   transition: all 0.2s !important;
+  background: var(--fallback-b1,oklch(var(--b1))) !important;
+  border: 1px solid var(--fallback-b2,oklch(var(--b2))) !important;
 }
 .flatpickr-current-month .numInputWrapper:hover {
   background: rgba(150, 150, 150, 0.1) !important;
