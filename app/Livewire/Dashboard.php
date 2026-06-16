@@ -12,17 +12,19 @@ class Dashboard extends Component
 
     public function render()
     {
-        $totalTerduga = Terduga::count();
-        $totalOrang = Terduga::where('terduga_type', 'Orang')->count();
+        $totalTerduga   = Terduga::count();
+        $totalOrang     = Terduga::where('terduga_type', 'Orang')->count();
         $totalKorporasi = Terduga::where('terduga_type', 'Korporasi')->count();
+        $todayCount     = Terduga::whereDate('created_at', today())->count();
 
         $recentData = Terduga::orderBy('created_at', 'desc')->paginate(10);
 
         return view('livewire.dashboard', [
-            'totalTerduga' => $totalTerduga,
-            'totalOrang' => $totalOrang,
+            'totalTerduga'   => $totalTerduga,
+            'totalOrang'     => $totalOrang,
             'totalKorporasi' => $totalKorporasi,
-            'recentData' => $recentData
+            'todayCount'     => $todayCount,
+            'recentData'     => $recentData,
         ]);
     }
 }
