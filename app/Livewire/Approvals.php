@@ -92,7 +92,7 @@ class Approvals extends Component
             $query->whereIn('status', ['PENDING_SPV', 'PENDING_MANAGER']);
         }
 
-        $requests = $query->orderBy('created_at', 'asc')->paginate($this->perPage)->onEachSide(1);
+        $requests = $query->orderBy('created_at', 'asc')->paginate($this->perPage);
 
         return view('livewire.approvals', [
             'requests' => $requests

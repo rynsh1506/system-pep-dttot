@@ -28,7 +28,7 @@ class Dashboard extends Component
         $totalKorporasi = Terduga::where('terduga_type', 'Korporasi')->count();
         $todayCount     = Terduga::whereDate('created_at', today())->count();
 
-        $recentData = Terduga::orderBy('created_at', 'desc')->paginate($this->perPage)->onEachSide(1);
+        $recentData = Terduga::orderBy('created_at', 'desc')->paginate($this->perPage);
 
         return view('livewire.dashboard', [
             'totalTerduga'   => $totalTerduga,
