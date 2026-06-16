@@ -139,7 +139,12 @@
 
             {{-- DTTOT MATCHES --}}
             <div class="card bg-base-100 border border-base-200 shadow-sm flex-1">
-                <div class="card-body p-5 flex flex-col h-full">
+                <div class="card-body p-5 flex flex-col h-full relative">
+                    <div wire:loading wire:target="nama_cadeb, nik, checkDttotDB" class="absolute inset-0 bg-base-100/60 z-10 backdrop-blur-sm flex items-center justify-center rounded-box">
+                        <span class="loading loading-spinner loading-md text-primary"></span>
+                        <span class="ml-2 font-semibold text-sm text-base-content/70">Mencari DTTOT...</span>
+                    </div>
+
                     <div class="flex items-center justify-between mb-4 border-b border-base-200 pb-3 gap-3">
                         <h2 class="card-title text-sm text-base-content/80 font-bold flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-info"><path fill-rule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zM5.5 10a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM10 6a4 4 0 100 8 4 4 0 000-8z" clip-rule="evenodd" /></svg>
