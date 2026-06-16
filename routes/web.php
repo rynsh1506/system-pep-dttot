@@ -6,6 +6,13 @@ use App\Livewire\Dashboard;
 
 Route::get('/login', Login::class)->name('login')->middleware('guest');
 
+Route::get('/locale/{lang}', function ($lang) {
+    if (in_array($lang, ['id', 'en', 'ja'])) {
+        session()->put('locale', $lang);
+    }
+    return back();
+})->name('locale.switch');
+
 Route::middleware('auth')->group(function () {
     Route::get('/', Dashboard::class)->name('home');
     Route::get('/approvals', App\Livewire\Approvals::class)->name('approvals');

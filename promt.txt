@@ -2,6 +2,6 @@ buatkan issue.md yang berisi perencanaan untuk nanti di implementasikan oleh jun
 
 isi dari planing nya sebagai berikut:
 
-karena sudah setup sekarang coba pelan" mulai dari login dan seterusnya fitur" lain nya 
+coba kamu bikin sissue kerjakan semua yang dttot dashboard ini semua dan perbaiki semua tampilan dasboard nya karena jujur ini buluk banget 
 
 tolong jelaskan dengan sangat detail tahapan - tahapan yang harus dilakukan untuk mengimplementasikan fitur ini anggap yang implementasi adalah junior programmer atau model AI yang lebih murah

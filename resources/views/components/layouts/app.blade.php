@@ -30,7 +30,7 @@
                 {{-- Left: system name (mobile only) --}}
                 <div class="flex-1 px-2 lg:px-4">
                     <span class="font-semibold text-sm text-base-content/60 hidden lg:block">
-                        Portal PEP &amp; DTTOT &mdash; Sistem Pengawasan Terintegrasi
+                        {!! __('Portal PEP & DTTOT &mdash; Sistem Pengawasan Terintegrasi') !!}
                     </span>
                     <span class="font-bold text-primary lg:hidden">PEP & DTTOT</span>
                 </div>
@@ -46,15 +46,15 @@
                                 <line x1="2" y1="12" x2="22" y2="12"></line>
                                 <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
                             </svg>
-                            <span class="text-xs font-semibold">ID</span>
+                            <span class="text-xs font-semibold">{{ strtoupper(app()->getLocale()) }}</span>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3 opacity-50">
                                 <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/>
                             </svg>
                         </div>
                         <ul tabindex="0" class="dropdown-content menu menu-sm bg-base-100 rounded-box z-[50] mt-3 w-32 p-2 shadow-lg border border-base-200">
-                            <li><a class="active">Indonesian</a></li>
-                            <li><a>English</a></li>
-                            <li><a>Japanese</a></li>
+                            <li><a href="{{ route('locale.switch', 'id') }}" class="{{ app()->getLocale() == 'id' ? 'active' : '' }}">Indonesian</a></li>
+                            <li><a href="{{ route('locale.switch', 'en') }}" class="{{ app()->getLocale() == 'en' ? 'active' : '' }}">English</a></li>
+                            <li><a href="{{ route('locale.switch', 'ja') }}" class="{{ app()->getLocale() == 'ja' ? 'active' : '' }}">Japanese</a></li>
                         </ul>
                     </div>
 
@@ -127,7 +127,7 @@
                     </div>
                     <div>
                         <div class="font-bold text-base-content text-sm leading-tight">PEP & DTTOT</div>
-                        <div class="text-xs text-base-content/50">Sistem Pengawasan</div>
+                        <div class="text-xs text-base-content/50">{{ __('Sistem Pengawasan') }}</div>
                     </div>
                 </div>
 
@@ -145,7 +145,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 shrink-0">
                             <path fill-rule="evenodd" d="M4.25 2A2.25 2.25 0 0 0 2 4.25v2.5A2.25 2.25 0 0 0 4.25 9h2.5A2.25 2.25 0 0 0 9 6.75v-2.5A2.25 2.25 0 0 0 6.75 2h-2.5Zm0 9A2.25 2.25 0 0 0 2 13.25v2.5A2.25 2.25 0 0 0 4.25 18h2.5A2.25 2.25 0 0 0 9 15.75v-2.5A2.25 2.25 0 0 0 6.75 11h-2.5Zm9-9A2.25 2.25 0 0 0 11 4.25v2.5A2.25 2.25 0 0 0 13.25 9h2.5A2.25 2.25 0 0 0 18 6.75v-2.5A2.25 2.25 0 0 0 15.75 2h-2.5Zm0 9A2.25 2.25 0 0 0 11 13.25v2.5A2.25 2.25 0 0 0 13.25 18h2.5A2.25 2.25 0 0 0 18 15.75v-2.5A2.25 2.25 0 0 0 15.75 11h-2.5Z" clip-rule="evenodd"/>
                         </svg>
-                        Dashboard
+                        {{ __('Dashboard') }}
                     </a>
 
                     <a href="{{ route('search') }}"
@@ -154,7 +154,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 shrink-0">
                             <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd"/>
                         </svg>
-                        Search Data
+                        {{ __('Search Data') }}
                     </a>
 
                     @if(session('role_level') >= 2)
@@ -164,7 +164,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 shrink-0">
                             <path fill-rule="evenodd" d="M16.403 12.652a3 3 0 0 0 0-5.304 3 3 0 0 0-3.75-3.751 3 3 0 0 0-5.305 0 3 3 0 0 0-3.751 3.75 3 3 0 0 0 0 5.305 3 3 0 0 0 3.75 3.751 3 3 0 0 0 5.305 0 3 3 0 0 0 3.751-3.75Zm-2.546-4.46a.75.75 0 0 1 0 1.06L9.853 13.409a.75.75 0 0 1-1.06 0l-1.5-1.5a.75.75 0 0 1 1.06-1.06l.97.97 3.484-3.484a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd"/>
                         </svg>
-                        Approvals
+                        {{ __('Approvals') }}
                         @php
                             $pendingCount = 0;
                             try {

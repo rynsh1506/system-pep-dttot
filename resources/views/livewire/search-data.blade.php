@@ -1,7 +1,7 @@
 <div>
     <div class="mb-8">
-        <h2 class="text-2xl font-bold text-primary">Daftar Seluruh Data</h2>
-        <p class="text-base-content/70 text-sm">Cari dan kelola seluruh record terduga teroris.</p>
+        <h2 class="text-2xl font-bold text-primary">{{ __('Daftar Seluruh Data') }}</h2>
+        <p class="text-base-content/70 text-sm">{{ __('Cari dan kelola seluruh record terduga teroris.') }}</p>
     </div>
 
     <div class="card bg-base-100 shadow-sm border border-base-200 mb-6 rounded-2xl">
@@ -9,37 +9,37 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                 {{-- Nama Subjek --}}
                 <div class="form-control w-full">
-                    <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/60 uppercase tracking-wide">Nama Subjek</span></label>
+                    <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/60 uppercase tracking-wide">{{ __('Nama Subjek') }}</span></label>
                     <div class="relative w-full">
                         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-base-content/40">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
                                 <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd"/>
                             </svg>
                         </div>
-                        <input type="text" wire:model.live.debounce.300ms="search" class="input input-bordered w-full pl-10 focus:outline-primary" placeholder="Cari nama..." />
+                        <input type="text" wire:model.live.debounce.300ms="search" class="input input-bordered w-full pl-10 focus:outline-primary" placeholder="{{ __('Cari nama...') }}" />
                     </div>
                 </div>
                 
                 {{-- Tipe --}}
                 <div class="form-control w-full">
-                    <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/60 uppercase tracking-wide">Tipe</span></label>
+                    <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/60 uppercase tracking-wide">{{ __('TIPE') }}</span></label>
                     <select wire:model.live="type" class="select select-bordered w-full focus:outline-primary">
-                        <option value="">Semua Tipe</option>
-                        <option value="Orang">Orang</option>
-                        <option value="Korporasi">Korporasi</option>
+                        <option value="">{{ __('Semua Tipe') }}</option>
+                        <option value="Orang">{{ __('Orang') }}</option>
+                        <option value="Korporasi">{{ __('Korporasi') }}</option>
                     </select>
                 </div>
                 
                 {{-- Kode Densus --}}
                 <div class="form-control w-full">
-                    <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/60 uppercase tracking-wide">Kode Densus</span></label>
+                    <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/60 uppercase tracking-wide">{{ __('KODE DENSUS') }}</span></label>
                     <div class="relative w-full">
                         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-base-content/40">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
                                 <path fill-rule="evenodd" d="M9.493 2.853a.75.75 0 0 0-1.486-.205L7.545 6H4.198a.75.75 0 0 0 0 1.5h3.14l-.69 5H3.302a.75.75 0 0 0 0 1.5h3.14l-.435 3.148a.75.75 0 0 0 1.486.205L7.955 14h2.986l-.434 3.148a.75.75 0 0 0 1.486.205L12.456 14h3.346a.75.75 0 0 0 0-1.5h-3.14l.69-5h3.346a.75.75 0 0 0 0-1.5h-3.14l.435-3.147a.75.75 0 0 0-1.486-.205L12.045 6H9.059l.434-3.147ZM8.852 7.5l-.69 5h2.986l.69-5H8.852Z" clip-rule="evenodd"/>
                             </svg>
                         </div>
-                        <input type="text" wire:model.live.debounce.300ms="kode" class="input input-bordered w-full pl-9 focus:outline-primary font-mono text-sm uppercase" placeholder="Contoh: IDD-032" />
+                        <input type="text" wire:model.live.debounce.300ms="kode" class="input input-bordered w-full pl-9 focus:outline-primary font-mono text-sm uppercase" placeholder="{{ __('Contoh: IDD-032') }}" />
                     </div>
                 </div>
                 
@@ -50,7 +50,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-success/70 group-hover:text-success">
                             <path fill-rule="evenodd" d="M4.5 2A1.5 1.5 0 0 0 3 3.5v13A1.5 1.5 0 0 0 4.5 18h11a1.5 1.5 0 0 0 1.5-1.5V7.621a1.5 1.5 0 0 0-.44-1.06l-4.12-4.122A1.5 1.5 0 0 0 11.378 2H4.5Zm2.25 8.5a.75.75 0 0 0 0 1.5h6.5a.75.75 0 0 0 0-1.5h-6.5Zm0 3a.75.75 0 0 0 0 1.5h6.5a.75.75 0 0 0 0-1.5h-6.5Z" clip-rule="evenodd"/>
                         </svg>
-                        Export Excel
+                        {{ __('Export Excel') }}
                     </a>
                 </div>
             </div>
@@ -60,7 +60,7 @@
     <div class="card bg-base-100 shadow-sm">
         <div class="flex flex-row flex-wrap items-center justify-between gap-4 px-6 py-4 border-b border-base-200">
             <div class="flex items-center gap-2">
-                <span class="text-xs text-base-content/60">Tampilkan</span>
+                <span class="text-xs text-base-content/60">{{ __('Tampilkan') }}</span>
                 <select wire:model.live="perPage" class="select select-bordered select-xs w-24">
                     <option value="5">5</option>
                     <option value="10">10</option>
@@ -68,7 +68,7 @@
                     <option value="50">50</option>
                     <option value="100">100</option>
                 </select>
-                <span class="text-xs text-base-content/60">baris</span>
+                <span class="text-xs text-base-content/60">{{ __('baris') }}</span>
             </div>
             <div class="w-auto">
                 {{ $data->links() }}
@@ -79,13 +79,13 @@
                 <table class="w-full text-sm min-w-[800px]">
                     <thead>
                         <tr class="border-b border-base-200 bg-base-200/50">
-                            <th class="text-left px-6 py-4 text-xs font-semibold text-base-content/50 uppercase tracking-wide">NAMA</th>
-                            <th class="text-left px-4 py-4 text-xs font-semibold text-base-content/50 uppercase tracking-wide">TIPE</th>
-                            <th class="text-left px-4 py-4 text-xs font-semibold text-base-content/50 uppercase tracking-wide">KODE DENSUS</th>
-                            <th class="text-left px-4 py-4 text-xs font-semibold text-base-content/50 uppercase tracking-wide">TEMPAT & TANGGAL LAHIR</th>
-                            <th class="text-left px-4 py-4 text-xs font-semibold text-base-content/50 uppercase tracking-wide">WN / NEGARA</th>
-                            <th class="text-left px-4 py-4 text-xs font-semibold text-base-content/50 uppercase tracking-wide">DESKRIPSI & ALAMAT</th>
-                            <th class="text-center px-4 py-4 text-xs font-semibold text-base-content/50 uppercase tracking-wide">AKSI</th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-base-content/50 uppercase tracking-wide">{{ __('NAMA') }}</th>
+                            <th class="text-left px-4 py-4 text-xs font-semibold text-base-content/50 uppercase tracking-wide">{{ __('TIPE') }}</th>
+                            <th class="text-left px-4 py-4 text-xs font-semibold text-base-content/50 uppercase tracking-wide">{{ __('KODE DENSUS') }}</th>
+                            <th class="text-left px-4 py-4 text-xs font-semibold text-base-content/50 uppercase tracking-wide">{{ __('TEMPAT & TANGGAL LAHIR') }}</th>
+                            <th class="text-left px-4 py-4 text-xs font-semibold text-base-content/50 uppercase tracking-wide">{{ __('WN / NEGARA') }}</th>
+                            <th class="text-left px-4 py-4 text-xs font-semibold text-base-content/50 uppercase tracking-wide">{{ __('DESKRIPSI & ALAMAT') }}</th>
+                            <th class="text-center px-4 py-4 text-xs font-semibold text-base-content/50 uppercase tracking-wide">{{ __('AKSI') }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-base-200">
@@ -103,7 +103,7 @@
                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" fill="currentColor" class="w-3 h-3">
                                                         <path fill-rule="evenodd" d="M6 1a5 5 0 1 0 0 10A5 5 0 0 0 6 1Zm.75 4.25a.75.75 0 0 0-1.5 0v2.5a.75.75 0 0 0 1.5 0v-2.5Zm0-2a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Z" clip-rule="evenodd"/>
                                                     </svg>
-                                                    Menunggu Approval
+                                                    {{ __('Menunggu Approval') }}
                                                 </span>
                                             @endif
                                         </div>
@@ -160,8 +160,8 @@
                                             <path d="M5.625 3.75a2.625 2.625 0 1 0 0 5.25h12.75a2.625 2.625 0 0 0 0-5.25H5.625ZM3.75 11.25a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5H3.75ZM3 15.75a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75ZM3.75 18.75a.75.75 0 0 0 0 1.5H12a.75.75 0 0 0 0-1.5H3.75Z"/>
                                         </svg>
                                         <div class="text-center">
-                                            <p class="font-semibold text-base-content/60">Data tidak ditemukan</p>
-                                            <p class="text-sm mt-1">Coba sesuaikan kata kunci pencarian atau tipe filter.</p>
+                                            <p class="font-semibold text-base-content/60">{{ __('Data tidak ditemukan') }}</p>
+                                            <p class="text-sm mt-1">{{ __('Coba sesuaikan kata kunci pencarian atau tipe filter.') }}</p>
                                         </div>
                                     </div>
                                 </td>
