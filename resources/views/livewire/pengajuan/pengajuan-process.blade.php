@@ -55,7 +55,7 @@
 
                         <div class="form-control mb-4">
                             <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Hasil Pengecekan DTTOT <span class="text-error">*</span></span></label>
-                            <select wire:model="hasil_pengecekan" class="select select-bordered focus:border-primary focus:outline-none w-full @error('hasil_pengecekan') select-error @enderror">
+                            <select wire:model.live="hasil_pengecekan" class="select select-bordered focus:border-primary focus:outline-none w-full @error('hasil_pengecekan') select-error @enderror">
                                 <option value="">-- Pilih --</option>
                                 <option value="Tidak Terindikasi">Tidak Terindikasi</option>
                                 <option value="Terindikasi">Terindikasi</option>
@@ -68,7 +68,7 @@
                                 <span class="label-text text-xs font-bold text-base-content/70 uppercase">Hasil Pengecekan PEP <span class="text-error">*</span></span>
                                 <a href="https://pep.ppatk.go.id/admin/user/login" target="_blank" class="label-text-alt link link-primary text-xs font-semibold">Buka Portal PEP ↗</a>
                             </label>
-                            <select wire:model="hasil_pep" class="select select-bordered focus:border-primary focus:outline-none w-full @error('hasil_pep') select-error @enderror">
+                            <select wire:model.live="hasil_pep" class="select select-bordered focus:border-primary focus:outline-none w-full @error('hasil_pep') select-error @enderror">
                                 <option value="">-- Pilih --</option>
                                 <option value="Tidak Terindikasi">Tidak Terindikasi</option>
                                 <option value="Terindikasi">Terindikasi</option>
@@ -78,7 +78,7 @@
 
                         <div class="form-control mb-4">
                             <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Catatan Pemeriksaan</span></label>
-                            <textarea wire:model="keterangan" rows="3" class="textarea textarea-bordered focus:border-primary focus:outline-none w-full resize-none" placeholder="Keterangan tambahan..."></textarea>
+                            <textarea wire:model.blur="keterangan" rows="3" class="textarea textarea-bordered focus:border-primary focus:outline-none w-full resize-none" placeholder="Keterangan tambahan..."></textarea>
                             @error('keterangan') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
                         </div>
 

@@ -19,7 +19,7 @@
                     <form wire:submit.prevent="save">
                         <div class="form-control mb-4">
                             <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Kategori <span class="text-error">*</span></span></label>
-                            <select wire:model="kategori" class="select select-bordered focus:border-primary focus:outline-none w-full @error('kategori') select-error @enderror">
+                            <select wire:model.live="kategori" class="select select-bordered focus:border-primary focus:outline-none w-full @error('kategori') select-error @enderror">
                                 <option value="Manual">Manual (Umum)</option>
                                 <option value="Karyawan">Karyawan</option>
                                 <option value="Vendor">Vendor</option>
@@ -46,7 +46,7 @@
                         </div>
                         <div class="form-control mb-4">
                             <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Hasil Pengecekan DTTOT <span class="text-error">*</span></span></label>
-                            <select wire:model="hasil_pengecekan" class="select select-bordered focus:border-primary focus:outline-none w-full @error('hasil_pengecekan') select-error @enderror">
+                            <select wire:model.live="hasil_pengecekan" class="select select-bordered focus:border-primary focus:outline-none w-full @error('hasil_pengecekan') select-error @enderror">
                                 <option value="">-- Hasil Manual DTOT --</option>
                                 <option value="Tidak Terindikasi">Tidak Terindikasi</option>
                                 <option value="Terindikasi">Terindikasi</option>
@@ -56,7 +56,7 @@
 
                         <div class="form-control mb-4">
                             <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Hasil Pengecekan PEP <span class="text-error">*</span></span></label>
-                            <select wire:model="hasil_pep" class="select select-bordered focus:border-primary focus:outline-none w-full @error('hasil_pep') select-error @enderror">
+                            <select wire:model.live="hasil_pep" class="select select-bordered focus:border-primary focus:outline-none w-full @error('hasil_pep') select-error @enderror">
                                 <option value="">-- Hasil Manual PEP --</option>
                                 <option value="Tidak Terindikasi">Tidak Terindikasi</option>
                                 <option value="Terindikasi">Terindikasi</option>
@@ -66,7 +66,7 @@
 
                         <div class="form-control mb-4">
                             <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Catatan Pemeriksaan</span></label>
-                            <textarea wire:model="keterangan" class="textarea textarea-bordered focus:border-primary focus:outline-none w-full" rows="3" placeholder="Tulis catatan jika diperlukan..."></textarea>
+                            <textarea wire:model.blur="keterangan" class="textarea textarea-bordered focus:border-primary focus:outline-none w-full" rows="3" placeholder="Tulis catatan jika diperlukan..."></textarea>
                             @error('keterangan') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
                         </div>
 
