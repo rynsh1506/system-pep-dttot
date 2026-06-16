@@ -184,14 +184,39 @@
                         Dashboard PEP
                     </div>
 
-                    {{-- PEP menus - akan diisi saat migrasi PEP selesai --}}
-                    <div class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-base-content/30 cursor-not-allowed select-none">
+                    <a href="{{ route('pengajuan') }}"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors
+                        {{ request()->routeIs('pengajuan*') ? 'bg-primary/10 text-primary border-l-2 border-primary' : 'text-base-content/70 hover:bg-base-200 hover:text-base-content' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 shrink-0">
-                            <path fill-rule="evenodd" d="M4.25 2A2.25 2.25 0 0 0 2 4.25v2.5A2.25 2.25 0 0 0 4.25 9h2.5A2.25 2.25 0 0 0 9 6.75v-2.5A2.25 2.25 0 0 0 6.75 2h-2.5Zm0 9A2.25 2.25 0 0 0 2 13.25v2.5A2.25 2.25 0 0 0 4.25 18h2.5A2.25 2.25 0 0 0 9 15.75v-2.5A2.25 2.25 0 0 0 6.75 11h-2.5Zm9-9A2.25 2.25 0 0 0 11 4.25v2.5A2.25 2.25 0 0 0 13.25 9h2.5A2.25 2.25 0 0 0 18 6.75v-2.5A2.25 2.25 0 0 0 15.75 2h-2.5Zm0 9A2.25 2.25 0 0 0 11 13.25v2.5A2.25 2.25 0 0 0 13.25 18h2.5A2.25 2.25 0 0 0 18 15.75v-2.5A2.25 2.25 0 0 0 15.75 11h-2.5Z" clip-rule="evenodd"/>
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" />
                         </svg>
-                        Dashboard PEP
-                        <span class="ml-auto badge badge-ghost badge-xs">Soon</span>
+                        {{ __('Pengajuan Cek') }}
+                    </a>
+
+                    <a href="{{ route('reksaloan') }}"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors
+                        {{ request()->routeIs('reksaloan*') ? 'bg-primary/10 text-primary border-l-2 border-primary' : 'text-base-content/70 hover:bg-base-200 hover:text-base-content' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 shrink-0">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 9a.75.75 0 0 0 0 1.5h.253a.25.25 0 0 1 .244.304l-.459 2.066A1.75 1.75 0 0 0 10.747 15H11a.75.75 0 0 0 0-1.5h-.253a.25.25 0 0 1-.244-.304l.459-2.066A1.75 1.75 0 0 0 9.253 9H9Z" clip-rule="evenodd" />
+                        </svg>
+                        {{ __('Cek Reksaloan & HRD') }}
+                    </a>
+
+                    @can('manage-users')
+                    {{-- Section: System Admin --}}
+                    <div class="text-xs font-semibold text-base-content/40 uppercase tracking-widest px-3 pb-1 pt-4">
+                        {{ __('System Admin') }}
                     </div>
+
+                    <a href="{{ route('users') }}"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors
+                        {{ request()->routeIs('users') ? 'bg-primary/10 text-primary border-l-2 border-primary' : 'text-base-content/70 hover:bg-base-200 hover:text-base-content' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 shrink-0">
+                            <path d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003Z" />
+                        </svg>
+                        {{ __('User Management') }}
+                    </a>
+                    @endcan
 
                 </nav>
 

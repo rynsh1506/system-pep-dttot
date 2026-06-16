@@ -22,6 +22,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/search', App\Livewire\SearchData::class)->name('search');
     Route::get('/detail/{id}', App\Livewire\TerdugaDetail::class)->name('detail');
     Route::get('/export-data', [App\Http\Controllers\ExportController::class, 'export'])->name('export-data');
+
+    // Pengajuan Routes
+    Route::get('/pengajuan', App\Livewire\Pengajuan\PengajuanIndex::class)->name('pengajuan');
+    Route::get('/pengajuan/tambah', App\Livewire\Pengajuan\PengajuanForm::class)->name('pengajuan.tambah');
+    Route::get('/pengajuan/proses/{id}', App\Livewire\Pengajuan\PengajuanProcess::class)->name('pengajuan.proses');
+
+    // Reksaloan / HRD Routes
+    Route::get('/reksaloan', App\Livewire\Reksaloan\ReksaloanIndex::class)->name('reksaloan');
+    Route::get('/reksaloan/proses/{id}', App\Livewire\Reksaloan\ReksaloanProcess::class)->name('reksaloan.proses');
+
+    // User Management
+    Route::get('/users', App\Livewire\UserManagement::class)->name('users')->middleware('can:manage-users');
     
     Route::get('/logout', function () {
         Illuminate\Support\Facades\Auth::logout();
