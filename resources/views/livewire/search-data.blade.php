@@ -121,15 +121,15 @@
                                 <td class="px-4 py-4">
                                     <div class="flex items-center justify-center gap-1.5">
                                         <a href="{{ route('detail', $row->id) }}" class="p-2 rounded-xl text-base-content/50 hover:text-primary hover:bg-primary/10 transition-colors" title="Lihat Detail">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-5 h-5">
-                                                <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"/>
-                                                <path fill-rule="evenodd" d="M1.38 8.28a.87.87 0 0 1 0-.566 7.003 7.003 0 0 1 13.238.006.87.87 0 0 1 0 .566A7.003 7.003 0 0 1 1.379 8.28ZM11 8a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" clip-rule="evenodd"/>
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                                                <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                                                <path fill-rule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z" clip-rule="evenodd" />
                                             </svg>
                                         </a>
                                         @if(!$row->is_pending)
                                             <a href="{{ route('edit-data', $row->id) }}" class="p-2 rounded-xl text-base-content/50 hover:text-base-content hover:bg-base-200 transition-colors" title="Edit">
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-5 h-5">
-                                                    <path d="M13.488 2.513a1.75 1.75 0 0 0-2.475 0L6.75 6.774a2.75 2.75 0 0 0-.596.892l-.848 2.047a.75.75 0 0 0 .98.98l2.047-.848a2.75 2.75 0 0 0 .892-.596l4.261-4.262a1.75 1.75 0 0 0 0-2.474ZM4.75 7.25A.75.75 0 0 0 4 8v4.25c0 .414.336.75.75.75H9a.75.75 0 0 0 .75-.75V10.5a.75.75 0 0 0-1.5 0V12.25h-3V8.75A.75.75 0 0 0 4.75 7.25Z"/>
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                                                    <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.158 3.71 3.71 1.159-1.157a2.625 2.625 0 0 0 0-3.711Zm-1.396 5.95L16.21 4.093 3.322 16.98C3.118 17.185 3 17.462 3 17.75V21h3.25c.288 0 .565-.118.77-.322l12.916-12.916Z" />
                                                 </svg>
                                             </a>
                                         @endif
