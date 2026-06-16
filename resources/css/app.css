@@ -27,28 +27,28 @@
   font-weight: 700 !important;
   border-radius: 0.5rem !important;
   padding: 0.25rem 0.5rem !important;
-  background: var(--fallback-b1,oklch(var(--b1))) !important;
-  color: var(--fallback-bc,oklch(var(--bc))) !important;
+  background-color: var(--color-base-100) !important;
+  color: var(--color-base-content) !important;
   cursor: pointer !important;
-  border: 1px solid var(--fallback-b2,oklch(var(--b2))) !important;
+  border: 1px solid var(--color-base-200) !important;
 }
 .flatpickr-monthDropdown-months:hover {
-  background: var(--fallback-b2,oklch(var(--b2))) !important;
+  background-color: var(--color-base-200) !important;
 }
 /* Restore up/down arrows for year but style them better */
 .numInputWrapper span {
-  border: 1px solid var(--fallback-b2,oklch(var(--b2))) !important;
-  background: var(--fallback-b1,oklch(var(--b1))) !important;
+  border: 1px solid var(--color-base-200) !important;
+  background-color: var(--color-base-100) !important;
 }
 .numInputWrapper span:hover {
-  background: var(--fallback-b2,oklch(var(--b2))) !important;
+  background-color: var(--color-base-200) !important;
 }
 .flatpickr-current-month .numInputWrapper {
   width: 9ch !important;
   border-radius: 0.5rem !important;
   transition: all 0.2s !important;
-  background: var(--fallback-b1,oklch(var(--b1))) !important;
-  border: 1px solid var(--fallback-b2,oklch(var(--b2))) !important;
+  background-color: var(--color-base-100) !important;
+  border: 1px solid var(--color-base-200) !important;
 }
 .flatpickr-current-month .numInputWrapper:hover {
   background: rgba(150, 150, 150, 0.1) !important;
@@ -60,4 +60,23 @@
 }
 .flatpickr-day {
   border-radius: 0.5rem !important;
+}
+
+/* SweetAlert2 DaisyUI Adaptation */
+.swal2-popup {
+  background-color: var(--color-base-100) !important;
+  color: var(--color-base-content) !important;
+  border: 1px solid var(--color-base-200) !important;
+  border-radius: 1.5rem !important;
+}
+.swal2-title, .swal2-html-container {
+  color: var(--color-base-content) !important;
+}
+.swal2-icon.swal2-warning {
+  border-color: var(--color-warning) !important;
+  color: var(--color-warning) !important;
+}
+.swal2-icon.swal2-question {
+  border-color: var(--color-info) !important;
+  color: var(--color-info) !important;
 }

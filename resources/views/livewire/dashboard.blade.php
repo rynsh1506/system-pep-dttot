@@ -2,8 +2,8 @@
     {{-- ===== PAGE HEADER ===== --}}
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
-            <h1 class="text-2xl font-bold text-base-content">Dashboard DTTOT</h1>
-            <p class="text-sm text-base-content/60 mt-0.5">Daftar Terduga Teroris dan Organisasi Teroris</p>
+            <h1 class="text-2xl font-bold text-base-content">{{ __('Dashboard DTTOT') }}</h1>
+            <p class="text-sm text-base-content/60 mt-0.5">{{ __('Daftar Terduga Teroris dan Organisasi Teroris') }}</p>
         </div>
         <div class="flex items-center gap-2 self-start sm:self-auto">
             <a href="{{ route('upload-data') }}"
@@ -11,14 +11,14 @@
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
                     <path fill-rule="evenodd" d="M5.5 17a4.5 4.5 0 0 1-1.44-8.765 4.5 4.5 0 0 1 8.302-3.046 3.5 3.5 0 0 1 4.504 4.272A4 4 0 0 1 15 17H5.5Zm3.75-2.75a.75.75 0 0 0 1.5 0V9.66l1.95 2.1a.75.75 0 1 0 1.1-1.02l-3.25-3.5a.75.75 0 0 0-1.1 0l-3.25 3.5a.75.75 0 1 0 1.1 1.02l1.95-2.1v4.59Z" clip-rule="evenodd"/>
                 </svg>
-                Upload
+                {{ __('Upload') }}
             </a>
             <a href="{{ route('add-data') }}"
                 class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary hover:bg-primary/90 active:scale-[0.98] text-primary-content text-sm font-semibold transition-all shadow-sm shadow-primary/20">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
                     <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z"/>
                 </svg>
-                Add Data
+                {{ __('Add Data') }}
             </a>
         </div>
     </div>
@@ -34,13 +34,13 @@
                 </svg>
             </div>
             <div class="min-w-0">
-                <div class="text-xs font-semibold text-base-content/50 uppercase tracking-wide mb-1">Total DTTOT</div>
+                <div class="text-xs font-semibold text-base-content/50 uppercase tracking-wide mb-1">{{ __('Total DTTOT') }}</div>
                 <div class="text-3xl font-bold text-base-content">{{ number_format($totalTerduga) }}</div>
                 <div class="text-xs text-success mt-1 flex items-center gap-1">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-3 h-3">
                         <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14Zm3.844-8.791a.75.75 0 0 0-1.188-.918l-3.7 4.79-1.649-1.833a.75.75 0 1 0-1.114 1.004l2.25 2.5a.75.75 0 0 0 1.15-.086l4.25-5.5-.001.043Z" clip-rule="evenodd"/>
                     </svg>
-                    Aktif dalam sistem
+                    {{ __('Aktif dalam sistem') }}
                 </div>
             </div>
         </div>
@@ -53,9 +53,9 @@
                 </svg>
             </div>
             <div class="min-w-0">
-                <div class="text-xs font-semibold text-base-content/50 uppercase tracking-wide mb-1">Individu</div>
+                <div class="text-xs font-semibold text-base-content/50 uppercase tracking-wide mb-1">{{ __('Individu') }}</div>
                 <div class="text-3xl font-bold text-base-content">{{ number_format($totalOrang) }}</div>
-                <div class="text-xs text-base-content/40 mt-1">Terduga orang</div>
+                <div class="text-xs text-base-content/40 mt-1">{{ __('Terduga orang') }}</div>
             </div>
         </div>
 
@@ -67,9 +67,9 @@
                 </svg>
             </div>
             <div class="min-w-0">
-                <div class="text-xs font-semibold text-base-content/50 uppercase tracking-wide mb-1">Korporasi</div>
+                <div class="text-xs font-semibold text-base-content/50 uppercase tracking-wide mb-1">{{ __('Korporasi') }}</div>
                 <div class="text-3xl font-bold text-base-content">{{ number_format($totalKorporasi) }}</div>
-                <div class="text-xs text-base-content/40 mt-1">Organisasi / badan usaha</div>
+                <div class="text-xs text-base-content/40 mt-1">{{ __('Organisasi / badan usaha') }}</div>
             </div>
         </div>
 
@@ -81,9 +81,9 @@
                 </svg>
             </div>
             <div class="min-w-0">
-                <div class="text-xs font-semibold text-base-content/50 uppercase tracking-wide mb-1">Hari Ini</div>
+                <div class="text-xs font-semibold text-base-content/50 uppercase tracking-wide mb-1">{{ __('Hari Ini') }}</div>
                 <div class="text-3xl font-bold text-base-content">{{ number_format($todayCount) }}</div>
-                <div class="text-xs text-base-content/40 mt-1">Ditambahkan hari ini</div>
+                <div class="text-xs text-base-content/40 mt-1">{{ __('Ditambahkan hari ini') }}</div>
             </div>
         </div>
 
@@ -94,9 +94,9 @@
         {{-- Tabel Header --}}
         <div class="px-6 py-4 border-b border-base-200">
             <div class="flex flex-row items-center justify-between mb-4">
-                <h2 class="text-base font-bold text-base-content">Data Terduga Terbaru</h2>
+                <h2 class="text-base font-bold text-base-content">{{ __('Data Terduga Terbaru') }}</h2>
                 <a href="{{ route('search') }}" class="btn btn-xs btn-outline btn-primary rounded-full">
-                    Lihat Semua
+                    {{ __('Lihat Semua') }}
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-3.5 h-3.5">
                         <path fill-rule="evenodd" d="M2 8a.75.75 0 0 1 .75-.75h8.69L8.22 4.03a.75.75 0 0 1 1.06-1.06l4.5 4.5a.75.75 0 0 1 0 1.06l-4.5 4.5a.75.75 0 0 1-1.06-1.06l3.22-3.22H2.75A.75.75 0 0 1 2 8Z" clip-rule="evenodd"/>
                     </svg>
@@ -104,7 +104,7 @@
             </div>
             <div class="flex flex-row flex-wrap items-center justify-between gap-4">
                 <div class="flex items-center gap-2">
-                    <span class="text-xs text-base-content/60">Tampilkan</span>
+                    <span class="text-xs text-base-content/60">{{ __('Tampilkan') }}</span>
                     <select wire:model.live="perPage" class="select select-bordered select-xs w-24">
                         <option value="5">5</option>
                         <option value="10">10</option>
@@ -112,7 +112,7 @@
                         <option value="50">50</option>
                         <option value="100">100</option>
                     </select>
-                    <span class="text-xs text-base-content/60">baris</span>
+                    <span class="text-xs text-base-content/60">{{ __('baris') }}</span>
                 </div>
                 <div class="w-full lg:w-auto">
                     {{ $recentData->links() }}
@@ -122,16 +122,16 @@
 
         {{-- Tabel --}}
         <div class="overflow-x-auto">
-            <table class="w-full text-sm min-w-[800px]">
-                <thead>
-                    <tr class="border-b border-base-200 bg-base-200/50">
-                        <th class="text-left px-6 py-3 text-xs font-semibold text-base-content/50 uppercase tracking-wide">Nama</th>
-                        <th class="text-left px-4 py-3 text-xs font-semibold text-base-content/50 uppercase tracking-wide">Tipe</th>
-                        <th class="text-left px-4 py-3 text-xs font-semibold text-base-content/50 uppercase tracking-wide">Kode Densus</th>
-                        <th class="text-left px-4 py-3 text-xs font-semibold text-base-content/50 uppercase tracking-wide">TTL</th>
-                        <th class="text-left px-4 py-3 text-xs font-semibold text-base-content/50 uppercase tracking-wide">WN / Negara</th>
-                        <th class="text-left px-4 py-3 text-xs font-semibold text-base-content/50 uppercase tracking-wide">Deskripsi</th>
-                        <th class="text-center px-4 py-3 text-xs font-semibold text-base-content/50 uppercase tracking-wide">Aksi</th>
+            <table class="w-full text-sm min-w-[800px] table-zebra">
+                <thead class="bg-base-200/50 text-base-content/70">
+                    <tr>
+                        <th>{{ __('NAMA') }}</th>
+                        <th class="hidden md:table-cell">{{ __('TIPE') }}</th>
+                        <th class="hidden lg:table-cell">{{ __('KODE DENSUS') }}</th>
+                        <th class="hidden md:table-cell">{{ __('TTL') }}</th>
+                        <th class="hidden sm:table-cell">{{ __('WN / NEGARA') }}</th>
+                        <th class="hidden xl:table-cell">{{ __('DESKRIPSI') }}</th>
+                        <th class="text-center">{{ __('AKSI') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-base-200">
@@ -216,14 +216,14 @@
                                         <path d="M5.625 3.75a2.625 2.625 0 1 0 0 5.25h12.75a2.625 2.625 0 0 0 0-5.25H5.625ZM3.75 11.25a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5H3.75ZM3 15.75a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75ZM3.75 18.75a.75.75 0 0 0 0 1.5H12a.75.75 0 0 0 0-1.5H3.75Z"/>
                                     </svg>
                                     <div class="text-center">
-                                        <p class="font-semibold text-base-content/60">Belum ada data terduga</p>
-                                        <p class="text-sm mt-1">Mulai tambahkan data menggunakan tombol Add Data</p>
+                                        <p class="font-semibold text-base-content/60">{{ __('Belum ada data terduga') }}</p>
+                                        <p class="text-sm mt-1">{{ __('Mulai tambahkan data menggunakan tombol Add Data') }}</p>
                                     </div>
                                     <a href="{{ route('add-data') }}" class="mt-2 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-content text-sm font-semibold hover:bg-primary/90 transition-colors">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
                                             <path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z"/>
                                         </svg>
-                                        Add Data
+                                        {{ __('Add Data') }}
                                     </a>
                                 </div>
                             </td>

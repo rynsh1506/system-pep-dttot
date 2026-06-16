@@ -1,102 +1,82 @@
-# Panduan Migrasi Logika: Dari Legacy PHP ke Laravel TALL Stack
+# Issue: Redesign Search Page & Table UI
 
-Dokumen ini disusun sebagai panduan teknis yang sangat mendetail untuk memigrasikan fitur-fitur dari *legacy code* PHP Native (yang saat ini berada di folder `legacy/`) ke sistem berbasis Laravel TALL Stack. 
+## Latar Belakang
 
-Ikuti panduan ini langkah demi langkah. Jika ada *error*, kerjakan secara bertahap dan jangan berpindah ke fase berikutnya jika fase sebelumnya belum tuntas.
+Setelah halaman dashboard diperbarui, halaman Search Data (`resources/views/livewire/search-data.blade.php`) terlihat masih sangat generik (bawaan DaisyUI).
+Masalah utama yang dilaporkan pengguna:
+1. **Form pencarian dan tombol** masih terlihat polos/standar.
+2. **Icon Edit** terlihat jelek dan kurang jelas (kurang premium).
+3. **Tabel dan Pagination** kurang memiliki garis pembatas yang tegas, sehingga baris data sulit dibedakan satu sama lain.
 
----
-
-## Fase 1: Migrasi Otentikasi & Model User
-
-Fase ini bertujuan untuk mengaktifkan sistem Login agar user dapat masuk ke dalam sistem dengan koneksi database `cadeb_db` yang sudah dikonfigurasi di file `.env`.
-
-### 1.1 Membuat Model User Kustom
-1. Jalankan perintah: `php artisan make:model User` (Timpa file bawaan jika sudah ada).
-2. Di dalam file `app/Models/User.php`, tambahkan property koneksi database:
-   ```php
-   protected $connection = 'cadeb';
-   protected $table = 'users';
-   ```
-3. Sesuaikan array `$fillable` dengan struktur tabel yang ada di file `legacy/users.php` (misal: `username`, `password`, `nama_lengkap`, `level`).
-4. Matikan *timestamps* (tambahkan `public $timestamps = false;`) jika tabel `users` lama tidak memiliki kolom `created_at` dan `updated_at`.
-
-### 1.2 Konfigurasi Laravel Auth
-1. Buka `config/auth.php`.
-2. Pastikan `providers.users.driver` bernilai `eloquent` dan modelnya diarahkan ke `App\Models\User::class`.
-3. Cek kembali fungsi `password_verify` di kode legacy (`legacy/login.php`). Karena *password* sudah menggunakan fungsi standar `password_hash()`, otentikasi bawaan `Auth::attempt()` di Laravel otomatis kompatibel.
-
-### 1.3 Membuat Livewire Login Component
-1. Jalankan `php artisan make:livewire Auth/Login`.
-2. Pada komponen Livewire (`app/Livewire/Auth/Login.php`), buat properti `$username` dan `$password`.
-3. Buat metode `login()`. Logika sederhananya:
-   - Gunakan `Auth::attempt(['username' => $this->username, 'password' => $this->password])`.
-   - Jika berhasil, simpan session penting yang sering dipakai aplikasi legacy:
-     `session(['role_level' => Auth::user()->level, 'full_name' => Auth::user()->nama_lengkap]);`
-   - Lalu *redirect* menggunakan `return $this->redirect('/', navigate: true);`.
-4. Di file *view* login (`resources/views/livewire/auth/login.blade.php`), bangun form login menggunakan komponen Tailwind & DaisyUI (contoh: `<input class="input input-bordered w-full" wire:model="username">`).
+Issue ini bertujuan untuk memperbaiki tampilan halaman Search Data agar sama modernnya dengan komponen Dashboard, serta memperjelas tampilan tabel.
 
 ---
 
-## Fase 2: Layout Utama (Master Blade) & Dashboard
+## File yang Harus Dikerjakan
 
-Setelah berhasil login, langkah selanjutnya adalah menyiapkan "Rumah" untuk fitur-fitur yang lain.
-
-### 2.1 Pembuatan Layout Component
-1. Pindahkan struktur HTML dasar yang ada di `legacy/layout/header.php` dan `legacy/layout/footer.php` menjadi satu file utuh di `resources/views/components/layouts/app.blade.php`.
-2. Desain ulang menggunakan *utility class* Tailwind CSS (misalnya membuat susunan grid untuk Sidebar di kiri dan Content di kanan).
-3. Untuk Sidebar dan Topbar, manfaatkan *DaisyUI Components* (seperti `drawer` dan `navbar`).
-4. Ubah logika PHP lama yang mengecek session (`if($_SESSION['role_level'] == 4)`) menjadi sintaks Blade: `@if(session('role_level') == 4)`.
-
-### 2.2 Migrasi Dashboard Utama
-1. Jalankan `php artisan make:livewire Dashboard`.
-2. Lihat kode `legacy/index.php`. Disana ada pengambilan total *Terduga*, *Orang*, dan *Korporasi*.
-3. Buat **Model Eloquent** untuk tabel terkait: `php artisan make:model Terduga`.
-   - Pastikan model ini mengarah ke default connection (`dtot`).
-   - Ubah logika *query mentah* `$pdo->query("SELECT COUNT(*) ...")` menjadi `Terduga::whereNull('deleted_at')->count();` di dalam komponen Livewire Dashboard.
-4. Tampilkan data statistik tersebut di UI *Dashboard* menggunakan *Card* dari DaisyUI (`<div class="card bg-base-100 shadow-xl">`).
+| File | Jenis Perubahan |
+|---|---|
+| `resources/views/livewire/search-data.blade.php` | Redesign UI form, tabel, icon aksi, dan garis batas tabel |
+| `resources/views/livewire/dashboard.blade.php` | Sinkronisasi icon aksi (View & Edit) agar seragam dengan Search Data |
 
 ---
 
-## Fase 3: Migrasi Core Logic (Data & Pengajuan)
+## Panduan Implementasi Detail
 
-Fitur utama aplikasi ini adalah manajemen data (PEP/DTTOT) dan alur persetujuan (Approvals). 
+### Tahap 1: Redesign Form Pencarian
 
-### 3.1 Manajemen Data (Add / Edit / Delete)
-1. Tinjau file `legacy/add_data.php` dan `legacy/save_data.php`.
-2. Buat komponen Livewire baru: `php artisan make:livewire Terduga/Create`.
-3. Terjemahkan validasi manual (`if(empty($_POST['nama']))`) menjadi fitur validasi Livewire menggunakan properti `#[Validate('required')]` di atas setiap deklarasi variabel.
-4. Simpan data menggunakan `Terduga::create([...])`.
-5. Ubah semua peringatan *alert javascript* (`echo "<script>alert('Sukses')</script>"`) menjadi *Flash Session* (`session()->flash('message', 'Sukses');`) dan tampilkan secara elegan di UI.
+**File:** `resources/views/livewire/search-data.blade.php`
 
-### 3.2 Proses Persetujuan (Approval Flow)
-1. Buat Model `ChangeRequest`.
-2. Tinjau `legacy/approvals.php`. Pada versi lama, aksi ubah status (Setujui/Tolak) dikirim via parameter GET/POST.
-3. Di dalam komponen Livewire *Approval*, tangani tombol *Approve* dengan *method* `public function approve($id)`. 
-4. Di dalam metode tersebut, jalankan proses transaksi database:
-   ```php
-   DB::transaction(function () use ($id) {
-       $request = ChangeRequest::find($id);
-       $request->update(['status' => 'APPROVED_SPV']);
-       // Trigger pengiriman email notifikasi di sini.
-   });
-   ```
+- Form pencarian yang saat ini menggunakan label atas (`label-text`) perlu dibuat lebih compact.
+- Ubah grid layout input pencarian. Tambahkan icon di dalam input (left icon) untuk memperjelas fungsinya (menggunakan flex-wrapper input seperti pada form Login).
+- **Tombol Export Excel:** Ganti class button dari `btn-success` menjadi button outline yang lebih rapi dengan icon Excel hijau, atau button yang lebih premium dengan shadow.
+
+Contoh struktur input dengan icon:
+```html
+<div class="relative w-full">
+  <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-base-content/50">
+    [Icon Search Heroicons]
+  </div>
+  <input type="text" class="input input-bordered w-full pl-10 bg-base-100/50 focus:bg-base-100 transition-colors" placeholder="Cari nama subjek...">
+</div>
+```
+
+### Tahap 2: Perbaikan Garis Batas Tabel (Borders)
+
+- **Tabel:** Hapus class `table-zebra` jika dirasa kurang jelas, dan ganti dengan styling garis batas baris yang tegas.
+- Gunakan kombinasi `divide-y divide-base-200/60` pada `<tbody>` atau tambahkan border bottom pada setiap baris `border-b border-base-200/80` agar batas antar data sangat kentara.
+- Tambahkan efek `hover:bg-base-200/40` pada baris agar pengguna tahu data mana yang sedang ditunjuk kursor.
+
+### Tahap 3: Perbaikan Icon Aksi (View & Edit)
+
+Icon bawaan saat ini (pensil dan mata) masih terlalu standar.
+- Ganti dengan icon SVG Heroicons berukuran lebih ideal (`w-4 h-4` atau `w-5 h-5`).
+- Beri background pill / square yang halus pada icon tersebut.
+- **Icon Edit:** Ganti dengan icon *Pencil Square* atau *Pencil* dari Heroicons yang lebih tebal.
+- Terapkan perbaikan icon ini tidak hanya di `search-data.blade.php`, tapi juga di `dashboard.blade.php` pada kolom aksi agar konsisten.
+
+Contoh Icon Edit modern:
+```html
+<a href="..." class="p-1.5 rounded-lg text-base-content/50 hover:text-info hover:bg-info/10 transition-colors" title="Edit">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+    <path d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a4 4 0 001.343-.885L17.5 5.5a2.121 2.121 0 00-3-3L3.58 13.42a4 4 0 00-.885 1.343z" />
+  </svg>
+</a>
+```
+
+### Tahap 4: Kustomisasi Pagination
+
+- Jika `$data->links()` saat ini menggunakan tampilan bawaan Tailwind yang membosankan atau ukurannya terlalu besar, pastikan komponen pagination dibungkus dalam container dengan padding yang tepat.
+- Tambahkan garis pembatas atas (border-top) di atas pagination untuk memisahkannya secara tegas dari baris tabel terakhir.
 
 ---
 
-## Fase 4: Migrasi User Management & Export
+## Verifikasi & Testing
 
-### 4.1 User Management
-1. Tinjau `legacy/users.php`.
-2. Buat komponen Livewire `User/Index` untuk menampilkan tabel daftar pengguna dari database `cadeb_db`.
-3. Jadikan fitur *Add/Edit/Delete* sebagai Modal DaisyUI (gunakan Alpine.js `@click="modal_add.showModal()"`).
-
-### 4.2 Laporan / Export Data
-1. Karena kode lama mengandalkan *library* PhpSpreadsheet mentah, direkomendasikan untuk beralih ke *package* **Laravel Excel** (`maatwebsite/excel`).
-2. Instal package: `composer require maatwebsite/excel`.
-3. Ubah alur rumit di `legacy/export_excel.php` dengan membuat *Class Export* khusus: `php artisan make:export TerdugaExport`.
-4. Tarik data via Eloquent, petakan kolom yang diinginkan di fungsi `map()`, dan kembalikan *download response* lewat Controller.
-
----
-
-**Catatan untuk Implementator:**
-Setiap kali menyelesaikan satu *task* (contoh: Selesai Fase 1.1), **selalu lakukan Git Commit** secara mandiri agar riwayat perubahan rapi dan dapat di-*rollback* jika terjadi kesalahan teknis.
+1. **Test Visual:**
+   - [ ] Form pencarian terlihat padat, modern, dan tidak memakan terlalu banyak ruang vertikal.
+   - [ ] Ada border / garis horizontal yang tegas memisahkan setiap baris data di tabel.
+   - [ ] Saat di-hover, baris tabel memberikan feedback visual yang jelas.
+   - [ ] Icon Aksi (Detail dan Edit) terlihat lebih premium (tidak sekadar icon SVG polosan, melainkan ada padding / hover background).
+2. **Kesesuaian:** Pastikan kolom Aksi di Dashboard (`dashboard.blade.php`) dan di Search Data (`search-data.blade.php`) sama persis.
+3. **Teknis:** Dikerjakan di branch baru dan dibuatkan PR sebelum di-merge.
