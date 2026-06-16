@@ -135,10 +135,29 @@
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-info"><path fill-rule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zM5.5 10a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM10 6a4 4 0 100 8 4 4 0 000-8z" clip-rule="evenodd" /></svg>
                             Database DTTOT Matches
                         </h2>
+                        @if (count($matchedRecords) > 0)
+                            <span class="badge badge-error gap-1 text-white">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-8-5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 10 5Zm0 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
+                                </svg>
+                                {{ count($matchedRecords) }} Kecocokan Ditemukan!
+                            </span>
+                        @else
+                            <span class="badge badge-success text-white gap-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" />
+                                </svg>
+                                Tidak Terindikasi
+                            </span>
+                        @endif
                     </div>
 
                     <p class="text-xs text-base-content/60 mb-3 bg-base-200 p-2 rounded-md">
-                        Pencarian data yang mirip dengan NAMA atau NIK yang diketik.
+                        @if(!empty(trim($nama_cadeb)) || !empty(trim($nik)))
+                            Menampilkan data yang cocok dengan nama <strong>"{{ $nama_cadeb }}"</strong> atau NIK <strong>"{{ $nik }}"</strong> di database DTTOT.
+                        @else
+                            Pencarian data yang mirip dengan NAMA atau NIK yang diketik.
+                        @endif
                     </p>
 
                     <div class="overflow-x-auto flex-1">

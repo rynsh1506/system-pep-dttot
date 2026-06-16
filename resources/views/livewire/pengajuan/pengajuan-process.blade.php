@@ -166,7 +166,13 @@
                             </span>
                         @endif
                     </div>
-                    <p class="text-xs text-base-content/60 mb-3 bg-base-200 p-2 rounded-md">Menampilkan data yang cocok dengan nama <strong>"{{ $nama_cadeb }}"</strong> di database DTTOT.</p>
+                    <p class="text-xs text-base-content/60 mb-3 bg-base-200 p-2 rounded-md">
+                        @if(!empty(trim($nama_cadeb)) || !empty(trim($nik)))
+                            Menampilkan data yang cocok dengan nama <strong>"{{ $nama_cadeb }}"</strong> atau NIK <strong>"{{ $nik }}"</strong> di database DTTOT.
+                        @else
+                            Pencarian data yang mirip dengan NAMA atau NIK yang diketik.
+                        @endif
+                    </p>
 
                     <div class="overflow-x-auto flex-1">
                         <table class="table table-sm table-zebra w-full text-xs">
