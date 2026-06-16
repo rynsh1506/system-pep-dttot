@@ -8,3 +8,49 @@
   --color-secondary: #245098;
   --color-accent: #f6af3b;
 }
+
+/* Modernize Flatpickr UI */
+.flatpickr-calendar {
+  border: none !important;
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1) !important;
+  border-radius: 1rem !important;
+  padding: 0.5rem !important;
+}
+.flatpickr-current-month {
+  padding-top: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.25rem;
+}
+.flatpickr-monthDropdown-months {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  font-weight: 700 !important;
+  border-radius: 0.5rem !important;
+  padding: 0.25rem 0.5rem !important;
+  background: transparent !important;
+  cursor: pointer !important;
+}
+.flatpickr-monthDropdown-months:hover {
+  background: rgba(150, 150, 150, 0.1) !important;
+}
+.numInputWrapper span {
+  display: none !important; /* Hide old up/down arrows */
+}
+.flatpickr-current-month .numInputWrapper {
+  width: 7ch !important;
+  border-radius: 0.5rem !important;
+  transition: all 0.2s !important;
+}
+.flatpickr-current-month .numInputWrapper:hover {
+  background: rgba(150, 150, 150, 0.1) !important;
+}
+.flatpickr-current-month input.cur-year {
+  font-weight: 700 !important;
+  padding: 0.25rem !important;
+  cursor: text !important;
+}
+.flatpickr-day {
+  border-radius: 0.5rem !important;
+}
