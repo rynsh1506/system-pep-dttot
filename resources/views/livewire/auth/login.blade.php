@@ -88,6 +88,7 @@
                 </label>
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        {{-- Heroicon: user --}}
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-base-content/40">
                             <path d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003Z"/>
                         </svg>
@@ -101,6 +102,12 @@
                         autofocus
                         autocomplete="username"
                     />
+                    {{-- Heroicon: at-symbol (right) --}}
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-base-content/30">
+                            <path fill-rule="evenodd" d="M5.404 14.596A6.5 6.5 0 1 1 17.5 10a1.5 1.5 0 0 1-3 0 3.5 3.5 0 1 0-1.048 2.498A3 3 0 0 0 20.5 10a8.5 8.5 0 1 0-2.343 5.855.75.75 0 0 0-1.06-1.06 7 7 0 0 1-11.693-5.199Z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
                 </div>
                 @error('username')
                     <p class="text-error text-xs mt-1.5 flex items-center gap-1">
@@ -117,20 +124,39 @@
                 <label class="block text-sm font-medium text-base-content/80 mb-1.5" for="password">
                     Password
                 </label>
-                <div class="relative">
+                <div class="relative" x-data="{ show: false }">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        {{-- Heroicon: lock-closed --}}
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-base-content/40">
                             <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 0 0-4.5 4.5V9H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-.5V5.5A4.5 4.5 0 0 0 10 1Zm3 8V5.5a3 3 0 1 0-6 0V9h6Z" clip-rule="evenodd"/>
                         </svg>
                     </div>
                     <input
                         id="password"
-                        type="password"
+                        :type="show ? 'text' : 'password'"
                         wire:model="password"
-                        class="input input-bordered w-full pl-10 @error('password') input-error @enderror"
+                        class="input input-bordered w-full pl-10 pr-10 @error('password') input-error @enderror"
                         placeholder="••••••••"
                         autocomplete="current-password"
                     />
+                    {{-- Toggle show/hide password (eye icon) --}}
+                    <button
+                        type="button"
+                        @click="show = !show"
+                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-base-content/40 hover:text-base-content/70 transition-colors"
+                        :aria-label="show ? 'Sembunyikan password' : 'Tampilkan password'"
+                    >
+                        {{-- Eye icon (password visible) --}}
+                        <svg x-show="show" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                            <path d="M10 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>
+                            <path fill-rule="evenodd" d="M.664 10.59a1.651 1.651 0 0 1 0-1.186A10.004 10.004 0 0 1 10 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0 1 10 17c-4.257 0-7.893-2.66-9.336-6.41ZM14 10a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z" clip-rule="evenodd"/>
+                        </svg>
+                        {{-- Eye-slash icon (password hidden) --}}
+                        <svg x-show="!show" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                            <path fill-rule="evenodd" d="M3.28 2.22a.75.75 0 0 0-1.06 1.06l14.5 14.5a.75.75 0 1 0 1.06-1.06l-1.745-1.745a10.029 10.029 0 0 0 3.3-4.38 1.651 1.651 0 0 0 0-1.185A10.004 10.004 0 0 0 9.999 3a9.956 9.956 0 0 0-4.744 1.194L3.28 2.22ZM7.752 6.69l1.092 1.092a2.5 2.5 0 0 1 3.374 3.373l1.091 1.092a4 4 0 0 0-5.557-5.557Z" clip-rule="evenodd"/>
+                            <path d="m10.748 13.93 2.523 2.524a10.049 10.049 0 0 1-6.958-.22l1.06-1.06a8.5 8.5 0 0 0 3.375-1.244Zm5.53-2.55a8.5 8.5 0 0 1-.972 1.472l1.06 1.06a10.004 10.004 0 0 0 1.386-2.11 1.65 1.65 0 0 0 0-1.186A10.004 10.004 0 0 0 10 3c-.47 0-.93.033-1.38.097l1.34 1.34A8.5 8.5 0 0 1 16.278 11.38Z"/>
+                        </svg>
+                    </button>
                 </div>
                 @error('password')
                     <p class="text-error text-xs mt-1.5 flex items-center gap-1">
