@@ -57,6 +57,22 @@
                 
                 <li class="menu-title"><span>DASHBOARD DTTOT</span></li>
                 <li><a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Dashboard</a></li>
+                @if(session('role_level') >= 2)
+                <li>
+                    <a href="{{ route('approvals') }}" class="{{ request()->routeIs('approvals') ? 'active' : '' }}">
+                        Approvals
+                        @php
+                            $pendingCount = 0;
+                            if (session('role_level') == 2) $pendingCount = \App\Models\ChangeRequest::where('status', 'PENDING_SPV')->count();
+                            elseif (session('role_level') == 3) $pendingCount = \App\Models\ChangeRequest::where('status', 'PENDING_MANAGER')->count();
+                            else $pendingCount = \App\Models\ChangeRequest::whereIn('status', ['PENDING_SPV', 'PENDING_MANAGER'])->count();
+                        @endphp
+                        @if($pendingCount > 0)
+                            <span class="badge badge-error badge-sm text-white">{{ $pendingCount }}</span>
+                        @endif
+                    </a>
+                </li>
+                @endif
                 <!-- We will add more menu items incrementally as we migrate other pages -->
                 
                 <div class="divider"></div>

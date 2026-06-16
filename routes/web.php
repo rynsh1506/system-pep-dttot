@@ -8,6 +8,10 @@ Route::get('/login', Login::class)->name('login')->middleware('guest');
 
 Route::middleware('auth')->group(function () {
     Route::get('/', Dashboard::class)->name('home');
+    Route::get('/approvals', App\Livewire\Approvals::class)->name('approvals');
+    Route::get('/add-data', App\Livewire\TerdugaForm::class)->name('add-data');
+    Route::get('/edit-data/{id}', App\Livewire\TerdugaForm::class)->name('edit-data');
+    
     Route::get('/logout', function () {
         Illuminate\Support\Facades\Auth::logout();
         request()->session()->invalidate();
