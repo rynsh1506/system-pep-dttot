@@ -11,111 +11,137 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-5 gap-5">
+    {{-- SPLIT SCREEN LAYOUT --}}
+    <div class="flex flex-col lg:flex-row gap-6 mb-14 items-stretch">
+        
         {{-- LEFT: Input Form --}}
-        <div class="lg:col-span-2 flex flex-col gap-4">
-            {{-- CADEB Info Card (Editable) --}}
-            <div class="card bg-base-100 border border-base-200 shadow-sm">
-                <div class="card-body p-4 gap-3">
-                    <div class="flex items-center justify-between border-b border-base-200 pb-2">
-                        <h3 class="font-bold text-sm text-primary">Data CADEB</h3>
-                        <span class="text-xs text-base-content/50">Diubah terakhir: {{ \Carbon\Carbon::parse($pengajuan->tanggal)->isoFormat('D MMM Y') }}</span>
-                    </div>
-                    
-                    <div class="form-control">
-                        <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Nama Lengkap</span></label>
-                        <input wire:model.blur="nama_cadeb" type="text" class="input input-bordered input-sm focus:border-primary focus:outline-none w-full font-bold" />
+        <div class="w-full lg:w-5/12 flex flex-col">
+            <div class="card bg-base-100 border border-base-200 shadow-md flex-1">
+                <div class="card-body p-6">
+                    <div class="flex items-center justify-between border-b border-base-200 pb-3 mb-4">
+                        <h2 class="card-title text-base text-primary flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003Z" /></svg>
+                            Data CADEB / Pegawai
+                        </h2>
+                        <span class="text-[10px] text-base-content/50 uppercase font-semibold">Tgl: {{ \Carbon\Carbon::parse($pengajuan->tanggal)->isoFormat('D MMM Y') }}</span>
                     </div>
 
-                    <div class="form-control">
-                        <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">NIK / Identitas</span></label>
-                        <div class="join w-full">
-                            <input wire:model.blur="nik" id="nik-input" type="text" class="input input-bordered input-sm focus:border-primary focus:outline-none w-full font-mono font-semibold join-item" />
-                            <button type="button" class="btn btn-primary btn-sm join-item" onclick="triggerScrapper(document.getElementById('nik-input').value)">Cek</button>
+                    <form wire:submit.prevent="saveResult">
+                        <div class="form-control mb-4">
+                            <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Nama Lengkap <span class="text-error">*</span></span></label>
+                            <input wire:model.blur="nama_cadeb" type="text" class="input input-bordered focus:border-primary focus:outline-none w-full font-bold" />
+                            @error('nama_cadeb') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
                         </div>
-                    </div>
 
-                    @if($pengajuan->nama_pasangan)
-                    <div class="mt-2 p-3 bg-base-200/50 rounded-lg">
-                        <p class="text-[10px] text-base-content/50 font-semibold uppercase mb-1">Informasi Pasangan (Read-only)</p>
-                        <p class="text-xs font-semibold">{{ $pengajuan->nama_pasangan }}</p>
-                        <p class="text-xs font-mono">{{ $pengajuan->nik_pasangan }}</p>
-                    </div>
-                    @endif
-                </div>
-            </div>
-
-            {{-- Result Form --}}
-            <div class="card bg-base-100 border border-base-200 shadow-sm">
-                <div class="card-body p-4 gap-4">
-                    <h3 class="font-bold text-sm text-primary border-b border-base-200 pb-2">Input Hasil Pengecekan</h3>
-
-                    {{-- Hasil DTTOT --}}
-                    <div class="form-control">
-                        <label class="label pb-1"><span class="label-text font-semibold text-sm">Hasil DTTOT <span class="text-error">*</span></span></label>
-                        <select wire:model="hasil_pengecekan" class="select select-bordered select-sm @error('hasil_pengecekan') select-error @enderror">
-                            <option value="">-- Pilih --</option>
-                            <option value="Tidak Terindikasi">Tidak Terindikasi</option>
-                            <option value="Terindikasi">Terindikasi</option>
-                        </select>
-                        @error('hasil_pengecekan') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
-                    </div>
-
-                    {{-- Hasil PEP --}}
-                    <div class="form-control">
-                        <label class="label pb-1">
-                            <span class="label-text font-semibold text-sm">Hasil PEP <span class="text-error">*</span></span>
-                            <a href="https://pep.ppatk.go.id/admin/user/login" target="_blank" class="label-text-alt link link-primary text-xs font-semibold">Buka Portal PEP ↗</a>
-                        </label>
-                        <select wire:model="hasil_pep" class="select select-bordered select-sm @error('hasil_pep') select-error @enderror">
-                            <option value="">-- Pilih --</option>
-                            <option value="Tidak Terindikasi">Tidak Terindikasi</option>
-                            <option value="Terindikasi">Terindikasi</option>
-                        </select>
-                        @error('hasil_pep') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
-                    </div>
-
-                    {{-- Keterangan --}}
-                    <div class="form-control">
-                        <label class="label pb-1"><span class="label-text font-semibold text-sm">Keterangan</span></label>
-                        <textarea wire:model="keterangan" rows="3" class="textarea textarea-bordered textarea-sm resize-none" placeholder="Keterangan tambahan..."></textarea>
-                    </div>
-
-                    {{-- Bukti SS --}}
-                    <div class="form-control">
-                        <label class="label pb-1"><span class="label-text font-semibold text-sm">Bukti Screenshot</span></label>
-                        @if ($pengajuan->bukti_ss && !$bukti_ss)
-                            <div class="mb-2">
-                                <img src="{{ asset('storage/' . $pengajuan->bukti_ss) }}" class="rounded-lg border border-base-200 max-h-32 object-cover" alt="Bukti SS" />
-                                <p class="text-xs text-base-content/40 mt-1">Upload gambar baru untuk mengganti.</p>
+                        <div class="form-control mb-4">
+                            <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">NIK / Identitas <span class="text-error">*</span></span></label>
+                            <div class="join w-full">
+                                <input wire:model.blur="nik" id="nik-input" type="text" class="input input-bordered focus:border-primary focus:outline-none w-full font-mono font-semibold join-item @error('nik') input-error @enderror" />
+                                <button type="button" class="btn btn-primary join-item" onclick="triggerScrapper(document.getElementById('nik-input').value)">Cek</button>
                             </div>
-                        @endif
-                        @if ($bukti_ss)
-                            <div class="mb-2">
-                                <img src="{{ $bukti_ss->temporaryUrl() }}" class="rounded-lg border border-base-200 max-h-32 object-cover" alt="Preview" />
-                            </div>
-                        @endif
-                        <input wire:model="bukti_ss" type="file" accept="image/*" class="file-input file-input-bordered file-input-sm w-full" />
-                        @error('bukti_ss') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
-                    </div>
+                            @error('nik') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
+                        </div>
 
-                    <button wire:click="saveResult" wire:loading.attr="disabled" class="btn btn-primary btn-sm gap-2 mt-1">
-                        <span wire:loading wire:target="saveResult" class="loading loading-spinner loading-xs"></span>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4" wire:loading.remove wire:target="saveResult">
-                            <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
-                        </svg>
-                        Simpan & Selesai
-                    </button>
+                        @if($pengajuan->nama_pasangan)
+                        <div class="mb-4 p-3 bg-base-200/50 rounded-lg">
+                            <p class="text-[10px] text-base-content/50 font-semibold uppercase mb-1">Informasi Pasangan (Read-only)</p>
+                            <p class="text-sm font-semibold">{{ $pengajuan->nama_pasangan }}</p>
+                            <p class="text-sm font-mono">{{ $pengajuan->nik_pasangan }}</p>
+                        </div>
+                        @endif
+
+                        <div class="form-control mb-4">
+                            <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Hasil Pengecekan DTTOT <span class="text-error">*</span></span></label>
+                            <select wire:model="hasil_pengecekan" class="select select-bordered focus:border-primary focus:outline-none w-full @error('hasil_pengecekan') select-error @enderror">
+                                <option value="">-- Pilih --</option>
+                                <option value="Tidak Terindikasi">Tidak Terindikasi</option>
+                                <option value="Terindikasi">Terindikasi</option>
+                            </select>
+                            @error('hasil_pengecekan') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
+                        </div>
+
+                        <div class="form-control mb-4">
+                            <label class="label pb-1">
+                                <span class="label-text text-xs font-bold text-base-content/70 uppercase">Hasil Pengecekan PEP <span class="text-error">*</span></span>
+                                <a href="https://pep.ppatk.go.id/admin/user/login" target="_blank" class="label-text-alt link link-primary text-xs font-semibold">Buka Portal PEP ↗</a>
+                            </label>
+                            <select wire:model="hasil_pep" class="select select-bordered focus:border-primary focus:outline-none w-full @error('hasil_pep') select-error @enderror">
+                                <option value="">-- Pilih --</option>
+                                <option value="Tidak Terindikasi">Tidak Terindikasi</option>
+                                <option value="Terindikasi">Terindikasi</option>
+                            </select>
+                            @error('hasil_pep') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
+                        </div>
+
+                        <div class="form-control mb-4">
+                            <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Catatan Pemeriksaan</span></label>
+                            <textarea wire:model="keterangan" rows="3" class="textarea textarea-bordered focus:border-primary focus:outline-none w-full resize-none" placeholder="Keterangan tambahan..."></textarea>
+                            @error('keterangan') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
+                        </div>
+
+                        <div class="form-control mb-6">
+                            <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Bukti Screenshot</span></label>
+                            @if ($pengajuan->bukti_ss && !$bukti_ss)
+                                <div class="mb-2">
+                                    <img src="{{ asset('storage/' . $pengajuan->bukti_ss) }}" class="rounded-lg border border-base-200 max-h-32 object-cover" alt="Bukti SS" />
+                                    <p class="text-xs text-base-content/40 mt-1">Upload gambar baru untuk mengganti.</p>
+                                </div>
+                            @endif
+                            @if ($bukti_ss)
+                                <div class="mb-2">
+                                    <img src="{{ $bukti_ss->temporaryUrl() }}" class="rounded-lg border border-base-200 max-h-32 object-cover" alt="Preview" />
+                                </div>
+                            @endif
+                            <input wire:model="bukti_ss" type="file" accept="image/*" class="file-input file-input-bordered w-full focus:border-primary focus:outline-none" />
+                            <div wire:loading wire:target="bukti_ss" class="text-xs text-primary mt-1">Mengunggah gambar...</div>
+                            @error('bukti_ss') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-full shadow-sm shadow-primary/30">
+                            <span wire:loading wire:target="saveResult" class="loading loading-spinner loading-xs"></span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5" wire:loading.remove wire:target="saveResult"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg>
+                            Simpan & Selesai
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
 
         {{-- RIGHT: Search Results --}}
-        <div class="lg:col-span-3">
-            <div class="card bg-base-100 border border-base-200 shadow-sm h-full">
-                <div class="card-body p-4 gap-3">
-                    <div class="flex items-center justify-between">
-                        <h3 class="font-bold text-sm">Hasil Pencarian di Database DTTOT</h3>
+        <div class="w-full lg:w-7/12 flex flex-col h-full space-y-6">
+            
+            {{-- API PPATK Scrapper Section --}}
+            <div class="card bg-base-100 border border-base-200 shadow-sm">
+                <div class="card-body p-5">
+                    <div class="flex items-center justify-between mb-3 border-b border-base-200 pb-2">
+                        <h2 class="card-title text-sm text-base-content/80 font-bold flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-secondary"><path fill-rule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zm-1.25 4.5a1.25 1.25 0 112.5 0v3.25h1.5a.75.75 0 010 1.5h-2.25a.75.75 0 01-.75-.75V6.5z" clip-rule="evenodd" /></svg>
+                            Hasil Pengecekan Otomatis (API Scrapper)
+                        </h2>
+                    </div>
+
+                    <!-- BIG LOADING BLOCK -->
+                    <div id="pep-loading-block" class="hidden text-center p-6 bg-base-200/50 border border-dashed border-base-300 rounded-lg mt-3">
+                        <span class="loading loading-spinner loading-lg text-primary mb-3"></span>
+                        <p class="font-semibold text-base-content m-0">Memeriksa ke Server PPATK...</p>
+                        <p class="text-xs text-base-content/50 mt-1 mb-0">Sistem sedang melakukan sinkronisasi live.</p>
+                    </div>
+                    <!-- RESULT BLOCK -->
+                    <div id="pep-result-block" class="text-center p-6 bg-base-200/50 border border-dashed border-base-300 rounded-lg mt-3">
+                        <p class="font-semibold text-base-content/50 m-0">Menunggu Input NIK...</p>
+                        <p class="text-xs text-base-content/40 mt-1 mb-0">Klik "Cek" untuk memulai pencarian PPATK.</p>
+                    </div>
+                </div>
+            </div>
+
+            {{-- DTTOT MATCHES --}}
+            <div class="card bg-base-100 border border-base-200 shadow-sm flex-1">
+                <div class="card-body p-5 flex flex-col h-full">
+                    <div class="flex items-center justify-between mb-4 border-b border-base-200 pb-3 gap-3">
+                        <h2 class="card-title text-sm text-base-content/80 font-bold flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-info"><path fill-rule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zM5.5 10a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM10 6a4 4 0 100 8 4 4 0 000-8z" clip-rule="evenodd" /></svg>
+                            Database DTTOT Matches
+                        </h2>
                         @if (count($matchedRecords) > 0)
                             <span class="badge badge-error gap-1 text-white">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3">
@@ -132,31 +158,28 @@
                             </span>
                         @endif
                     </div>
-                    <p class="text-xs text-base-content/50">Menampilkan data yang cocok dengan nama <strong>"{{ $nama_cadeb }}"</strong> di database DTTOT.</p>
+                    <p class="text-xs text-base-content/60 mb-3 bg-base-200 p-2 rounded-md">Menampilkan data yang cocok dengan nama <strong>"{{ $nama_cadeb }}"</strong> di database DTTOT.</p>
 
-                    <div class="overflow-x-auto">
-                        <table class="table table-xs table-zebra w-full">
-                            <thead>
+                    <div class="overflow-x-auto flex-1">
+                        <table class="table table-sm table-zebra w-full text-xs">
+                            <thead class="bg-base-200">
                                 <tr>
-                                    <th>Nama Terduga</th>
-                                    <th>Tipe</th>
-                                    <th>Keterangan / NIK</th>
+                                    <th class="font-semibold text-base-content">NAMA LENGKAP</th>
+                                    <th class="font-semibold text-base-content">TIPE</th>
+                                    <th class="font-semibold text-base-content">DESKRIPSI / IDENTITAS</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse ($matchedRecords as $item)
-                                    <tr class="bg-error/5">
-                                        <td class="font-bold text-error">{{ $item['nama'] }}</td>
-                                        <td>{{ $item['terduga_type'] ?? '-' }}</td>
-                                        <td class="text-xs">{{ Str::limit($item['deskripsi'] ?? '-', 80) }}</td>
+                                    <tr class="bg-error/5 border-b border-error/10">
+                                        <td class="font-bold text-error whitespace-nowrap">{{ $item['nama'] }}</td>
+                                        <td class="whitespace-nowrap">{{ $item['terduga_type'] ?? '-' }}</td>
+                                        <td class="text-base-content/70 max-w-xs whitespace-normal">{{ Str::limit($item['deskripsi'] ?? '-', 100) }}</td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="3" class="text-center py-12 text-base-content/30">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-10 h-10 mx-auto mb-2">
-                                                <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" />
-                                            </svg>
-                                            <p class="font-medium">Tidak ada data yang cocok di database DTTOT</p>
+                                        <td colspan="3" class="text-center py-10 text-base-content/40">
+                                            Data tidak ditemukan di database DTTOT lokal.
                                         </td>
                                     </tr>
                                 @endforelse
@@ -164,30 +187,9 @@
                         </table>
                     </div>
                 </div>
-                {{-- API PPATK Scrapper Section --}}
-                <div class="card bg-base-100 border border-base-200 shadow-sm mt-5 h-full">
-                    <div class="card-body p-5">
-                        <div class="flex items-center justify-between mb-3 border-b border-base-200 pb-2">
-                            <h2 class="card-title text-sm text-base-content/80 font-bold flex items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-secondary"><path fill-rule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zm-1.25 4.5a1.25 1.25 0 112.5 0v3.25h1.5a.75.75 0 010 1.5h-2.25a.75.75 0 01-.75-.75V6.5z" clip-rule="evenodd" /></svg>
-                                Hasil Pengecekan Otomatis (API Scrapper)
-                            </h2>
-                        </div>
-
-                        <!-- NEW BIG LOADING BLOCK -->
-                        <div id="pep-loading-block" class="text-center p-6 bg-base-200/50 border border-dashed border-base-300 rounded-lg mt-3">
-                            <span class="loading loading-spinner loading-lg text-primary mb-3"></span>
-                            <p class="font-semibold text-base-content m-0">Memeriksa ke Server PPATK...</p>
-                            <p class="text-xs text-base-content/50 mt-1 mb-0">Sistem sedang melakukan sinkronisasi live.</p>
-                        </div>
-                        <!-- NEW RESULT BLOCK -->
-                        <div id="pep-result-block" class="hidden text-center p-6 rounded-lg mt-3 border font-semibold"></div>
-                        
-                    </div>
-                </div>
-
             </div>
         </div>
+    </div>
         
         <script>
             let scrapperDebounceTimeout = null;
