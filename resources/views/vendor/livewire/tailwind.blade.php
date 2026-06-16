@@ -45,15 +45,13 @@ $scrollIntoViewJsSnippet = ($scrollTo !== false)
                     {{-- Array Of Links --}}
                     @if (is_array($element))
                         @foreach ($element as $page => $url)
-                            <span wire:key="paginator-{{ $paginator->getPageName() }}-page{{ $page }}" class="{{ $page == $paginator->currentPage() ? 'inline-block' : 'hidden sm:inline-block' }}">
-                                @if ($page == $paginator->currentPage())
-                                    <button class="join-item btn btn-sm btn-primary border border-primary pointer-events-none" aria-current="page">{{ $page }}</button>
-                                @else
-                                    <button type="button" wire:click="gotoPage({{ $page }}, '{{ $paginator->getPageName() }}')" x-on:click="{{ $scrollIntoViewJsSnippet }}" class="join-item btn btn-sm btn-ghost hover:bg-base-200 border border-base-200 bg-base-100" aria-label="{{ __('Go to page :page', ['page' => $page]) }}">
-                                        {{ $page }}
-                                    </button>
-                                @endif
-                            </span>
+                            @if ($page == $paginator->currentPage())
+                                <button wire:key="paginator-{{ $paginator->getPageName() }}-page{{ $page }}" class="join-item btn btn-sm btn-primary border border-primary pointer-events-none {{ $page == $paginator->currentPage() ? 'inline-block' : 'hidden sm:inline-block' }}" aria-current="page">{{ $page }}</button>
+                            @else
+                                <button wire:key="paginator-{{ $paginator->getPageName() }}-page{{ $page }}" type="button" wire:click="gotoPage({{ $page }}, '{{ $paginator->getPageName() }}')" wire:loading.attr="disabled" class="join-item btn btn-sm btn-ghost hover:bg-base-200 border border-base-200 bg-base-100 hidden sm:inline-block" aria-label="{{ __('Go to page :page', ['page' => $page]) }}">
+                                    {{ $page }}
+                                </button>
+                            @endif
                         @endforeach
                     @endif
                 @endforeach
