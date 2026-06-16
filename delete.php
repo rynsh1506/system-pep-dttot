@@ -1,28 +1,45 @@
 <?php
-require_once 'auth.php';
-require_once 'db.php';
+/**
+ * Delete Logic
+ * DTOT System
+ */
 
-$id = $_GET['id'] ?? null;
+session_name('pep');
+session_start();
+require_once 'config/db_dtot.php';
 
-if ($id) {
-    if ($_SESSION['level'] == 1) {
-        // Fetch current data for history
-        $stmt = $pdo->prepare("SELECT * FROM candidates WHERE id = ?");
-        $stmt->execute([$id]);
-        $candidate = $stmt->fetch();
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
 
-        // Create Approval Request
-        $qReq = $pdo->prepare("INSERT INTO approval_requests (candidate_id, type, old_data, requester_id) VALUES (?, 'DELETE', ?, ?)");
-        $qReq->execute([$id, json_encode($candidate), $_SESSION['user_id']]);
-        header('Location: index.php?msg=Request Delete Terkirim. Menunggu Approval L2 & L3.');
-    } else {
-        // Direct Delete for L2/L3
-        $stmt = $pdo->prepare("DELETE FROM candidates WHERE id = ?");
-        $stmt->execute([$id]);
-        header('Location: index.php?msg=Data Berhasil Dihapus Langsung.');
+if (isset($_GET['id'])) {
+    $id = $_GET['id'];
+
+    try {
+        if ($_SESSION['role_level'] == 4) {
+            // Admin soft deletes directly
+            $stmt = $pdo->prepare("UPDATE terduga SET deleted_at = NOW() WHERE id = ?");
+            $stmt->execute([$id]);
+            header("Location: index.php?status=deleted");
+        } else {
+            // Staf creates delete request
+            $sql = "INSERT INTO change_requests (target_id, request_type, data_json, requester_id, status, created_at) 
+                    VALUES (?, 'DELETE', '{}', ?, 'PENDING_SPV', NOW())";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([$id, $_SESSION['user_id']]);
+
+            // Mark as pending
+            $stmtPending = $pdo->prepare("UPDATE terduga SET is_pending = 1 WHERE id = ?");
+            $stmtPending->execute([$id]);
+
+            header("Location: detail.php?id=$id&status=pending_delete");
+        }
+        exit;
+    } catch (Exception $e) {
+        die("Error menghapus data: " . $e->getMessage());
     }
 } else {
-    header('Location: index.php');
+    header("Location: index.php");
+    exit;
 }
-exit;
-?>

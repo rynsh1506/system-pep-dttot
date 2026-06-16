@@ -1,7 +1,7 @@
 <?php
 session_name('pep');
 session_start();
-require_once 'db.php';
+require_once 'config/db_cadeb.php';
 
 if (isset($_SESSION['user_id'])) {
     header('Location: index.php');
@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
+    $stmt = $pdo_cadeb->prepare("SELECT * FROM users WHERE username = ?");
     $stmt->execute([$username]);
     $user = $stmt->fetch();
 
@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['role_level'] = $user['level'];
         $roles = [1 => 'Staff Input', 2 => 'Supervisor', 3 => 'Manager', 4 => 'Super Admin'];
         $_SESSION['role_name'] = $roles[$user['level']] ?? 'Unknown';
-        header('Location: portal.php');
+        header('Location: index.php');
         exit;
     } else {
         $error = 'Username atau password salah.';

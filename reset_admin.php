@@ -1,5 +1,5 @@
 <?php
-require_once 'db.php';
+require_once 'config/db_cadeb.php';
 
 $username = 'admin';
 $password = 'admin123';
@@ -8,10 +8,10 @@ $nama = 'System Administrator';
 
 try {
     // Clear old users
-    $pdo->exec("TRUNCATE TABLE users");
+    $pdo_cadeb->exec("TRUNCATE TABLE users");
     
     // Add Level column if not exists (fallback)
-    $pdo->exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS level INT NOT NULL DEFAULT 1 AFTER nama_lengkap");
+    $pdo_cadeb->exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS level INT NOT NULL DEFAULT 1 AFTER nama_lengkap");
 
     $password = password_hash('admin123', PASSWORD_DEFAULT);
     
@@ -22,7 +22,7 @@ try {
         ['admin', $password, 'Super Admin (Level 4)', 4]
     ];
 
-    $stmt = $pdo->prepare("INSERT INTO users (username, password, nama_lengkap, level) VALUES (?, ?, ?, ?)");
+    $stmt = $pdo_cadeb->prepare("INSERT INTO users (username, password, nama_lengkap, level) VALUES (?, ?, ?, ?)");
     foreach ($users as $u) {
         $stmt->execute($u);
     }

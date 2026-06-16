@@ -1,137 +1,114 @@
-<?php
-require_once 'auth.php';
-require_once 'db.php';
+<?php include 'layout/header.php'; ?>
 
-if ($_SESSION['level'] != 1) {
-    header('Location: index.php?msg=Hanya Staff (Level 1) yang dapat mengupload data.');
-    exit;
-}
+<div class="dashboard-header" style="margin-bottom: 2rem;">
+    <h2 style="font-weight: 700; color: var(--primary-color);">Upload Data DTTOT</h2>
+    <p style="color: var(--text-secondary); font-size: 0.9rem;">Impor data Terduga Teroris dari file Excel atau CSV.</p>
+</div>
 
-// Download Template
-if (isset($_GET['action']) && $_GET['action'] == 'template') {
-    header('Content-Type: text/csv; charset=utf-8');
-    header('Content-Disposition: attachment; filename=Template_Upload_Cadeb.csv');
-    $output = fopen('php://output', 'w');
-    fputcsv($output, ['Nama Cadeb', 'No Identitas KTP', 'Nama Pasangan', 'No Identitas Pasangan', 'Kategori', 'Keterangan PEP']);
-    fputcsv($output, ['JOHN DOE', '3201010101010001', 'JANE DOE', '3201010101010002', 'Cadeb', 'Tidak Ada Indikasi']);
-    fclose($output);
-    exit;
-}
+<div class="upload-container">
+    <form action="save_data.php" method="POST" enctype="multipart/form-data" id="uploadForm">
+        <div class="drop-zone" id="dropZone">
+            <i class="fas fa-file-excel"></i>
+            <h3>Tarik & Lepas File ke Sini</h3>
+            <p>atau klik untuk pilih file (Support .xlsx, .csv)</p>
+            <input type="file" name="excel_file" id="fileInput" accept=".xlsx, .csv" required>
 
-$msg = '';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file_upload'])) {
-    $file = $_FILES['file_upload'];
-
-    // Check if file is uploaded and is a CSV
-    if ($file['error'] === UPLOAD_ERR_OK) {
-        $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
-        if (strtolower($ext) == 'csv') {
-            $handle = fopen($file['tmp_name'], 'r');
-            // Skip the first row (header)
-            fgetcsv($handle);
-
-            $inserted = 0;
-            $failed = 0;
-
-            $pdo->beginTransaction();
-            try {
-                $sql = "INSERT INTO candidates (nama_cadeb, no_identitas, nama_pasangan, no_identitas_pasangan, kategori, keterangan_pep, go_live) 
-                        VALUES (?, ?, ?, ?, ?, ?, 'Tidak')";
-                $stmt = $pdo->prepare($sql);
-
-                while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-                    if (count($data) >= 6) {
-                        $nama_cadeb = trim($data[0]);
-                        $no_identitas = trim($data[1]);
-                        $nama_pasangan = trim($data[2]);
-                        $no_identitas_pasangan = trim($data[3]);
-                        $kategori = trim($data[4]);
-                        $keterangan_pep = trim($data[5]);
-
-                        // Basic validation
-                        if (!empty($nama_cadeb) && !empty($no_identitas) && !empty($keterangan_pep) && !empty($kategori)) {
-                            $stmt->execute([$nama_cadeb, $no_identitas, $nama_pasangan, $no_identitas_pasangan, $kategori, $keterangan_pep]);
-                            $inserted++;
-                        } else {
-                            $failed++;
-                        }
-                    } else {
-                        $failed++;
-                    }
-                }
-                $pdo->commit();
-                fclose($handle);
-                header("Location: index.php?msg=" . urlencode("Upload Berhasil. $inserted baris ditambahkan, $failed baris gagal."));
-                exit;
-            } catch (Exception $e) {
-                $pdo->rollBack();
-                $msg = 'Terjadi kesalahan sistem saat menyimpan data: ' . $e->getMessage();
-            }
-        } else {
-            $msg = 'Format file tidak didukung. Harap upload file CSV.';
-        }
-    } else {
-        $msg = 'Gagal mengupload file.';
-    }
-}
-?>
-
-<!DOCTYPE html>
-<html lang="id">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Data CADEB</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-
-<body>
-    <div class="container" style="max-width: 600px;">
-        <header>
-            <h1>Upload Data Candidate</h1>
-            <a href="index.php" class="btn btn-warning">Kembali</a>
-        </header>
-
-        <?php if ($msg): ?>
-            <div
-                style="background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); color: var(--danger); padding: 1rem; border-radius: 0.5rem; margin-bottom: 2rem; font-size: 0.9rem;">
-                ⚠️
-                <?= htmlspecialchars($msg) ?>
-            </div>
-        <?php endif; ?>
-
-        <div class="card">
-            <div class="modal-content">
-                <div style="margin-bottom: 20px; text-align: center;">
-                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 10px;">
-                        Silakan download template CSV di bawah ini sebelum mengupload data. Pastikan format sesuai
-                        dengan template.
-                    </p>
-                    <a href="upload.php?action=template" class="btn btn-success"
-                        style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); color: var(--success);">
-                        ⬇️ Download Template CSV
-                    </a>
+            <div id="fileInfo" class="selected-file">
+                <div>
+                    <i class="fas fa-file-alt"
+                        style="font-size: 1.2rem; color: var(--text-secondary); margin-bottom: 0;"></i>
+                    <span id="fileName" style="margin-left: 10px; font-weight: 500;">nama_file.xlsx</span>
                 </div>
-
-                <hr style="border: none; border-top: 1px solid rgba(0,0,0,0.1); margin: 20px 0;">
-
-                <form method="POST" enctype="multipart/form-data">
-                    <div class="form-group">
-                        <label>Pilih File CSV</label>
-                        <input type="file" name="file_upload" class="form-control" accept=".csv" required
-                            style="padding-top: 10px;">
-                    </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Upload
-                        File</button>
-                    <p style="text-align: center; margin-top: 10px; font-size: 0.8rem; color: var(--text-muted);">
-                        *Data 'Go Live' akan otomatis tersetting ke 'Tidak'
-                    </p>
-                </form>
+                <i class="fas fa-times" id="removeFile" style="cursor: pointer; color: #e74a3b;"></i>
             </div>
         </div>
-    </div>
-</body>
 
-</html>
+        <div
+            style="margin-top: 2rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem; text-align: right;">
+            <a href="index.php"
+                style="text-decoration: none; color: var(--text-secondary); margin-right: 2rem; font-size: 0.9rem;">Batal</a>
+            <button type="submit" class="btn-upload" id="submitBtn" disabled>
+                <i class="fas fa-cloud-upload-alt" style="margin-right: 8px;"></i> Mulai Impor Data
+            </button>
+        </div>
+    </form>
+</div>
+
+<div
+    style="margin-top: 2rem; background: rgba(78, 115, 223, 0.05); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(78, 115, 223, 0.1);">
+    <h4 style="color: var(--accent-color); margin-bottom: 0.5rem;"><i class="fas fa-info-circle"></i> Petunjuk Format
+    </h4>
+    <p style="font-size: 0.85rem; color: var(--text-primary); line-height: 1.6;">
+        Pastikan file Excel Anda memiliki urutan kolom berikut (tanpa header juga boleh, tapi urutan harus sama):<br>
+        <strong>Nama | Deskripsi | Terduga (Orang/Korporasi) | Kode Densus | Tempat Lahir | Tanggal Lahir (DD/MM/YYYY) |
+            WN/Asal Negara | Alamat</strong>
+    </p>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const removeFile = document.getElementById('removeFile');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // Click to select
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        // Drag & Drop effects
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropZone.classList.add('active');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('active');
+            }, false);
+        });
+
+        // Handle Drop
+        dropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length) {
+                fileInput.files = files;
+                updateFileInfo(files[0]);
+            }
+        });
+
+        // Handle Select
+        fileInput.addEventListener('change', function () {
+            if (this.files.length) {
+                updateFileInfo(this.files[0]);
+            }
+        });
+
+        function updateFileInfo(file) {
+            fileName.textContent = file.name;
+            fileInfo.style.display = 'flex';
+            submitBtn.disabled = false;
+            // Hide icons/text in dropzone
+            dropZone.querySelector('i').style.display = 'none';
+            dropZone.querySelector('h3').style.display = 'none';
+            dropZone.querySelector('p').style.display = 'none';
+        }
+
+        removeFile.addEventListener('click', (e) => {
+            e.stopPropagation();
+            fileInput.value = '';
+            fileInfo.style.display = 'none';
+            submitBtn.disabled = true;
+            dropZone.querySelector('i').style.display = 'block';
+            dropZone.querySelector('h3').style.display = 'block';
+            dropZone.querySelector('p').style.display = 'block';
+        });
+    });
+</script>
+
+<?php include 'layout/footer.php'; ?>

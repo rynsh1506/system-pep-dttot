@@ -1,143 +1,137 @@
 <?php
-require_once 'auth.php';
-require_once 'db.php';
+require_once 'config/db_cadeb.php';
+require_once 'config/db_dtot.php';
+include 'layout/header.php';
 
-// Only Super Admin (Level 4) can access this page
-if ($_SESSION['level'] != 4) {
-    header('Location: index.php?msg=Akses Ditolak. Hanya Super Admin yang dapat mengelola user.');
+// Only Admin (Lv 4)
+if ($_SESSION['role_level'] != 4) {
+    echo "<div class='alert alert-danger'>Akses ditolak.</div>";
+    include 'layout/footer.php';
     exit;
 }
-
-$msg = $_GET['msg'] ?? '';
 
 // Handle Add User
-if (isset($_POST['add_user'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'add') {
     $username = $_POST['username'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-    $nama = $_POST['nama_lengkap'];
-    $level = $_POST['level'];
+    $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
+    $full_name = $_POST['full_name'];
+    $role = $_POST['role_level'];
 
     try {
-        $stmt = $pdo->prepare("INSERT INTO users (username, password, nama_lengkap, level) VALUES (?, ?, ?, ?)");
-        $stmt->execute([$username, $password, $nama, $level]);
-        header('Location: users.php?msg=User Berhasil Ditambahkan');
-        exit;
-    } catch (PDOException $e) {
-        $msg = "Error: Username mungkin sudah ada.";
+        // Use $pdo_cadeb and corrected field names (nama_lengkap, level)
+        $stmt = $pdo_cadeb->prepare("INSERT INTO users (username, password, nama_lengkap, level) VALUES (?, ?, ?, ?)");
+        $stmt->execute([$username, $password, $full_name, $role]);
+        $success_msg = "User berhasil ditambahkan ke database Portal.";
+    } catch (Exception $e) {
+        $error_msg = "Error: " . $e->getMessage();
     }
 }
 
-// Handle Delete User
-if (isset($_GET['delete'])) {
-    $id_to_delete = $_GET['delete'];
-    // Prevent deleting self
-    if ($id_to_delete == $_SESSION['user_id']) {
-        header('Location: users.php?msg=Anda tidak dapat menghapus akun sendiri!');
-    } else {
-        $stmt = $pdo->prepare("DELETE FROM users WHERE id = ?");
-        $stmt->execute([$id_to_delete]);
-        header('Location: users.php?msg=User Berhasil Dihapus');
-    }
-    exit;
-}
-
-// Fetch all users
-$stmt = $pdo->query("SELECT * FROM users ORDER BY level DESC, username ASC");
+// Fetch Users from Portal database
+$stmt = $pdo_cadeb->query("SELECT * FROM users ORDER BY level DESC, username ASC");
 $users = $stmt->fetchAll();
 ?>
 
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Management - PEP System</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="container">
-        <header>
-            <div>
-                <h1>User Management</h1>
-                <p style="color: var(--text-muted); font-size: 0.875rem;">Kelola akses pengguna ke sistem PEP.</p>
-            </div>
-            <a href="index.php" class="btn btn-warning">Kembali ke Dashboard</a>
-        </header>
+<div class="dashboard-header" style="margin-bottom: 2rem;">
+    <h2 style="font-weight: 700; color: var(--primary-color);">Manajemen User</h2>
+    <p style="color: var(--text-secondary); font-size: 0.9rem;">Kelola pengguna sistem dan hak akses.</p>
+</div>
 
-        <?php if ($msg): ?>
-            <div style="background: rgba(99, 102, 241, 0.1); border: 1px solid var(--primary); color: white; padding: 1rem; border-radius: 0.5rem; margin-bottom: 2rem; font-size: 0.9rem;">
-                ℹ️ <?= htmlspecialchars($msg) ?>
-            </div>
-        <?php endif; ?>
+<?php if (isset($success_msg)): ?>
+    <div
+        style="background: rgba(28, 200, 138, 0.1); color: #1cc88a; padding: 1rem; border-radius: 10px; margin-bottom: 2rem; border: 1px solid rgba(28, 200, 138, 0.2);">
+        <i class="fas fa-check-circle"></i>
+        <?php echo $success_msg; ?>
+    </div>
+<?php endif; ?>
 
-        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem;">
-            <!-- Form Add User -->
-            <div class="card" style="height: fit-content;">
-                <div class="modal-content">
-                    <h3 style="margin-bottom: 1.5rem;">Tambah User Baru</h3>
-                    <form method="POST">
-                        <div class="form-group">
-                            <label>Username</label>
-                            <input type="text" name="username" class="form-control" required placeholder="Contoh: jdoe">
-                        </div>
-                        <div class="form-group">
-                            <label>Password</label>
-                            <input type="password" name="password" class="form-control" required placeholder="••••••••">
-                        </div>
-                        <div class="form-group">
-                            <label>Nama Lengkap</label>
-                            <input type="text" name="nama_lengkap" class="form-control" required placeholder="Contoh: John Doe">
-                        </div>
-                        <div class="form-group">
-                            <label>Level Akses</label>
-                            <select name="level" class="form-control" required>
-                                <option value="1">Level 1 (Staff Input)</option>
-                                <option value="2">Level 2 (Supervisor Approval)</option>
-                                <option value="3">Level 3 (Manager Approval)</option>
-                                <option value="4">Level 4 (Super Admin)</option>
-                            </select>
-                        </div>
-                        <button type="submit" name="add_user" class="btn btn-primary" style="width: 100%; justify-content: center;">Simpan User</button>
-                    </form>
-                </div>
+<!-- Add User Form -->
+<div class="card" style="margin-bottom: 2rem;">
+    <h4 style="margin-bottom: 1.5rem; color: var(--primary-color);">Tambah User Baru</h4>
+    <form method="POST" action="">
+        <input type="hidden" name="action" value="add">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+            <div class="form-group">
+                <label>Nama Lengkap</label>
+                <input type="text" name="full_name" required class="form-control" placeholder="Contoh: Budi Santoso">
             </div>
-
-            <!-- List Users -->
-            <div class="card">
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Username</th>
-                                <th>Nama Lengkap</th>
-                                <th>Level</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($users as $u): ?>
-                                <tr>
-                                    <td><strong><?= htmlspecialchars($u['username']) ?></strong></td>
-                                    <td><?= htmlspecialchars($u['nama_lengkap']) ?></td>
-                                    <td>
-                                        <span class="badge <?= $u['level'] == 4 ? 'badge-both' : 'badge-cadeb' ?>">
-                                            L<?= $u['level'] ?>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <?php if ($u['id'] != $_SESSION['user_id']): ?>
-                                            <a href="users.php?delete=<?= $u['id'] ?>" class="btn btn-danger" style="padding: 0.4rem 0.8rem; font-size: 0.75rem;" onclick="return confirm('Hapus user ini?')">Hapus</a>
-                                        <?php else: ?>
-                                            <span style="font-size: 0.75rem; color: var(--text-muted);">Akun Anda</span>
-                                        <?php endif; ?>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" name="username" required class="form-control" placeholder="Username untuk login">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" required class="form-control" placeholder="********">
+            </div>
+            <div class="form-group">
+                <label>Role</label>
+                <select name="role_level" class="form-control">
+                    <option value="1">Level 1 - Staf</option>
+                    <option value="2">Level 2 - Supervisor</option>
+                    <option value="3">Level 3 - Manager</option>
+                    <option value="4">Level 4 - Super Admin</option>
+                </select>
             </div>
         </div>
-    </div>
-</body>
-</html>
+        <div style="text-align: right; margin-top: 1.5rem;">
+            <button type="submit" class="btn-upload"
+                style="background: var(--primary-color); padding: 0.8rem 2rem; display: inline-flex; align-items: center; justify-content: center;">
+                <i class="fas fa-plus-circle" style="margin-right: 8px;"></i> Simpan User
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Users List -->
+<div class="data-table-container">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Nama Lengkap</th>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Terdaftar</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($users as $user): ?>
+                <tr>
+                    <td>
+                        <?php echo htmlspecialchars($user['nama_lengkap']); ?>
+                    </td>
+                    <td>
+                        <?php echo htmlspecialchars($user['username']); ?>
+                    </td>
+                    <td>
+                        <?php
+                        $roles = [1 => 'Staf', 2 => 'Supervisor', 3 => 'Manager', 4 => 'Super Admin'];
+                        $colors = [1 => '#36b9cc', 2 => '#f6c23e', 3 => '#4e73df', 4 => '#e74a3b'];
+                        ?>
+                        <span class="badge" style="background: <?php echo $colors[$user['level']]; ?>; color: #fff;">
+                            <?php echo $roles[$user['level']] ?? 'Unknown'; ?>
+                        </span>
+                    </td>
+                    <td>
+                        <?php echo isset($user['created_at']) ? date('d M Y', strtotime($user['created_at'])) : '-'; ?>
+                    </td>
+                    <td>
+                        <a href="edit_user.php?id=<?php echo $user['id']; ?>" class="btn-upload"
+                            style="background: #f6c23e; padding: 5px 10px; font-size: 0.8rem; display: inline-block;">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <?php if ($_SESSION['user_id'] != $user['id']): ?>
+                            <a href="delete_user.php?id=<?php echo $user['id']; ?>" class="btn-upload"
+                                style="background: #e74a3b; padding: 5px 10px; font-size: 0.8rem; display: inline-block;"
+                                onclick="return confirm('Hapus user ini?');">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
+
+<?php include 'layout/footer.php'; ?>

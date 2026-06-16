@@ -1,41 +1,27 @@
 <?php
 require_once 'config/db_dtot.php';
 
-if (!isset($_GET['id'])) {
-    header("Location: index.php");
-    exit;
-}
-
-$id = $_GET['id'];
-$stmt = $pdo->prepare("SELECT * FROM terduga WHERE id = ?");
-$stmt->execute([$id]);
-$data = $stmt->fetch();
-
-if (!$data) {
-    die("Data tidak ditemukan.");
-}
-
 include 'layout/header.php';
 ?>
 
 <div class="dashboard-header" style="margin-bottom: 2rem;">
     <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
-        <a href="detail.php?id=<?php echo $id; ?>" style="color: var(--text-secondary); text-decoration: none;"><i
+        <a href="index.php" style="color: var(--text-secondary); text-decoration: none;"><i
                 class="fas fa-arrow-left"></i> Kembali</a>
-        <h2 style="font-weight: 700; color: var(--primary-color);">Edit Data Terduga</h2>
+        <h2 style="font-weight: 700; color: var(--primary-color);">Tambah Data Terduga</h2>
     </div>
-    <p style="color: var(--text-secondary); font-size: 0.9rem;">Ubah informasi subjek DTTOT.</p>
+    <p style="color: var(--text-secondary); font-size: 0.9rem;">Input data terduga teroris baru secara manual ke dalam
+        sistem.</p>
 </div>
 
 <div class="upload-container" style="padding: 2.5rem;">
-    <form action="update_data.php" method="POST">
-        <input type="hidden" name="id" value="<?php echo $data['id']; ?>">
+    <form action="save_single.php" method="POST">
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
             <div class="form-group">
                 <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-primary);">Nama
                     Lengkap / Korporasi</label>
-                <input type="text" name="nama" value="<?php echo htmlspecialchars($data['nama']); ?>" required
+                <input type="text" name="nama" placeholder="Masukkan nama lengkap..." required
                     style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 8px;">
             </div>
             <div class="form-group">
@@ -43,10 +29,9 @@ include 'layout/header.php';
                     Terduga</label>
                 <select name="terduga_type" required
                     style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 8px;">
-                    <option value="Orang" <?php echo $data['terduga_type'] == 'Orang' ? 'selected' : ''; ?>>Orang
-                    </option>
-                    <option value="Korporasi" <?php echo $data['terduga_type'] == 'Korporasi' ? 'selected' : ''; ?>>
-                        Korporasi</option>
+                    <option value="Orang">Orang</option>
+                    <option value="Korporasi">Korporasi</option>
+                    <option value="Tidak Terduga">Tidak Terduga</option>
                 </select>
             </div>
         </div>
@@ -55,14 +40,13 @@ include 'layout/header.php';
             <div class="form-group">
                 <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-primary);">Kode
                     Densus / Khusus</label>
-                <input type="text" name="kode_densus" value="<?php echo htmlspecialchars($data['kode_densus']); ?>"
+                <input type="text" name="kode_densus" placeholder="Contoh: IDD-XXX"
                     style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 8px;">
             </div>
             <div class="form-group">
                 <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-primary);">WN /
                     Asal Negara</label>
-                <input type="text" name="wn_asal_negara"
-                    value="<?php echo htmlspecialchars($data['wn_asal_negara']); ?>" required
+                <input type="text" name="wn_asal_negara" placeholder="Contoh: INDONESIA" required
                     style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 8px;">
             </div>
         </div>
@@ -71,13 +55,13 @@ include 'layout/header.php';
             <div class="form-group">
                 <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-primary);">Tempat
                     Lahir</label>
-                <input type="text" name="tempat_lahir" value="<?php echo htmlspecialchars($data['tempat_lahir']); ?>"
+                <input type="text" name="tempat_lahir" placeholder="Masukkan tempat lahir..."
                     style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 8px;">
             </div>
             <div class="form-group">
                 <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-primary);">Tanggal
-                    Lahir (YYYY-MM-DD)</label>
-                <input type="date" name="tanggal_lahir" value="<?php echo $data['tanggal_lahir']; ?>"
+                    Lahir</label>
+                <input type="date" name="tanggal_lahir"
                     style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 8px;">
             </div>
         </div>
@@ -85,22 +69,22 @@ include 'layout/header.php';
         <div class="form-group" style="margin-bottom: 1.5rem;">
             <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-primary);">Deskripsi /
                 Keterangan</label>
-            <textarea name="deskripsi" rows="4" required
-                style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 8px;"><?php echo htmlspecialchars($data['deskripsi']); ?></textarea>
+            <textarea name="deskripsi" rows="4" placeholder="Keterangan tambahan mengenai subjek..." required
+                style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 8px;"></textarea>
         </div>
 
         <div class="form-group" style="margin-bottom: 2rem;">
             <label
                 style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-primary);">Alamat</label>
-            <textarea name="alamat" rows="3"
-                style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 8px;"><?php echo htmlspecialchars($data['alamat']); ?></textarea>
+            <textarea name="alamat" rows="3" placeholder="Alamat terakhir yang diketahui..."
+                style="width: 100%; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 8px;"></textarea>
         </div>
 
         <div style="text-align: right; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
-            <a href="detail.php?id=<?php echo $id; ?>"
+            <a href="index.php"
                 style="text-decoration: none; color: var(--text-secondary); margin-right: 2rem;">Batal</a>
             <button type="submit" class="btn-upload" style="margin-top: 0;">
-                <i class="fas fa-save" style="margin-right: 8px;"></i> Simpan Perubahan
+                <i class="fas fa-plus" style="margin-right: 8px;"></i> Simpan Data Baru
             </button>
         </div>
     </form>

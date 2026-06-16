@@ -1,199 +1,225 @@
 <?php
-require_once 'auth.php';
-require_once 'db.php';
+require_once 'config/db_dtot.php';
+include 'layout/header.php';
 
-if ($_SESSION['level'] < 2) {
-    header('Location: index.php');
+// Only Lv 2, 3, 4 can access
+if ($_SESSION['role_level'] < 2) {
+    echo "<div class='alert alert-danger'>Akses ditolak. Anda tidak memiliki izin untuk halaman ini.</div>";
+    include 'layout/footer.php';
     exit;
 }
 
-$user_level = $_SESSION['level'];
-$user_id = $_SESSION['user_id'];
+// Logic: Process Approval
+if (isset($_POST['action']) && isset($_POST['request_id'])) {
+    $action = $_POST['action'];
+    $req_id = $_POST['request_id'];
+    $role = $_SESSION['role_level'];
 
-// Handle Approval Action
-if (isset($_POST['action'])) {
-    $request_id = $_POST['request_id'];
-    $action = $_POST['action']; // 'APPROVED' or 'REJECTED'
-    $notes = $_POST['notes'] ?? '';
+    try {
+        $stmtReq = $pdo->prepare("SELECT * FROM change_requests WHERE id = ?");
+        $stmtReq->execute([$req_id]);
+        $request = $stmtReq->fetch();
 
-    if ($user_level == 2) {
-        $stmt = $pdo->prepare("UPDATE approval_requests SET l2_status = ?, l2_approver_id = ?, l2_notes = ? WHERE id = ?");
-        $stmt->execute([$action, $user_id, $notes, $request_id]);
+        if ($request) {
+            if ($action === 'approve') {
+                if ($role == 2) { // Supervisor
+                    // Forward to Manager
+                    $stmtUpd = $pdo->prepare("UPDATE change_requests SET status = 'PENDING_MANAGER', approver_id = ? WHERE id = ?");
+                    $stmtUpd->execute([$_SESSION['user_id'], $req_id]);
+                    $success_msg = "Permintaan disetujui dan diteruskan ke Manager.";
+                } elseif ($role == 3 || $role == 4) { // Manager / Admin
+                    // Final Approval
+                    $data = json_decode($request['data_json'], true);
 
-        if ($action == 'REJECTED') {
-            $pdo->prepare("UPDATE approval_requests SET final_status = 'REJECTED' WHERE id = ?")->execute([$request_id]);
-        }
-    } elseif ($user_level == 3) {
-        $stmt = $pdo->prepare("UPDATE approval_requests SET l3_status = ?, l3_approver_id = ?, l3_notes = ? WHERE id = ?");
-        $stmt->execute([$action, $user_id, $notes, $request_id]);
+                    if ($request['request_type'] === 'ADD') {
+                        // Should not happen for Add, but handled just in case
+                        $sql = "INSERT INTO terduga (nama, terduga_type, kode_densus, tempat_lahir, tanggal_lahir, wn_asal_negara, deskripsi, alamat, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+                        $stmt = $pdo->prepare($sql);
+                        $stmt->execute(array_values($data));
+                    } elseif ($request['request_type'] === 'EDIT') {
+                        $sql = "UPDATE terduga SET nama=?, terduga_type=?, kode_densus=?, tempat_lahir=?, tanggal_lahir=?, wn_asal_negara=?, deskripsi=?, alamat=?, is_pending=0 WHERE id=?";
+                        $stmt = $pdo->prepare($sql);
+                        $stmt->execute([
+                            $data['nama'],
+                            $data['terduga_type'],
+                            $data['kode_densus'],
+                            $data['tempat_lahir'],
+                            $data['tanggal_lahir'],
+                            $data['wn_asal_negara'],
+                            $data['deskripsi'],
+                            $data['alamat'],
+                            $request['target_id']
+                        ]);
+                    } elseif ($request['request_type'] === 'DELETE') {
+                        $stmt = $pdo->prepare("UPDATE terduga SET deleted_at = NOW(), is_pending=0 WHERE id = ?");
+                        $stmt->execute([$request['target_id']]);
+                    }
 
-        if ($action == 'REJECTED') {
-            $pdo->prepare("UPDATE approval_requests SET final_status = 'REJECTED' WHERE id = ?")->execute([$request_id]);
-        } else {
-            // Level 3 APPROVED -> Final Execution
-            $qReq = $pdo->prepare("SELECT * FROM approval_requests WHERE id = ?");
-            $qReq->execute([$request_id]);
-            $request = $qReq->fetch();
-
-            if ($request['type'] == 'EDIT') {
-                $new_data = json_decode($request['new_data'], true);
-                $stmt = $pdo->prepare("UPDATE candidates SET nama_cadeb = ?, no_identitas = ?, nama_pasangan = ?, no_identitas_pasangan = ?, keterangan_pep = ?, go_live = ? WHERE id = ?");
-                $stmt->execute([
-                    $new_data['nama_cadeb'],
-                    $new_data['no_identitas'],
-                    $new_data['nama_pasangan'],
-                    $new_data['no_identitas_pasangan'],
-                    $new_data['keterangan_pep'],
-                    $new_data['go_live'],
-                    $request['candidate_id']
-                ]);
-            } elseif ($request['type'] == 'DELETE') {
-                $stmt = $pdo->prepare("DELETE FROM candidates WHERE id = ?");
-                $stmt->execute([$request['candidate_id']]);
+                    // Update Request Status
+                    $stmtEnd = $pdo->prepare("UPDATE change_requests SET status = 'APPROVED', approver_id = ?, processed_at = NOW() WHERE id = ?");
+                    $stmtEnd->execute([$_SESSION['user_id'], $req_id]);
+                    $success_msg = "Permintaan telah disetujui sepenuhnya.";
+                }
+            } else {
+                // Reject
+                if ($request['target_id']) {
+                    $stmtClear = $pdo->prepare("UPDATE terduga SET is_pending = 0 WHERE id = ?");
+                    $stmtClear->execute([$request['target_id']]);
+                }
+                $stmtEnd = $pdo->prepare("UPDATE change_requests SET status = 'REJECTED', approver_id = ?, processed_at = NOW() WHERE id = ?");
+                $stmtEnd->execute([$_SESSION['user_id'], $req_id]);
+                $success_msg = "Permintaan ditolak.";
             }
-
-            // Mark as COMPLETED
-            $pdo->prepare("UPDATE approval_requests SET final_status = 'COMPLETED' WHERE id = ?")->execute([$request_id]);
         }
+    } catch (Exception $e) {
+        $error_msg = "Error: " . $e->getMessage();
     }
-    header('Location: approvals.php?msg=Request Updated');
-    exit;
 }
 
-// Fetch Pending Requests
-if ($user_level == 2) {
-    // Level 2 sees all PENDING at Level 2
-    $q = $pdo->prepare("SELECT a.*, u.nama_lengkap as requester_name FROM approval_requests a JOIN users u ON a.requester_id = u.id WHERE a.l2_status = 'PENDING' AND a.final_status = 'PENDING' ORDER BY a.created_at DESC");
+// Fetch Pending Requests based on Role
+$status_filter = "";
+if ($_SESSION['role_level'] == 2) {
+    $status_filter = "cr.status = 'PENDING_SPV'";
+} elseif ($_SESSION['role_level'] == 3) {
+    $status_filter = "cr.status = 'PENDING_MANAGER'";
 } else {
-    // Level 3 sees only those APPROVED by L2 and PENDING at Level 3
-    $q = $pdo->prepare("SELECT a.*, u.nama_lengkap as requester_name FROM approval_requests a JOIN users u ON a.requester_id = u.id WHERE a.l2_status = 'APPROVED' AND a.l3_status = 'PENDING' AND a.final_status = 'PENDING' ORDER BY a.created_at DESC");
+    $status_filter = "cr.status IN ('PENDING_SPV', 'PENDING_MANAGER')"; // Admin sees all
 }
-$q->execute();
-$requests = $q->fetchAll();
+
+$sql = "SELECT cr.*, u.nama_lengkap as requester_name, t.nama as target_name, 
+        t.nama as t_nama, t.terduga_type as t_terduga_type, t.kode_densus as t_kode_densus, t.tempat_lahir as t_tempat_lahir, 
+        t.tanggal_lahir as t_tanggal_lahir, t.wn_asal_negara as t_wn_asal_negara, t.deskripsi as t_deskripsi, t.alamat as t_alamat
+        FROM change_requests cr 
+        JOIN cadeb_db.users u ON cr.requester_id = u.id 
+        LEFT JOIN terduga t ON cr.target_id = t.id 
+        WHERE $status_filter 
+        ORDER BY cr.created_at ASC";
+$stmtRequests = $pdo->query($sql);
+$requests = $stmtRequests->fetchAll();
 ?>
 
-<!DOCTYPE html>
-<html lang="id">
+<div class="dashboard-header" style="margin-bottom: 2rem;">
+    <h2 style="font-weight: 700; color: var(--primary-color);">Pending Approvals</h2>
+    <p style="color: var(--text-secondary); font-size: 0.9rem;">
+        <?php if ($_SESSION['role_level'] == 2)
+            echo "Review permintaan dari Staf sebelum diteruskan ke Manager."; ?>
+        <?php if ($_SESSION['role_level'] == 3)
+            echo "Review permintaan final yang telah disetujui Supervisor."; ?>
+        <?php if ($_SESSION['role_level'] == 4)
+            echo "Review semua permintaan pending."; ?>
+    </p>
+</div>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Persetujuan - PEP System</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-
-<body>
-    <div class="container">
-        <header>
-            <div>
-                <h1>Antrean Approval (L<?= $user_level ?>)</h1>
-                <p style="color: var(--text-muted); font-size: 0.875rem;">Harap tinjau permintaan perubahan data di
-                    bawah ini.</p>
-            </div>
-            <a href="index.php" class="btn btn-warning">Kembali ke Dashboard</a>
-        </header>
-
-        <div class="card">
-            <?php if (empty($requests)): ?>
-                <div style="padding: 3rem; text-align: center; color: var(--text-muted);">
-                    🎉 Tidak ada permintaan yang menunggu approval Anda.
-                </div>
-            <?php else: ?>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Tipe</th>
-                                <th>Request By</th>
-                                <th>Detail Perubahan</th>
-                                <th>Waktu</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($requests as $req): ?>
-                                <?php
-                                $old = json_decode($req['old_data'], true);
-                                $new = json_decode($req['new_data'], true);
-                                ?>
-                                <tr>
-                                    <td>
-                                        <span class="badge <?= $req['type'] == 'EDIT' ? 'badge-both' : 'badge-danger' ?>">
-                                            <?= $req['type'] ?>
-                                        </span>
-                                    </td>
-                                    <td><?= htmlspecialchars($req['requester_name']) ?></td>
-                                    <td>
-                                        <?php if ($req['type'] == 'EDIT'): ?>
-                                            <div style="font-size: 0.85rem; line-height: 1.6;">
-                                                <strong style="color: var(--primary);">📋 Target:
-                                                    <?= htmlspecialchars($old['nama_cadeb']) ?></strong>
-                                                <div
-                                                    style="margin-top: 8px; padding: 8px; background: rgba(76, 175, 80, 0.05); border-left: 3px solid var(--success); border-radius: 4px;">
-                                                    <strong style="color: var(--success);">✏️ Perubahan Data:</strong>
-                                                    <table
-                                                        style="width: 100%; margin-top: 6px; font-size: 0.8rem; border-collapse: collapse;">
-                                                        <?php
-                                                        $field_labels = [
-                                                            'nama_cadeb' => 'Nama Debitur',
-                                                            'no_identitas' => 'No. KTP',
-                                                            'nama_pasangan' => 'Nama Pasangan',
-                                                            'no_identitas_pasangan' => 'No. KTP Pasangan',
-                                                            'keterangan_pep' => 'Keterangan PEP',
-                                                            'go_live' => 'Go Live'
-                                                        ];
-
-                                                        $has_changes = false;
-                                                        foreach ($field_labels as $field => $label) {
-                                                            if (isset($old[$field]) && isset($new[$field]) && $old[$field] != $new[$field]) {
-                                                                $has_changes = true;
-                                                                echo "<tr style='border-bottom: 1px solid rgba(0,0,0,0.05);'>";
-                                                                echo "<td style='padding: 4px 8px 4px 0; font-weight: 600; color: var(--text-primary); width: 35%;'>{$label}:</td>";
-                                                                echo "<td style='padding: 4px 4px; color: var(--danger); text-decoration: line-through; opacity: 0.7;'>" . htmlspecialchars($old[$field]) . "</td>";
-                                                                echo "<td style='padding: 4px 4px; text-align: center; color: var(--success);'>→</td>";
-                                                                echo "<td style='padding: 4px 4px; color: var(--success); font-weight: 600;'>" . htmlspecialchars($new[$field]) . "</td>";
-                                                                echo "</tr>";
-                                                            }
-                                                        }
-
-                                                        if (!$has_changes) {
-                                                            echo "<tr><td colspan='4' style='padding: 4px; color: var(--text-muted); font-style: italic;'>Tidak ada perubahan terdeteksi</td></tr>";
-                                                        }
-                                                        ?>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        <?php else: ?>
-                                            <div style="font-size: 0.85rem; line-height: 1.6;">
-                                                <strong style="color: var(--primary);">📋 Target:
-                                                    <?= htmlspecialchars($old['nama_cadeb']) ?></strong>
-                                                <div
-                                                    style="margin-top: 8px; padding: 8px; background: rgba(244, 67, 54, 0.05); border-left: 3px solid var(--danger); border-radius: 4px;">
-                                                    <strong style="color: var(--danger);">🗑️ Permohonan Hapus Permanen</strong>
-                                                </div>
-                                            </div>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td style="font-size: 0.8rem; color: var(--text-muted);"><?= $req['created_at'] ?></td>
-                                    <td>
-                                        <form method="POST" style="display: flex; gap: 0.5rem; align-items: center;">
-                                            <input type="hidden" name="request_id" value="<?= $req['id'] ?>">
-                                            <input type="text" name="notes" placeholder="Catatan (Opsional)"
-                                                class="form-control" style="font-size: 0.75rem; padding: 0.4rem; width: 150px;">
-                                            <button type="submit" name="action" value="APPROVED" class="btn btn-primary"
-                                                style="padding: 0.4rem 0.8rem; font-size: 0.75rem; background: var(--success);">Approve</button>
-                                            <button type="submit" name="action" value="REJECTED" class="btn btn-danger"
-                                                style="padding: 0.4rem 0.8rem; font-size: 0.75rem;">Reject</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-            <?php endif; ?>
-        </div>
+<?php if (isset($success_msg)): ?>
+    <div
+        style="background: rgba(28, 200, 138, 0.1); color: #1cc88a; padding: 1rem; border-radius: 10px; margin-bottom: 2rem; border: 1px solid rgba(28, 200, 138, 0.2);">
+        <i class="fas fa-check-circle"></i> <?php echo $success_msg; ?>
     </div>
-</body>
+<?php endif; ?>
 
-</html>
+<div class="data-table-container">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Tanggal</th>
+                <th>Pengaju</th>
+                <th>Tipe Aksi</th>
+                <th>Status</th>
+                <th>Subjek</th>
+                <th>Detail Perubahan</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if (empty($requests)): ?>
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                        <i class="fas fa-inbox"
+                            style="font-size: 2rem; display: block; margin-bottom: 10px; opacity: 0.3;"></i>
+                        Tidak ada permintaan pending untuk Anda.
+                    </td>
+                </tr>
+            <?php else: ?>
+                <?php foreach ($requests as $row): ?>
+                    <tr>
+                        <td><?php echo date('d/m/Y H:i', strtotime($row['created_at'])); ?></td>
+                        <td><strong><?php echo htmlspecialchars($row['requester_name']); ?></strong></td>
+                        <td>
+                            <?php
+                            $type_badges = [
+                                'ADD' => ['label' => 'TAMBAH', 'color' => '#4e73df'],
+                                'EDIT' => ['label' => 'UPDATE', 'color' => '#f6c23e'],
+                                'DELETE' => ['label' => 'HAPUS', 'color' => '#e74a3b']
+                            ];
+                            $badge = $type_badges[$row['request_type']];
+                            ?>
+                            <span class="badge"
+                                style="background: <?php echo $badge['color']; ?>; color: #fff; font-size: 0.7rem;"><?php echo $badge['label']; ?></span>
+                        </td>
+                        <td>
+                            <?php if ($row['status'] == 'PENDING_SPV'): ?>
+                                <span class="badge" style="background: #f6c23e; color: #fff;">Menunggu SPV</span>
+                            <?php elseif ($row['status'] == 'PENDING_MANAGER'): ?>
+                                <span class="badge" style="background: #36b9cc; color: #fff;">Menunggu Manager</span>
+                            <?php endif; ?>
+                        </td>
+                        <td><?php echo htmlspecialchars($row['target_name'] ?: 'Data Baru'); ?></td>
+                        <td style="font-size: 0.8rem; line-height: 1.4;">
+                            <?php
+                            $dataNew = json_decode($row['data_json'], true);
+                            if ($row['request_type'] == 'ADD') {
+                                echo "Menambah data baru:<br><strong>" . htmlspecialchars($dataNew['nama'] ?? '') . "</strong>";
+                            } elseif ($row['request_type'] == 'DELETE') {
+                                echo "Permintaan hapus data.";
+                            } elseif ($row['request_type'] == 'EDIT') {
+                                $changes = [];
+                                $fields = [
+                                    'nama' => 'Nama',
+                                    'terduga_type' => 'Tipe',
+                                    'kode_densus' => 'Kode Densus',
+                                    'tempat_lahir' => 'Tempat Lahir',
+                                    'tanggal_lahir' => 'Tanggal Lahir',
+                                    'wn_asal_negara' => 'WN/Negara',
+                                    'deskripsi' => 'Deskripsi',
+                                    'alamat' => 'Alamat'
+                                ];
+                                foreach ($fields as $key => $label) {
+                                    if (array_key_exists($key, $dataNew) && $dataNew[$key] != $row['t_' . $key]) {
+                                        $oldVal = htmlspecialchars($row['t_' . $key] ?: '-');
+                                        $newVal = htmlspecialchars($dataNew[$key] ?: '-');
+                                        $changes[] = "<strong>$label:</strong> <s>$oldVal</s> &rarr; <span style='color: #1cc88a; font-weight: 600;'>$newVal</span>";
+                                    }
+                                }
+                                if (empty($changes)) {
+                                    echo "<em>Tidak ada perubahan pada kolom.</em>";
+                                } else {
+                                    echo implode("<br>", $changes);
+                                }
+                            }
+                            ?>
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 10px;">
+                                <form method="POST" style="margin: 0;">
+                                    <input type="hidden" name="request_id" value="<?php echo $row['id']; ?>">
+                                    <button type="submit" name="action" value="approve" class="btn-upload"
+                                        style="margin: 0; padding: 5px 12px; font-size: 0.8rem; background: #1cc88a; border-radius: 5px;"
+                                        onclick="return confirm('Setujui permintaan ini?')">
+                                        <?php echo ($_SESSION['role_level'] == 2) ? 'Teruskan' : 'Approve'; ?>
+                                    </button>
+                                    <button type="submit" name="action" value="reject" class="btn-upload"
+                                        style="margin: 0; padding: 5px 12px; font-size: 0.8rem; background: #e74a3b; border-radius: 5px;"
+                                        onclick="return confirm('Tolak permintaan ini?')">
+                                        Reject
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </tbody>
+    </table>
+</div>
+
+<?php include 'layout/footer.php'; ?>

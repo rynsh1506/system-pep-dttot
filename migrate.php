@@ -1,7 +1,7 @@
 <?php
-require 'db.php';
+require 'config/db_cadeb.php';
 try {
-    $pdo->exec("ALTER TABLE candidates ADD COLUMN kategori VARCHAR(50) NOT NULL DEFAULT 'Cadeb'");
+    $pdo_cadeb->exec("ALTER TABLE candidates ADD COLUMN kategori VARCHAR(50) NOT NULL DEFAULT 'Cadeb'");
     echo "Migration successful\n";
 } catch (PDOException $e) {
     if ($e->getCode() == '42S21') {
