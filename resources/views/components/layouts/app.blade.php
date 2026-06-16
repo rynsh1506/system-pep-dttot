@@ -57,6 +57,7 @@
                 
                 <li class="menu-title"><span>DASHBOARD DTTOT</span></li>
                 <li><a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Dashboard</a></li>
+                <li><a href="{{ route('search') }}" class="{{ request()->routeIs('search') ? 'active' : '' }}">Search Data</a></li>
                 @if(session('role_level') >= 2)
                 <li>
                     <a href="{{ route('approvals') }}" class="{{ request()->routeIs('approvals') ? 'active' : '' }}">
