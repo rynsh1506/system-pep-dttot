@@ -6,9 +6,11 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Models\PengajuanDtot;
 use App\Models\Terduga;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Auth;
+use App\Mail\AlertTerindikasiMail;
 use Livewire\Attributes\On;
 
 class PengajuanProcess extends Component
@@ -166,6 +168,46 @@ class PengajuanProcess extends Component
             Log::error('Gagal submit ke SQL Server (Process): ' . $e->getMessage());
         }
         // --- END SQL SERVER SUBMISSION ---
+
+        // --- START EMAIL ALERT ---
+        if ($this->hasil_pengecekan === 'Terindikasi' || $this->hasil_pep === 'Terindikasi') {
+            try {
+                $recipients = [
+                    'adwin.bhaskoro@reksafinance.com',
+                    'robert.syahratoe@reksafinance.com',
+                    'ghessa.utomo@reksafinance.com',
+                    'triyana.rahmawati@reksafinance.com',
+                    'asti.miftahul@reksafinance.com',
+                    'julies.barli@reksafinance.com',
+                    'rizal.dzalkarnaen@reksafinance.com',
+                    'agatha.saputri@reksafinance.com',
+                    'credit.ho3@reksafinance.com',
+                    'ericho.primadadi@reksafinance.com',
+                    'galih.prasetyo@reksafinance.com',
+                    'yoseph.halomoan@reksafinance.com',
+                    'siti.annisa@reksafinance.com',
+                    'nur.azizah@reksafinance.com',
+                    'ida.santi@reksafinance.com',
+                    'bustaman@reksafinance.com',
+                    'hanifah.adiyati@reksafinance.com'
+                ];
+
+                $checked_by = Auth::user()->full_name ?? Auth::user()->username ?? 'Unknown';
+                
+                Mail::to($recipients)->send(new AlertTerindikasiMail(
+                    $this->pengajuan->nama_cadeb,
+                    $this->pengajuan->nik,
+                    $this->hasil_pengecekan,
+                    $this->hasil_pep,
+                    "Pengajuan Cek (" . ($this->pengajuan->kategori_pengajuan ?? '-') . ")",
+                    $this->pengajuan->nomor_kontrak ?? '-',
+                    $checked_by
+                ));
+            } catch (\Exception $e) {
+                Log::error('Gagal kirim email alert (Process): ' . $e->getMessage());
+            }
+        }
+        // --- END EMAIL ALERT ---
 
         session()->forget('pengajuan_draft_' . $this->id);
 
