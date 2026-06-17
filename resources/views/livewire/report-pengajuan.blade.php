@@ -90,7 +90,7 @@
                                     'Tidak Terindikasi' => 'badge-success text-white',
                                     default => 'badge-outline text-base-content',
                                 }; @endphp
-                                <span class="badge {{ $dttotClass }} badge-sm font-medium">{{ $row->hasil_pengecekan ?? 'Belum Dicek' }}</span>
+                                <span class="badge {{ $dttotClass }} badge-sm font-medium whitespace-nowrap">{{ $row->hasil_pengecekan ?? 'Belum Dicek' }}</span>
                             </td>
                             <td>
                                 @php $pepClass = match($row->hasil_pep ?? '') {
@@ -98,7 +98,7 @@
                                     'Tidak Terindikasi' => 'badge-success text-white',
                                     default => 'badge-outline text-base-content',
                                 }; @endphp
-                                <span class="badge {{ $pepClass }} badge-sm font-medium">{{ $row->hasil_pep ?? '-' }}</span>
+                                <span class="badge {{ $pepClass }} badge-sm font-medium whitespace-nowrap">{{ $row->hasil_pep ?? '-' }}</span>
                             </td>
                             <td class="text-xs text-base-content/60">{{ Str::limit($row->keterangan, 60) ?? '-' }}</td>
                         </tr>
