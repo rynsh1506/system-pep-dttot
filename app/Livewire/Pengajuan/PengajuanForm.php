@@ -9,6 +9,9 @@ use App\Models\PengajuanDtot;
 use App\Models\Terduga;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Livewire\Attributes\On;
 
 class PengajuanForm extends Component
 {
@@ -99,6 +102,7 @@ class PengajuanForm extends Component
         }
     }
 
+    #[On('confirm-save')]
     public function save(): void
     {
         $this->validate();
@@ -108,7 +112,7 @@ class PengajuanForm extends Component
             $buktiPath = $this->bukti_ss->store('bukti-ss', 'public');
         }
 
-        PengajuanDtot::create([
+        $pengajuan = PengajuanDtot::create([
             'tanggal'          => $this->tanggal,
             'kategori'         => $this->kategori,
             'nama_cadeb'       => strtoupper($this->nama_cadeb),
@@ -122,6 +126,24 @@ class PengajuanForm extends Component
             'checked_by'       => Auth::id(),
             'checked_at'       => now(),
         ]);
+
+        // --- START SQL SERVER SUBMISSION ---
+        try {
+            DB::connection('sqlsrv')->table('HasilPengecekan')->insert([
+                'id_pengecekan' => $pengajuan->id,
+                'Nama_Cadeb'    => strtoupper($this->nama_cadeb),
+                'NIK'           => $this->nik,
+                'HasilDtot'     => $this->hasil_pengecekan,
+                'Keterangan'    => $this->keterangan,
+                'DiperiksaOleh' => Auth::user()->full_name ?? Auth::user()->username ?? 'unknown',
+                'WaktuPeriksa'  => now(),
+                'IsProceed'     => 0,
+                'Hasilpep'      => $this->hasil_pep,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Gagal submit ke SQL Server (Manual): ' . $e->getMessage());
+        }
+        // --- END SQL SERVER SUBMISSION ---
 
         $this->dispatch('swal-redirect', [
             'icon'  => 'success',

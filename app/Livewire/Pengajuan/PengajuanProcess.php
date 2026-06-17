@@ -7,6 +7,9 @@ use Livewire\WithFileUploads;
 use App\Models\PengajuanDtot;
 use App\Models\Terduga;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Livewire\Attributes\On;
 
 class PengajuanProcess extends Component
 {
@@ -125,6 +128,7 @@ class PengajuanProcess extends Component
         }
     }
 
+    #[On('confirm-save-process')]
     public function saveResult(): void
     {
         $this->validate();
@@ -144,6 +148,24 @@ class PengajuanProcess extends Component
             'checked_by'       => Auth::id(),
             'checked_at'       => now(),
         ]);
+
+        // --- START SQL SERVER SUBMISSION ---
+        try {
+            DB::connection('sqlsrv')->table('HasilPengecekan')->insert([
+                'id_pengecekan' => $this->id,
+                'Nama_Cadeb'    => strtoupper(trim($this->nama_cadeb)),
+                'NIK'           => $this->nik,
+                'HasilDtot'     => $this->hasil_pengecekan,
+                'Keterangan'    => $this->keterangan,
+                'DiperiksaOleh' => Auth::user()->full_name ?? Auth::user()->username ?? 'unknown',
+                'WaktuPeriksa'  => now(),
+                'IsProceed'     => 0,
+                'Hasilpep'      => $this->hasil_pep,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Gagal submit ke SQL Server (Process): ' . $e->getMessage());
+        }
+        // --- END SQL SERVER SUBMISSION ---
 
         session()->forget('pengajuan_draft_' . $this->id);
 
