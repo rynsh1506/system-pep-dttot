@@ -26,7 +26,7 @@
                         <span class="text-[10px] text-base-content/50 uppercase font-semibold">Tgl: {{ \Carbon\Carbon::parse($pengajuan->tanggal)->isoFormat('D MMM Y') }}</span>
                     </div>
 
-                    <form wire:submit.prevent="saveResult">
+                    <form id="pengajuanProcessForm">
                         <div class="form-control mb-4">
                             <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Nama Lengkap <span class="text-error">*</span></span></label>
                             <div class="join w-full">
@@ -100,7 +100,7 @@
                             @error('bukti_ss') <span class="text-error text-xs mt-1">{{ $message }}</span> @enderror
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-full shadow-sm shadow-primary/30">
+                        <button type="button" onclick="confirmSaveProcess()" class="btn btn-primary w-full shadow-sm shadow-primary/30">
                             <span wire:loading wire:target="saveResult" class="loading loading-spinner loading-xs"></span>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5" wire:loading.remove wire:target="saveResult"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg>
                             Simpan & Selesai
@@ -220,6 +220,23 @@
                     }
                 }
             });
+
+            function confirmSaveProcess() {
+                Swal.fire({
+                    title: 'Apakah kamu yakin?',
+                    text: "Data hasil pengecekan akan disimpan ke sistem dan SQL Server!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, Simpan',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Livewire.dispatch('confirm-save-process');
+                    }
+                });
+            }
 
             function triggerScrapper(searchNik) {
                 document.getElementById('pep-loading-block').style.display = 'block';
