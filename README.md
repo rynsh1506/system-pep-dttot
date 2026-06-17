@@ -128,3 +128,17 @@ docker exec system-pep-dttot-app-1 npm run dev
 ## 📝 Catatan Migrasi Legacy
 - **Data Session / Draft:** Proses input pencarian sudah dilengkapi sistem *persistence*. Data Anda tidak akan hilang jika secara tak sengaja berpindah halaman.
 - **Scrapper NIK:** API scrapper lama ke PPATK berjalan menggunakan Javascript murni di latar belakang demi menjaga stabilitas sesi Livewire. JANGAN hapus script integrasi di dalam form pencarian.
+
+---
+
+## 🔧 Troubleshooting
+
+### 1. Masalah Hak Akses (Permission Denied) saat Deploy ke Server / Production
+Jika kamu menemukan error seperti `touch(): Utime failed: Operation not permitted` atau error permission pada saat memuat halaman, itu berarti web server (Nginx/PHP-FPM) tidak memiliki hak akses untuk menulis (write) ke dalam folder `storage` atau `bootstrap/cache`.
+
+Untuk memperbaikinya di lingkungan Docker, jalankan perintah ini untuk memberikan hak akses kepada user `www-data` (user default web server):
+```bash
+docker exec system-pep-dttot-app-1 chown -R www-data:www-data storage bootstrap/cache
+docker exec system-pep-dttot-app-1 chmod -R 775 storage bootstrap/cache
+```
+*Note: Sesuaikan nama container `system-pep-dttot-app-1` dengan nama container aplikasi PHP/Laravel kamu.*
