@@ -114,7 +114,7 @@
         <div class="w-full lg:w-7/12 flex flex-col h-full space-y-6">
             
             {{-- API PPATK Scrapper Section --}}
-            <div class="card bg-base-100 border border-base-200 shadow-sm">
+            <div class="card bg-base-100 border border-base-200 shadow-sm" wire:ignore>
                 <div class="card-body p-5">
                     <div class="flex items-center justify-between mb-3 border-b border-base-200 pb-2">
                         <h2 class="card-title text-sm text-base-content/80 font-bold flex items-center gap-2">
