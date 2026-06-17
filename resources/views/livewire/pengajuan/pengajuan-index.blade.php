@@ -66,21 +66,21 @@
                             <td>
                                 @php $dttot = $row->hasil_pengecekan ?? 'Belum Dicek'; @endphp
                             @if ($dttot === 'Terindikasi')
-                                <span class="badge badge-error text-white badge-sm font-medium">{{ $dttot }}</span>
+                                <span class="badge badge-error text-white badge-sm font-medium whitespace-nowrap">{{ $dttot }}</span>
                             @elseif ($dttot === 'Tidak Terindikasi')
-                                <span class="badge badge-success text-white badge-sm font-medium">{{ $dttot }}</span>
+                                <span class="badge badge-success text-white badge-sm font-medium whitespace-nowrap">{{ $dttot }}</span>
                             @else
-                                <span class="badge badge-neutral badge-sm font-medium">{{ $dttot }}</span>
+                                <span class="badge badge-neutral badge-sm font-medium whitespace-nowrap">{{ $dttot }}</span>
                             @endif
                             </td>
                             <td>
                             @php $pep = $row->hasil_pep ?? 'Belum Dicek'; @endphp
                             @if ($pep === 'Terindikasi')
-                                <span class="badge badge-error text-white badge-sm font-medium">{{ $pep }}</span>
+                                <span class="badge badge-error text-white badge-sm font-medium whitespace-nowrap">{{ $pep }}</span>
                             @elseif ($pep === 'Tidak Terindikasi')
-                                <span class="badge badge-success text-white badge-sm font-medium">{{ $pep }}</span>
+                                <span class="badge badge-success text-white badge-sm font-medium whitespace-nowrap">{{ $pep }}</span>
                             @else
-                                <span class="badge badge-neutral badge-sm font-medium">{{ $pep }}</span>
+                                <span class="badge badge-neutral badge-sm font-medium whitespace-nowrap">{{ $pep }}</span>
                             @endif
                             </td>
                             <td class="text-center">
