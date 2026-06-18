@@ -24,6 +24,33 @@ services:
     depends_on:
       - app
 
+  mariadb-pep:
+    image: mariadb:10.11
+    restart: unless-stopped
+    environment:
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "yes"
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - app-network
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: mariadb-pep
+      PMA_USER: root
+      PMA_PASSWORD: ""
+    networks:
+      - app-network
+    depends_on:
+      - mariadb-pep
+
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  dbdata:
