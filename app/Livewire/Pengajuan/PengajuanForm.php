@@ -35,7 +35,7 @@ class PengajuanForm extends Component
     public string $hasil_pep = '';
     #[Session]
     public string $keterangan = '';
-    
+
     public $bukti_ss = null;
 
     // Data Holds
@@ -83,7 +83,7 @@ class PengajuanForm extends Component
         $this->matchedRecords = Terduga::where(function ($q) {
             if (!empty(trim($this->nama_cadeb))) {
                 $q->where('nama', 'like', '%' . $this->nama_cadeb . '%')
-                  ->orWhere('deskripsi', 'like', '%' . $this->nama_cadeb . '%');
+                    ->orWhere('deskripsi', 'like', '%' . $this->nama_cadeb . '%');
             }
             if (!empty(trim($this->nik))) {
                 $q->orWhere('deskripsi', 'like', '%' . $this->nik . '%');
@@ -166,11 +166,12 @@ class PengajuanForm extends Component
                     'nur.azizah@reksafinance.com',
                     'ida.santi@reksafinance.com',
                     'bustaman@reksafinance.com',
-                    'hanifah.adiyati@reksafinance.com'
+                    'hanifah.adiyati@reksafinance.com',
+                    'muhammad.riyansyah@reksafinance.com'
                 ];
 
                 $checked_by = Auth::user()->full_name ?? Auth::user()->username ?? 'Unknown';
-                
+
                 Mail::to($recipients)->send(new AlertTerindikasiMail(
                     $this->nama_cadeb,
                     $this->nik,
@@ -194,8 +195,15 @@ class PengajuanForm extends Component
         ]);
 
         $this->reset([
-            'tanggal', 'kategori', 'nama_cadeb', 'nik', 
-            'hasil_pengecekan', 'hasil_pep', 'keterangan', 'bukti_ss', 'matchedRecords'
+            'tanggal',
+            'kategori',
+            'nama_cadeb',
+            'nik',
+            'hasil_pengecekan',
+            'hasil_pep',
+            'keterangan',
+            'bukti_ss',
+            'matchedRecords'
         ]);
     }
 

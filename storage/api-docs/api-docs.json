@@ -1,0 +1,121 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "DTTOT & PEP API",
+        "description": "Dokumentasi API untuk pengecekan DTTOT dan PEP",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000",
+            "description": "API Server"
+        }
+    ],
+    "paths": {
+        "/api/v1/dttot/check": {
+            "post": {
+                "tags": [
+                    "DTTOT"
+                ],
+                "summary": "Pengecekan DTTOT",
+                "description": "Pengecekan nama dan NIK terhadap database DTTOT internal menggunakan skenario pemecahan kata.",
+                "operationId": "checkDttot",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nama"
+                                ],
+                                "properties": {
+                                    "nama": {
+                                        "type": "string",
+                                        "example": "ALEX SANDRA"
+                                    },
+                                    "nik": {
+                                        "type": "string",
+                                        "example": "1234567890123456"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Hasil Pengecekan DTTOT"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/pep/check": {
+            "post": {
+                "tags": [
+                    "PEP"
+                ],
+                "summary": "Pengecekan PEP",
+                "description": "Pengecekan terhadap scraper PPATK eksternal dengan fallback otomatis ke database internal.",
+                "operationId": "checkPep",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nama",
+                                    "nik"
+                                ],
+                                "properties": {
+                                    "nama": {
+                                        "type": "string",
+                                        "example": "MIRA ARIANI"
+                                    },
+                                    "nik": {
+                                        "type": "string",
+                                        "example": "640201205820003"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Hasil Pengecekan PEP"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "DTTOT",
+            "description": "DTTOT"
+        },
+        {
+            "name": "PEP",
+            "description": "PEP"
+        }
+    ]
+}
