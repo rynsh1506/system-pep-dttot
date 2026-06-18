@@ -13,12 +13,20 @@ class PepSearch extends Component
     public string $search = '';
     public string $filterPep = '';
     public string $filterNik = '';
+    public int $perPage = 15;
 
-    protected $queryString = ['search', 'filterPep', 'filterNik'];
+    protected $queryString = ['search', 'filterPep', 'filterNik', 'perPage' => ['except' => 15]];
 
+    public function updatingPerPage(): void { $this->resetPage(); }
     public function updatingSearch(): void { $this->resetPage(); }
     public function updatingFilterPep(): void { $this->resetPage(); }
     public function updatingFilterNik(): void { $this->resetPage(); }
+
+    public function resetFilters(): void
+    {
+        $this->reset(['search', 'filterPep', 'filterNik']);
+        $this->resetPage();
+    }
 
     public function render()
     {
@@ -35,7 +43,7 @@ class PepSearch extends Component
                   ->orWhere('nik_pasangan', 'like', '%' . $this->filterNik . '%');
             }))
             ->orderBy('nama_cadeb')
-            ->paginate(15);
+            ->paginate($this->perPage);
 
         return view('livewire.pep.pep-search', compact('data'))
             ->layout('components.layouts.app', ['title' => 'Search Data PEP']);

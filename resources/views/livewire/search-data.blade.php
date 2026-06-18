@@ -1,7 +1,15 @@
 <div>
-    <div class="mb-8">
-        <h2 class="text-2xl font-bold text-primary">{{ __('Daftar Seluruh Data') }}</h2>
-        <p class="text-base-content/70 text-sm">{{ __('Cari dan kelola seluruh record terduga teroris.') }}</p>
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+        <div>
+            <h2 class="text-2xl font-bold text-primary">{{ __('Daftar Seluruh Data') }}</h2>
+            <p class="text-base-content/70 text-sm">{{ __('Cari dan kelola seluruh record terduga teroris.') }}</p>
+        </div>
+        <a href="{{ route('export-data', ['search' => $search, 'type' => $type, 'kode' => $kode]) }}" class="btn btn-success text-white btn-sm gap-2 shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                <path fill-rule="evenodd" d="M4.5 2A1.5 1.5 0 0 0 3 3.5v13A1.5 1.5 0 0 0 4.5 18h11a1.5 1.5 0 0 0 1.5-1.5V7.621a1.5 1.5 0 0 0-.44-1.06l-4.12-4.122A1.5 1.5 0 0 0 11.378 2H4.5Zm2.25 8.5a.75.75 0 0 0 0 1.5h6.5a.75.75 0 0 0 0-1.5h-6.5Zm0 3a.75.75 0 0 0 0 1.5h6.5a.75.75 0 0 0 0-1.5h-6.5Z" clip-rule="evenodd"/>
+            </svg>
+            {{ __('Export Excel') }}
+        </a>
     </div>
 
     <div class="card bg-base-100 shadow-sm border border-base-200 mb-6 rounded-2xl">
@@ -43,15 +51,14 @@
                     </div>
                 </div>
                 
-                {{-- Export Button --}}
-                <div class="form-control w-full">
-                    <a href="{{ route('export-data', ['search' => $search, 'type' => $type, 'kode' => $kode]) }}" 
-                       class="btn bg-base-100 hover:bg-success/10 hover:border-success text-success border border-base-300 w-full shadow-sm transition-colors group">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-success/70 group-hover:text-success">
-                            <path fill-rule="evenodd" d="M4.5 2A1.5 1.5 0 0 0 3 3.5v13A1.5 1.5 0 0 0 4.5 18h11a1.5 1.5 0 0 0 1.5-1.5V7.621a1.5 1.5 0 0 0-.44-1.06l-4.12-4.122A1.5 1.5 0 0 0 11.378 2H4.5Zm2.25 8.5a.75.75 0 0 0 0 1.5h6.5a.75.75 0 0 0 0-1.5h-6.5Zm0 3a.75.75 0 0 0 0 1.5h6.5a.75.75 0 0 0 0-1.5h-6.5Z" clip-rule="evenodd"/>
+                {{-- Reset Button --}}
+                <div class="form-control w-full flex justify-end items-start md:items-end pb-0">
+                    <button wire:click="resetFilters" class="btn btn-ghost w-full md:w-auto text-base-content/60 hover:text-base-content hover:bg-base-200 gap-2 border border-base-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                            <path fill-rule="evenodd" d="M15.312 11.424a5.5 5.5 0 0 1-9.201 2.466l-.312-.311h2.433a.75.75 0 0 0 0-1.5H3.989a.75.75 0 0 0-.75.75v4.242a.75.75 0 0 0 1.5 0v-2.43l.31.31a7 7 0 0 0 11.712-3.138.75.75 0 0 0-1.449-.39Zm1.23-3.723a.75.75 0 0 0 .219-.53V2.929a.75.75 0 0 0-1.5 0V5.36l-.31-.31A7 7 0 0 0 3.239 8.188a.75.75 0 1 0 1.448.389A5.5 5.5 0 0 1 13.89 6.11l.311.31h-2.432a.75.75 0 0 0 0 1.5h4.243a.75.75 0 0 0 .53-.219Z" clip-rule="evenodd" />
                         </svg>
-                        {{ __('Export Excel') }}
-                    </a>
+                        Reset Filter
+                    </button>
                 </div>
             </div>
         </div>

@@ -9,15 +9,15 @@
     {{-- Filter Card --}}
     <div class="card bg-base-100 border border-base-200 shadow-sm mb-5">
         <div class="card-body p-4 gap-3">
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 items-end">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 items-end">
                 {{-- Branch --}}
-                <div class="form-control col-span-2 sm:col-span-1 lg:col-span-2">
+                <div class="form-control">
                     <label class="label pb-1"><span class="label-text text-xs font-semibold uppercase">Branch <span class="text-error">*</span></span></label>
-                    <select wire:model="branchFilter" class="select select-bordered select-sm">
+                    <select wire:model="branchFilter" class="select select-bordered select-sm w-full">
                         <option value="">-- Pilih Branch --</option>
                         <option value="ALL">-- SEMUA CABANG --</option>
                         @foreach ($branches as $br)
-                            <option value="{{ $br->BranchID }}">{{ $br->BranchFullName }}</option>
+                            <option value="{{ $br['BranchID'] ?? $br->BranchID }}">{{ $br['BranchFullName'] ?? $br->BranchFullName }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -25,7 +25,7 @@
                 {{-- Bulan --}}
                 <div class="form-control">
                     <label class="label pb-1"><span class="label-text text-xs font-semibold uppercase">Bulan</span></label>
-                    <select wire:model="bulan" class="select select-bordered select-sm">
+                    <select wire:model="bulan" class="select select-bordered select-sm w-full">
                         @foreach(['01'=>'Januari','02'=>'Februari','03'=>'Maret','04'=>'April','05'=>'Mei','06'=>'Juni','07'=>'Juli','08'=>'Agustus','09'=>'September','10'=>'Oktober','11'=>'November','12'=>'Desember'] as $num => $name)
                             <option value="{{ $num }}">{{ $name }}</option>
                         @endforeach
@@ -35,7 +35,7 @@
                 {{-- Tahun --}}
                 <div class="form-control">
                     <label class="label pb-1"><span class="label-text text-xs font-semibold uppercase">Tahun</span></label>
-                    <select wire:model="tahun" class="select select-bordered select-sm">
+                    <select wire:model="tahun" class="select select-bordered select-sm w-full">
                         @for ($y = now()->year; $y >= now()->year - 3; $y--)
                             <option value="{{ $y }}">{{ $y }}</option>
                         @endfor
@@ -45,25 +45,36 @@
                 {{-- Nama --}}
                 <div class="form-control">
                     <label class="label pb-1"><span class="label-text text-xs font-semibold uppercase">Nama</span></label>
-                    <input wire:model="qNama" type="text" placeholder="Cari nama..." class="input input-bordered input-sm" />
+                    <input wire:model="qNama" type="text" placeholder="Cari nama..." class="input input-bordered input-sm w-full" />
                 </div>
 
                 {{-- NIK --}}
                 <div class="form-control">
                     <label class="label pb-1"><span class="label-text text-xs font-semibold uppercase">NIK</span></label>
-                    <input wire:model="qNik" type="text" placeholder="Cari NIK..." class="input input-bordered input-sm font-mono" />
+                    <input wire:model="qNik" type="text" placeholder="Cari NIK..." class="input input-bordered input-sm font-mono w-full" />
+                </div>
+                
+                {{-- No Kontrak --}}
+                <div class="form-control">
+                    <label class="label pb-1"><span class="label-text text-xs font-semibold uppercase">No Kontrak</span></label>
+                    <input wire:model="qKontrak" type="text" placeholder="Cari kontrak..." class="input input-bordered input-sm font-mono w-full" />
                 </div>
             </div>
 
-            <div class="flex gap-2 mt-1">
-                <button wire:click="search" wire:loading.attr="disabled" class="btn btn-primary btn-sm gap-2">
+            <div class="flex items-center justify-end gap-2 mt-4 pt-4 border-t border-base-200">
+                <button wire:click="resetFilter" class="btn btn-ghost btn-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                    </svg>
+                    Reset
+                </button>
+                <button wire:click="search" wire:loading.attr="disabled" class="btn btn-primary btn-sm px-6">
                     <span wire:loading wire:target="search" class="loading loading-spinner loading-xs"></span>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4" wire:loading.remove wire:target="search">
                         <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd" />
                     </svg>
-                    Tampilkan
+                    Tampilkan Data
                 </button>
-                <button wire:click="resetFilter" class="btn btn-ghost btn-sm">Reset</button>
             </div>
         </div>
     </div>
@@ -91,8 +102,26 @@
         </div>
     @elseif ($isLoaded && !empty($data))
         <div class="card bg-base-100 border border-base-200 shadow-sm overflow-hidden">
-            <div class="flex items-center justify-between px-4 py-3 border-b border-base-200">
-                <span class="text-sm font-semibold text-base-content/70">{{ count($data) }} data ditemukan</span>
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 border-b border-base-200">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-base-content/60">{{ __('Tampilkan') }}</span>
+                    <select wire:model.live="perPage" class="select select-bordered select-xs w-24">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="250">250</option>
+                    </select>
+                    <span class="text-xs text-base-content/60">{{ __('baris') }}</span>
+                </div>
+                
+                @if ($totalRows > $perPage)
+                <div class="join">
+                    <button wire:click="prevPage" class="join-item btn btn-sm" {{ $page <= 1 ? 'disabled' : '' }}>«</button>
+                    <button class="join-item btn btn-sm no-animation bg-base-100 pointer-events-none">Halaman {{ $page }} dari {{ $this->totalPages() }}</button>
+                    <button wire:click="nextPage" class="join-item btn btn-sm" {{ $page >= $this->totalPages() ? 'disabled' : '' }}>»</button>
+                </div>
+                @endif
             </div>
             <div class="overflow-x-auto max-h-[65vh] overflow-y-auto">
                 <table class="table table-xs table-zebra w-full">

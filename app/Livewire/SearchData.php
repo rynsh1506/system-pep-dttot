@@ -42,6 +42,12 @@ class SearchData extends Component
         $this->resetPage();
     }
 
+    public function resetFilters()
+    {
+        $this->reset(['search', 'type', 'kode']);
+        $this->resetPage();
+    }
+
     public function render()
     {
         $query = Terduga::query();

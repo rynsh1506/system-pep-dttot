@@ -10,6 +10,14 @@ class PepDashboard extends Component
 {
     use WithPagination;
 
+    public int $perPage = 10;
+    protected $queryString = ['perPage' => ['except' => 10]];
+
+    public function updatingPerPage(): void
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
         $query = PengajuanDtot::whereNotNull('hasil_pep')
@@ -28,7 +36,7 @@ class PepDashboard extends Component
                   ->orWhereNull('kategori');
             })
             ->orderByDesc('created_at')
-            ->paginate(10);
+            ->paginate($this->perPage);
 
         return view('livewire.pep.pep-dashboard', compact('totalPEP', 'totalTerindikasi', 'totalAman', 'recentData'))
             ->layout('components.layouts.app', ['title' => 'Dashboard PEP']);
