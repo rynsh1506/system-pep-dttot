@@ -133,12 +133,16 @@ docker exec system-pep-dttot-app-1 npm run dev
 
 ## 🔧 Troubleshooting
 
-### 1. Masalah Hak Akses (Permission Denied) saat Deploy ke Server / Production
-Jika kamu menemukan error seperti `touch(): Utime failed: Operation not permitted` atau error permission pada saat memuat halaman, itu berarti web server (Nginx/PHP-FPM) tidak memiliki hak akses untuk menulis (write) ke dalam folder `storage` atau `bootstrap/cache`.
+### 1. Masalah Hak Akses (Permission Denied) pada folder Storage / Sessions
+Jika Anda menemukan error `file_put_contents(.../sessions/...): failed to open stream: Permission denied`, ini berarti aplikasi Laravel di dalam Docker tidak memiliki hak akses untuk menulis file sementara (seperti log, session, atau cache). 
 
-Untuk memperbaikinya di lingkungan Docker, jalankan perintah ini untuk memberikan hak akses kepada user `www-data` (user default web server):
+Hal ini sangat umum terjadi di lingkungan lokal (Docker Volume) setelah Anda menjalankan `git pull` atau mereset kepemilikan file ke *host user*.
+
+**Solusinya:**
+Untuk lingkungan *development* lokal, cara paling mudah dan aman agar tidak bentrok dengan Git (di *host*) adalah dengan membuka izin secara penuh (777) khusus pada folder `storage` dan `bootstrap/cache` menggunakan perintah berikut dari terminal *host*:
+
 ```bash
-docker exec system-pep-dttot-app-1 chown -R www-data:www-data storage bootstrap/cache
-docker exec system-pep-dttot-app-1 chmod -R 775 storage bootstrap/cache
+docker exec pep_test-app-1 chmod -R 777 storage bootstrap/cache
 ```
-*Note: Sesuaikan nama container `system-pep-dttot-app-1` dengan nama container aplikasi PHP/Laravel kamu.*
+
+*(Catatan: Pastikan nama container aplikasi Anda sesuai, misalnya `pep_test-app-1` atau `system-pep-dttot-app-1`).*
