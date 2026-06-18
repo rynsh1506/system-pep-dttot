@@ -11,13 +11,15 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     gnupg2 \
-    apt-transport-https
+    apt-transport-https \
+    libicu-dev
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
+RUN docker-php-ext-configure intl \
+    && docker-php-ext-install mysqli pdo_mysql mbstring exif pcntl bcmath gd zip intl
 
 # Add Microsoft repo for Microsoft ODBC Driver 18 for SQL Server
 RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg \

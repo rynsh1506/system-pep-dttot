@@ -1,0 +1,20 @@
+<?php
+$host = 'mariadb-pep';
+$db   = 'db_dtot';
+$user = 'root';
+$pass = '';
+$charset = 'utf8mb4';
+
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
+try {
+     $pdo = new PDO($dsn, $user, $pass, $options);
+     $stmt = $pdo->query('SELECT * FROM pengajuan_dtot ORDER BY id DESC LIMIT 1');
+     echo json_encode($stmt->fetch(), JSON_PRETTY_PRINT);
+} catch (\PDOException $e) {
+     throw new \PDOException($e->getMessage(), (int)$e->getCode());
+}
