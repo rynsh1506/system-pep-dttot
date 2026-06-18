@@ -13,8 +13,14 @@ class PengajuanIndex extends Component
     public string $search = '';
     public string $filterDttot = '';
     public string $filterPep = '';
+    public int $perPage = 15;
 
-    protected $queryString = ['search', 'filterDttot', 'filterPep'];
+    protected $queryString = ['search', 'filterDttot', 'filterPep', 'perPage' => ['except' => 15]];
+
+    public function updatingPerPage(): void
+    {
+        $this->resetPage();
+    }
 
     public function updatingSearch(): void
     {
@@ -31,6 +37,12 @@ class PengajuanIndex extends Component
         $this->resetPage();
     }
 
+    public function resetFilters(): void
+    {
+        $this->reset(['search', 'filterDttot', 'filterPep']);
+        $this->resetPage();
+    }
+
     public function render()
     {
         $query = PengajuanDtot::query()
@@ -44,7 +56,7 @@ class PengajuanIndex extends Component
             ->orderByDesc('created_at');
 
         return view('livewire.pengajuan.pengajuan-index', [
-            'submissions' => $query->paginate(15),
+            'submissions' => $query->paginate($this->perPage),
         ])->layout('components.layouts.app', ['title' => 'Pengajuan Cek DTTOT & PEP']);
     }
 }

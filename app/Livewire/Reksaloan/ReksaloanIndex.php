@@ -66,6 +66,14 @@ class ReksaloanIndex extends Component
         $this->fetchData();
     }
 
+    public function updatingPerPage(): void
+    {
+        $this->page = 1;
+        if ($this->isLoaded) {
+            $this->fetchData();
+        }
+    }
+
     public function goToPage(int $page): void
     {
         $this->page = $page;

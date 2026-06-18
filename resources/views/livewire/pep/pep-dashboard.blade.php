@@ -39,9 +39,28 @@
 
     {{-- Recent Data Table --}}
     <div class="card bg-base-100 border border-base-200 shadow-sm overflow-hidden">
-        <div class="flex items-center justify-between px-4 py-3 border-b border-base-200">
-            <h3 class="font-bold text-sm text-base-content">Data PEP Terbaru</h3>
-            <a href="{{ route('pep.search') }}" class="text-xs text-primary font-semibold link link-hover">Lihat Semua →</a>
+        <div class="px-4 py-3 border-b border-base-200">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-bold text-sm text-base-content">Data PEP Terbaru</h3>
+                <a href="{{ route('pep.search') }}" class="text-xs text-primary font-semibold link link-hover">Lihat Semua →</a>
+            </div>
+            <div class="flex flex-row flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-base-content/60">{{ __('Tampilkan') }}</span>
+                    <select wire:model.live="perPage" class="select select-bordered select-xs w-24">
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="15">15</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                    <span class="text-xs text-base-content/60">{{ __('baris') }}</span>
+                </div>
+                <div class="w-auto">
+                    {{ $recentData->links() }}
+                </div>
+            </div>
         </div>
         <div class="overflow-x-auto">
             <table class="table table-sm table-zebra w-full">
@@ -74,7 +93,7 @@
                                 @endphp
                                 <span class="badge {{ $pepClass }} badge-sm text-white font-medium">{{ $row->hasil_pep }}</span>
                             </td>
-                            <td><span class="badge badge-ghost badge-sm">{{ $row->kategori ?? 'Mobile' }}</span></td>
+                            <td><span class="badge badge-ghost badge-sm whitespace-nowrap">{{ $row->kategori ?? 'Mobile' }}</span></td>
                             <td class="text-xs">{{ \Carbon\Carbon::parse($row->tanggal)->format('d/m/Y') }}</td>
                             <td class="text-center">
                                 <a href="{{ route('pengajuan.proses', $row->id) }}" class="btn btn-xs btn-ghost">Detail</a>

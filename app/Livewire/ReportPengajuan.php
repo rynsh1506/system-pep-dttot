@@ -14,6 +14,7 @@ class ReportPengajuan extends Component
     public string $endDate = '';
     public string $filterDttot = 'All';
     public string $filterPep = 'All';
+    public int $perPage = 15;
 
     public function mount(): void
     {
@@ -25,10 +26,20 @@ class ReportPengajuan extends Component
     public function updatingEndDate(): void { $this->resetPage(); }
     public function updatingFilterDttot(): void { $this->resetPage(); }
     public function updatingFilterPep(): void { $this->resetPage(); }
+    public function updatingPerPage(): void { $this->resetPage(); }
+
+    public function resetFilters(): void
+    {
+        $this->reset(['filterDttot', 'filterPep']);
+        $this->startDate = now()->subMonth()->format('Y-m-d');
+        $this->endDate   = now()->format('Y-m-d');
+        $this->resetPage();
+    }
 
     public function render()
     {
         $query = PengajuanDtot::query()
+            ->with('userPemeriksa')
             ->whereBetween('tanggal', [$this->startDate, $this->endDate])
             ->when($this->filterDttot !== 'All', fn($q) => $q->where('hasil_pengecekan', $this->filterDttot))
             ->when($this->filterPep !== 'All', fn($q) => $q->where('hasil_pep', $this->filterPep));
@@ -44,7 +55,7 @@ class ReportPengajuan extends Component
                                 ->where('hasil_pep', 'Tidak Terindikasi')->count();
 
         return view('livewire.report-pengajuan', [
-            'data'              => $query->orderByDesc('tanggal')->orderByDesc('created_at')->paginate(15),
+            'data'              => $query->orderByDesc('tanggal')->orderByDesc('created_at')->paginate($this->perPage),
             'total'             => $total,
             'terindikasi'       => $terindikasi,
             'tidakTerindikasi'  => $tidakTerindikasi,

@@ -35,26 +35,24 @@ $scrollIntoViewJsSnippet = ($scrollTo !== false)
                     </button>
                 @endif
 
-                {{-- Pagination Elements --}}
-                @foreach ($elements as $element)
-                    {{-- "Three Dots" Separator --}}
-                    @if (is_string($element))
-                        <button class="join-item btn btn-sm btn-disabled border border-base-200 bg-base-100 hidden sm:inline-flex" style="min-width: 2.5rem;">{{ $element }}</button>
-                    @endif
+                {{-- Pagination Elements (Sliding Window of 6 pages) --}}
+                @php
+                    $startPage = max($paginator->currentPage() - 2, 1);
+                    $endPage = min($startPage + 5, $paginator->lastPage());
+                    if ($endPage - $startPage < 5) {
+                        $startPage = max($endPage - 5, 1);
+                    }
+                @endphp
 
-                    {{-- Array Of Links --}}
-                    @if (is_array($element))
-                        @foreach ($element as $page => $url)
-                            @if ($page == $paginator->currentPage())
-                                <button wire:key="paginator-{{ $paginator->getPageName() }}-page{{ $page }}" class="join-item btn btn-sm btn-primary border border-primary pointer-events-none {{ $page == $paginator->currentPage() ? 'inline-flex' : 'hidden sm:inline-flex' }}" style="min-width: 2.5rem;" aria-current="page">{{ $page }}</button>
-                            @else
-                                <button wire:key="paginator-{{ $paginator->getPageName() }}-page{{ $page }}" type="button" wire:click="gotoPage({{ $page }}, '{{ $paginator->getPageName() }}')" wire:loading.attr="disabled" class="join-item btn btn-sm btn-ghost hover:bg-base-200 border border-base-200 bg-base-100 hidden sm:inline-flex" style="min-width: 2.5rem;" aria-label="{{ __('Go to page :page', ['page' => $page]) }}">
-                                    {{ $page }}
-                                </button>
-                            @endif
-                        @endforeach
+                @for ($page = $startPage; $page <= $endPage; $page++)
+                    @if ($page == $paginator->currentPage())
+                        <button wire:key="paginator-{{ $paginator->getPageName() }}-page{{ $page }}" class="join-item btn btn-sm btn-primary border border-primary pointer-events-none inline-flex" style="min-width: 2.5rem;" aria-current="page">{{ $page }}</button>
+                    @else
+                        <button wire:key="paginator-{{ $paginator->getPageName() }}-page{{ $page }}" type="button" wire:click="gotoPage({{ $page }}, '{{ $paginator->getPageName() }}')" wire:loading.attr="disabled" class="join-item btn btn-sm btn-ghost hover:bg-base-200 border border-base-200 bg-base-100 inline-flex" style="min-width: 2.5rem;" aria-label="{{ __('Go to page :page', ['page' => $page]) }}">
+                            {{ $page }}
+                        </button>
                     @endif
-                @endforeach
+                @endfor
 
                 {{-- Next Page Link --}}
                 @if ($paginator->hasMorePages())

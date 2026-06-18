@@ -39,6 +39,7 @@ Route::middleware('auth')->group(function () {
     // Report
     Route::get('/report', App\Livewire\ReportPengajuan::class)->name('report');
     Route::get('/report/export', [App\Http\Controllers\ExportController::class, 'exportPengajuan'])->name('report.export');
+    Route::get('/monthly-report', App\Livewire\MonthlyReport::class)->name('monthly-report');
 
     // User Management
     Route::get('/users', App\Livewire\UserManagement::class)->name('users')->middleware('can:manage-users');
