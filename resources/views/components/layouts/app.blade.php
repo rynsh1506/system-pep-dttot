@@ -157,6 +157,15 @@
                         {{ __('Search Data') }}
                     </a>
 
+                    <a href="{{ route('upload-data') }}"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors
+                        {{ request()->routeIs('upload-data') ? 'bg-primary/10 text-primary border-l-2 border-primary' : 'text-base-content/70 hover:bg-base-200 hover:text-base-content' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 shrink-0">
+                            <path fill-rule="evenodd" d="M5.5 17a4.5 4.5 0 0 1-1.44-8.765 4.5 4.5 0 0 1 8.302-3.046 3.5 3.5 0 0 1 4.504 4.272A4 4 0 0 1 15 17H5.5Zm3.75-2.75a.75.75 0 0 0 1.5 0V9.66l1.95 2.1a.75.75 0 1 0 1.1-1.02l-3.25-3.5a.75.75 0 0 0-1.1 0l-3.25 3.5a.75.75 0 1 0 1.1 1.02l1.95-2.1v4.59Z" clip-rule="evenodd"/>
+                        </svg>
+                        {{ __('Upload Data') }}
+                    </a>
+
                     @if(session('role_level') >= 2)
                     <a href="{{ route('approvals') }}"
                         class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors
@@ -222,7 +231,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 shrink-0">
                             <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 9a.75.75 0 0 0 0 1.5h.253a.25.25 0 0 1 .244.304l-.459 2.066A1.75 1.75 0 0 0 10.747 15H11a.75.75 0 0 0 0-1.5h-.253a.25.25 0 0 1-.244-.304l.459-2.066A1.75 1.75 0 0 0 9.253 9H9Z" clip-rule="evenodd" />
                         </svg>
-                        {{ __('Cek Reksaloan & HRD') }}
+                        {{ __('Cek Reksaloan') }}
                     </a>
 
                     <a href="{{ route('report') }}"
@@ -232,6 +241,15 @@
                             <path fill-rule="evenodd" d="M6 2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7.414A2 2 0 0 0 15.414 6L12 2.586A2 2 0 0 0 10.586 2H6Zm5 6a1 1 0 1 0-2 0v3.586l-1.293-1.293a1 1 0 1 0-1.414 1.414l3 3a1 1 0 0 0 1.414 0l3-3a1 1 0 0 0-1.414-1.414L11 11.586V8Z" clip-rule="evenodd" />
                         </svg>
                         {{ __('Report Hasil Cek') }}
+                    </a>
+
+                    <a href="{{ route('monthly-report') }}"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors
+                        {{ request()->routeIs('monthly-report') ? 'bg-primary/10 text-primary border-l-2 border-primary' : 'text-base-content/70 hover:bg-base-200 hover:text-base-content' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 shrink-0">
+                            <path fill-rule="evenodd" d="M10 2c-1.716 0-3.408.106-5.07.31C3.806 2.45 3 3.414 3 4.51v10.98c0 1.096.806 2.06 1.93 2.198 1.662.204 3.354.31 5.07.31s3.408-.106 5.07-.31c1.124-.137 1.93-1.102 1.93-2.198V4.51c0-1.096-.806-2.06-1.93-2.198A41.284 41.284 0 0 0 10 2ZM8 6.5a.5.5 0 0 0-.5.5v1.5H6a.5.5 0 0 0 0 1h1.5V11a.5.5 0 0 0 1 0V9.5H10a.5.5 0 0 0 0-1H8.5V7a.5.5 0 0 0-.5-.5Zm4 4a.5.5 0 0 0-.5.5v1.5H10a.5.5 0 0 0 0 1h1.5V15a.5.5 0 0 0 1 0v-1.5H14a.5.5 0 0 0 0-1h-1.5V11a.5.5 0 0 0-.5-.5Z" clip-rule="evenodd" />
+                        </svg>
+                        {{ __('Laporan Bulanan Automasi') }}
                     </a>
 
                     @can('manage-users')
