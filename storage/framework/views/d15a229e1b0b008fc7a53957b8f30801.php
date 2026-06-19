@@ -25,7 +25,7 @@
         </div>
     </div>
 
-    {{-- Table --}}
+    
     <div class="card bg-base-100 border border-base-200 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
             <table class="table table-sm table-zebra w-full">
@@ -38,26 +38,27 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($users as $user)
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $user): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                         <tr class="hover">
-                            <td class="font-semibold">{{ $user->nama_lengkap }}</td>
-                            <td class="font-mono text-sm">{{ $user->username }}</td>
+                            <td class="font-semibold"><?php echo e($user->nama_lengkap); ?></td>
+                            <td class="font-mono text-sm"><?php echo e($user->username); ?></td>
                             <td>
-                                @php
+                                <?php
                                     $badgeClass = match ((int) $user->level) {
                                         4 => 'badge-error',
                                         3 => 'badge-primary',
                                         2 => 'badge-warning',
                                         default => 'badge-info',
                                     };
-                                @endphp
-                                <span class="badge {{ $badgeClass }} text-white badge-sm font-semibold">
-                                    L{{ $user->level }} - {{ $roleLabels[$user->level] ?? 'Unknown' }}
+                                ?>
+                                <span class="badge <?php echo e($badgeClass); ?> text-white badge-sm font-semibold">
+                                    L<?php echo e($user->level); ?> - <?php echo e($roleLabels[$user->level] ?? 'Unknown'); ?>
+
                                 </span>
                             </td>
                             <td class="text-center">
                                 <div class="flex gap-1 justify-center">
-                                    <button wire:click="openEdit({{ $user->id }})"
+                                    <button wire:click="openEdit(<?php echo e($user->id); ?>)"
                                         class="btn btn-xs btn-warning gap-1">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
                                             class="w-3 h-3">
@@ -68,9 +69,9 @@
                                         </svg>
                                         Edit
                                     </button>
-                                    @if ($user->id !== auth()->id())
-                                        <button wire:click="delete({{ $user->id }})"
-                                            wire:confirm="Yakin hapus user '{{ $user->nama_lengkap }}'?"
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($user->id !== auth()->id()): ?>
+                                        <button wire:click="delete(<?php echo e($user->id); ?>)"
+                                            wire:confirm="Yakin hapus user '<?php echo e($user->nama_lengkap); ?>'?"
                                             class="btn btn-xs btn-error gap-1 text-white">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                                                 fill="currentColor" class="w-3 h-3">
@@ -80,22 +81,22 @@
                                             </svg>
                                             Hapus
                                         </button>
-                                    @endif
+                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
                             </td>
                         </tr>
-                    @endforeach
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                 </tbody>
             </table>
         </div>
     </div>
 
-    {{-- Modal --}}
-    @if ($showModal)
+    
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($showModal): ?>
         <div class="modal modal-open">
             <div class="modal-box w-full max-w-lg p-6 rounded-2xl shadow-xl">
                 <h3 class="font-bold text-xl mb-6 text-base-content border-b border-base-200 pb-3">
-                    {{ $isEditing ? 'Edit User' : 'Tambah User Baru' }}</h3>
+                    <?php echo e($isEditing ? 'Edit User' : 'Tambah User Baru'); ?></h3>
 
                 <div class="flex flex-col gap-5">
                     <div class="form-control w-full">
@@ -103,37 +104,79 @@
                                 class="label-text font-bold text-xs uppercase tracking-wide text-base-content/70">Nama
                                 Lengkap</span></label>
                         <input wire:model="nama_lengkap" type="text" placeholder="Masukkan nama lengkap..."
-                            class="input input-bordered w-full focus:outline-primary @error('nama_lengkap') input-error @enderror" />
-                        @error('nama_lengkap')
-                            <span class="text-error text-xs mt-1.5">{{ $message }}</span>
-                        @enderror
+                            class="input input-bordered w-full focus:outline-primary <?php $__errorArgs = ['nama_lengkap'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> input-error <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" />
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['nama_lengkap'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <span class="text-error text-xs mt-1.5"><?php echo e($message); ?></span>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
 
                     <div class="form-control w-full">
                         <label class="label pb-2"><span
                                 class="label-text font-bold text-xs uppercase tracking-wide text-base-content/70">Username</span></label>
                         <input wire:model="username" type="text" placeholder="Masukkan username untuk login..."
-                            class="input input-bordered w-full font-mono focus:outline-primary @error('username') input-error @enderror" />
-                        @error('username')
-                            <span class="text-error text-xs mt-1.5">{{ $message }}</span>
-                        @enderror
+                            class="input input-bordered w-full font-mono focus:outline-primary <?php $__errorArgs = ['username'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> input-error <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" />
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['username'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <span class="text-error text-xs mt-1.5"><?php echo e($message); ?></span>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
 
                     <div class="form-control w-full">
                         <label class="label pb-2">
                             <span
                                 class="label-text font-bold text-xs uppercase tracking-wide text-base-content/70">Password</span>
-                            @if ($isEditing)
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isEditing): ?>
                                 <span class="label-text-alt text-base-content/50 font-normal">(Kosongkan jika tidak
                                     ingin diubah)</span>
-                            @endif
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </label>
                         <input wire:model="password" type="password"
-                            placeholder="{{ $isEditing ? 'Password baru (opsional)' : 'Masukkan password (min 6 karakter)...' }}"
-                            class="input input-bordered w-full focus:outline-primary @error('password') input-error @enderror" />
-                        @error('password')
-                            <span class="text-error text-xs mt-1.5">{{ $message }}</span>
-                        @enderror
+                            placeholder="<?php echo e($isEditing ? 'Password baru (opsional)' : 'Masukkan password (min 6 karakter)...'); ?>"
+                            class="input input-bordered w-full focus:outline-primary <?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> input-error <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" />
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <span class="text-error text-xs mt-1.5"><?php echo e($message); ?></span>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
 
                     <div class="form-control w-full">
@@ -141,15 +184,29 @@
                                 class="label-text font-bold text-xs uppercase tracking-wide text-base-content/70">Role /
                                 Level Akses</span></label>
                         <select wire:model="level"
-                            class="select select-bordered w-full focus:outline-primary @error('level') select-error @enderror">
+                            class="select select-bordered w-full focus:outline-primary <?php $__errorArgs = ['level'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> select-error <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
                             <option value="1">Level 1 - Staff Input</option>
                             <option value="2">Level 2 - Supervisor</option>
                             <option value="3">Level 3 - Manager</option>
                             <option value="4">Level 4 - Super Admin</option>
                         </select>
-                        @error('level')
-                            <span class="text-error text-xs mt-1.5">{{ $message }}</span>
-                        @enderror
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['level'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <span class="text-error text-xs mt-1.5"><?php echo e($message); ?></span>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
                 </div>
 
@@ -163,5 +220,6 @@
             </div>
             <div class="modal-backdrop bg-base-content/20" wire:click="$set('showModal', false)"></div>
         </div>
-    @endif
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 </div>
+<?php /**PATH /var/www/resources/views/livewire/user-management.blade.php ENDPATH**/ ?>

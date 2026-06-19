@@ -248,8 +248,13 @@ $months = [
         font-weight: 800;
     }
 
-    .check-value.ya { color: #e74a3b; }
-    .check-value.tidak { color: #1cc88a; }
+    .check-value.ya {
+        color: #e74a3b;
+    }
+
+    .check-value.tidak {
+        color: #1cc88a;
+    }
 </style>
 
 <div class="dashboard-header" style="margin-bottom: 2rem;">
@@ -419,16 +424,16 @@ $months = [
                                         <?php echo date('d/m/y H:i', strtotime($row['last_check']['checked_at'])); ?>
                                     </div>
                                     <div style="font-size: 0.75rem;">
-                                       DTOT: <?php echo $row['last_check']['hasil_dtot']; ?><br>
-                                       PEP: <?php echo $row['last_check']['hasil_pep']; ?>
+                                        DTOT: <?php echo $row['last_check']['hasil_dtot']; ?><br>
+                                        PEP: <?php echo $row['last_check']['hasil_pep']; ?>
                                     </div>
                                 <?php else: ?>
                                     <span style="color: #d1d3e2; font-style: italic; font-size: 0.8rem;">Belum ada riwayat</span>
                                 <?php endif; ?>
                             </td>
                             <td style="text-align: center; vertical-align: middle;">
-                                <a href="proses_cek_reksaloan.php?kontrak=<?php echo urlencode($row['no_kontrak']); ?>" 
-                                   class="btn-cek" title="Cek & Simpan Hasil">
+                                <a href="proses_cek_reksaloan.php?kontrak=<?php echo urlencode($row['no_kontrak']); ?>"
+                                    class="btn-cek" title="Cek & Simpan Hasil">
                                     <i class="fas fa-clipboard-check"></i>
                                     <span>Cek</span>
                                 </a>

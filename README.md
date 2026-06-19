@@ -1,148 +1,68 @@
-<p align="center">
-  <h1 align="center">PEP & DTTOT Verification System</h1>
-  <p align="center">Sistem Terintegrasi Pengecekan CADEB terhadap Database DTTOT dan Portal PEP PPATK.</p>
-</p>
+# CodeIgniter 4 Application Starter
 
-## 📋 Tentang Sistem
+## What is CodeIgniter?
 
-Aplikasi ini adalah hasil migrasi dan modernisasi dari sistem *legacy* CodeIgniter 3 ke ekosistem **Laravel 11**. Sistem ini dirancang khusus untuk memenuhi standar kepatuhan (*compliance*) AML/CFT (Anti-Money Laundering and Combating the Financing of Terrorism) dengan memverifikasi calon debitur (CADEB) atau karyawan.
+CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
+More information can be found at the [official site](https://codeigniter.com).
 
-### Fitur Utama:
-- **Manajemen DTTOT:** Upload masif, pencarian terintegrasi, dan sistem persetujuan (*Maker-Checker*).
-- **Pengecekan CADEB:** Pencocokan *real-time* ke database DTTOT lokal dan *scrapping* otomatis ke portal PEP eksternal.
-- **Reksaloan (HRD):** Verifikasi data karyawan yang terhubung langsung dengan *view* database eksternal perusahaan.
-- **Laporan & Ekspor:** *Filter* lanjutan berdasarkan status terindikasi DTTOT/PEP dan ekspor data CSV.
+This repository holds a composer-installable app starter.
+It has been built from the
+[development repository](https://github.com/codeigniter4/CodeIgniter4).
 
----
+More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
 
-## 🚀 Teknologi yang Digunakan
+You can read the [user guide](https://codeigniter.com/user_guide/)
+corresponding to the latest version of the framework.
 
-- **Backend:** Laravel 11 (PHP 8.2)
-- **Frontend:** Livewire 3 + Alpine.js
-- **Styling:** Tailwind CSS + DaisyUI (Glassmorphism UI)
-- **Database:** MariaDB / MySQL 8.0
-- **Deployment:** Docker & Nginx Alpine
+## Installation & updates
 
----
+`composer create-project codeigniter4/appstarter` then `composer update` whenever
+there is a new release of the framework.
 
-## ⚙️ Persyaratan Sistem (Prerequisites)
+When updating, check the release notes to see if there are any changes you might need to apply
+to your `app` folder. The affected files can be copied or merged from
+`vendor/codeigniter4/framework/app`.
 
-Sebelum menginstal, pastikan mesin Anda telah memiliki perangkat lunak berikut:
-1. **Docker Desktop / Docker Engine** (versi terbaru)
-2. **Docker Compose**
-3. **Database Server Lokal (XAMPP / Laragon / MariaDB native)** - *Jika tidak menggunakan container DB.*
+## Setup
 
----
+Copy `env` to `.env` and tailor for your app, specifically the baseURL
+and any database settings.
 
-## 🛠️ Instalasi & Setup Lokal (Docker)
+## Important Change with index.php
 
-Ikuti langkah-langkah di bawah ini untuk menjalankan sistem di lingkungan pengembangan lokal Anda.
+`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
+for better security and separation of components.
 
-### 1. Kloning Repositori
-```bash
-git clone https://github.com/rynsh1506/system-pep-dttot.git
-cd system-pep-dttot
-```
+This means that you should configure your web server to "point" to your project's *public* folder, and
+not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
+framework are exposed.
 
-### 2. Persiapkan Konfigurasi Environment (`.env`)
-Salin file konfigurasi bawaan.
-```bash
-cp .env.example .env
-```
-Buka file `.env` dan pastikan konfigurasi database sudah mengarah ke server MariaDB lokal Anda (biasanya `172.17.0.1` jika dari dalam Docker ke Host).
-```env
-DB_DTOT_CONNECTION=mariadb
-DB_DTOT_HOST=172.17.0.1
-DB_DTOT_PORT=3306
-DB_DTOT_DATABASE=db_dtot
-DB_DTOT_USERNAME=root
-DB_DTOT_PASSWORD=
+**Please** read the user guide for a better explanation of how CI4 works!
 
-DB_CADEB_CONNECTION=mariadb
-DB_CADEB_HOST=172.17.0.1
-DB_CADEB_PORT=3306
-DB_CADEB_DATABASE=cadeb_db
-DB_CADEB_USERNAME=root
-DB_CADEB_PASSWORD=
-```
+## Repository Management
 
-### 3. Build & Jalankan Docker Containers
-```bash
-docker-compose up -d --build
-```
-*Perintah ini akan menjalankan dua container: `system-pep-dttot-app-1` (PHP 8.2 FPM) dan webserver Nginx.*
+We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
+We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
+FEATURE REQUESTS.
 
-### 4. Instalasi Dependensi PHP (Composer)
-```bash
-docker exec system-pep-dttot-app-1 composer install
-```
+This repository is a "distribution" one, built by our release preparation script.
+Problems with it can be raised on our forum, or as issues in the main repository.
 
-### 5. Instalasi Dependensi Node.js & Build Aset
-```bash
-docker exec system-pep-dttot-app-1 npm install
-docker exec system-pep-dttot-app-1 npm run build
-```
+## Server Requirements
 
-### 6. Generate Application Key
-```bash
-docker exec system-pep-dttot-app-1 php artisan key:generate
-```
+PHP version 8.1 or higher is required, with the following extensions installed:
 
-### 7. Migrasi Database & Seeding Data Awal
-```bash
-docker exec system-pep-dttot-app-1 php artisan migrate --seed
-```
+- [intl](http://php.net/manual/en/intl.requirements.php)
+- [mbstring](http://php.net/manual/en/mbstring.installation.php)
 
----
+> [!WARNING]
+> - The end of life date for PHP 7.4 was November 28, 2022.
+> - The end of life date for PHP 8.0 was November 26, 2023.
+> - If you are still using PHP 7.4 or 8.0, you should upgrade immediately.
+> - The end of life date for PHP 8.1 will be December 31, 2025.
 
-## 🌐 Mengakses Aplikasi
+Additionally, make sure that the following extensions are enabled in your PHP:
 
-Setelah semua langkah selesai, aplikasi dapat diakses melalui peramban (browser) di:
-**http://localhost:8000**
-
-### Akun Uji Coba (Bawaan Seeder)
-Gunakan akun berikut untuk menguji *Role-Based Access Control* (RBAC) pada sistem:
-
-- **Super Admin**
-  - Email: `superadmin@example.com`
-  - Password: `password`
-- **Admin**
-  - Email: `admin@example.com`
-  - Password: `password`
-
----
-
-## 🖥️ Command Berguna Tambahan
-
-Jika Anda melakukan perubahan pada antarmuka Livewire atau *view* Blade, Anda mungkin perlu membersihkan *cache*:
-```bash
-# Membersihkan Cache View
-docker exec system-pep-dttot-app-1 php artisan view:clear
-
-# Menjalankan Vite Hot Reloading (saat development CSS/JS)
-docker exec system-pep-dttot-app-1 npm run dev
-```
-
----
-
-## 📝 Catatan Migrasi Legacy
-- **Data Session / Draft:** Proses input pencarian sudah dilengkapi sistem *persistence*. Data Anda tidak akan hilang jika secara tak sengaja berpindah halaman.
-- **Scrapper NIK:** API scrapper lama ke PPATK berjalan menggunakan Javascript murni di latar belakang demi menjaga stabilitas sesi Livewire. JANGAN hapus script integrasi di dalam form pencarian.
-
----
-
-## 🔧 Troubleshooting
-
-### 1. Masalah Hak Akses (Permission Denied) pada folder Storage / Sessions
-Jika Anda menemukan error `file_put_contents(.../sessions/...): failed to open stream: Permission denied`, ini berarti aplikasi Laravel di dalam Docker tidak memiliki hak akses untuk menulis file sementara (seperti log, session, atau cache). 
-
-Hal ini sangat umum terjadi di lingkungan lokal (Docker Volume) setelah Anda menjalankan `git pull` atau mereset kepemilikan file ke *host user*.
-
-**Solusinya:**
-Untuk lingkungan *development* lokal, cara paling mudah dan aman agar tidak bentrok dengan Git (di *host*) adalah dengan membuka izin secara penuh (777) khusus pada folder `storage` dan `bootstrap/cache` menggunakan perintah berikut dari terminal *host*:
-
-```bash
-docker exec pep_test-app-1 chmod -R 777 storage bootstrap/cache
-```
-
-*(Catatan: Pastikan nama container aplikasi Anda sesuai, misalnya `pep_test-app-1` atau `system-pep-dttot-app-1`).*
+- json (enabled by default - don't turn it off)
+- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
+- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
