@@ -3,99 +3,98 @@
 Sistem ini digunakan untuk mengecek kesesuaian data nasabah / calon debitur terhadap daftar Terduga Teroris (DTTOT) dan Politically Exposed Persons (PEP). Sistem ini dibangun menggunakan CodeIgniter 4.
 
 ## Persyaratan Server
-- PHP 8.1 atau lebih tinggi
-- Ekstensi PHP: `intl`, `mbstring`, `json`, `curl`, `pdo_sqlsrv`, `sqlsrv` (jika menggunakan SQL Server)
-- Composer
+- Docker & Docker Compose
+- Lingkungan server wajib mendukung eksekusi container.
 
-## Panduan Instalasi & Deployment ke Server
+---
 
-Berikut adalah langkah-langkah penting saat mendeploy aplikasi ini ke server produksi, terutama untuk menghindari masalah permission (hak akses).
+## Panduan Instalasi & Deployment ke Server (KHUSUS DOCKER)
 
-### 1. Clone & Install Dependencies
-Setelah melakukan clone atau pull ke server, instal library PHP menggunakan Composer:
-```bash
-composer install --no-dev --optimize-autoloader
-```
+Karena aplikasi ini dijalankan di dalam container, **semua perintah instalasi, update, dan build HARUS dijalankan dari dalam Docker Container** untuk mencegah bentrok hak akses (permission denied) dengan sistem operasi induk (host).
 
-### 2. Konfigurasi Environment
-Salin file `.env.example` atau `env` bawaan menjadi `.env` lalu sesuaikan dengan konfigurasi server Anda:
-```bash
-cp env .env
-```
-Pastikan Anda mengatur konfigurasi database, base URL, dan email tujuan alert di dalam file `.env`.
+Asumsi: Nama container PHP/App Anda adalah `pep_test-app-1` (sesuaikan jika berbeda).
 
-### 3. Masalah Permissions (Hak Akses) - PENTING!
-CodeIgniter 4 memerlukan hak akses tulis (write) pada folder `writable/` untuk menyimpan cache, logs, dan session. Seringkali setelah git pull atau memindahkan file, terjadi error 500 karena masalah permission.
-
-Jalankan perintah berikut di folder root aplikasi untuk mengatur ownership dan permission:
-
-```bash
-# Ubah kepemilikan file ke user web server (misalnya www-data untuk Nginx/Apache di Ubuntu)
-sudo chown -R www-data:www-data .
-
-# Pastikan folder writable bisa ditulis oleh web server
-sudo chmod -R 775 writable
-sudo chmod -R 775 public/uploads
-```
-
-### 4. Mengatasi Folder yang Terkunci (Permission Denied saat Git Pull)
-Jika sebelumnya server menggunakan Docker atau Composer dijalankan sebagai root, folder seperti `vendor/` atau file tertentu bisa terkunci. Jika Anda mengalami error **"Permission denied"** saat menjalankan `git pull` atau pindah branch, hapus paksa folder tersebut dengan `sudo`, lalu jalankan `composer install` ulang:
-
-```bash
-# Hapus folder vendor yang terkunci
-sudo rm -rf vendor
-
-# Lakukan git pull atau checkout
-git pull origin main
-
-# Install ulang dependencies (jangan lupa set chown lagi setelahnya jika perlu)
-composer install
-sudo chown -R www-data:www-data vendor
-```
-
-## Menjalankan dengan Docker
-Jika Anda menggunakan Docker (docker-compose), cukup jalankan:
+### 1. Menjalankan Docker
+Setelah clone repository, jalankan container:
 ```bash
 docker-compose up -d --build
 ```
-Lalu masuk ke container PHP untuk menginstal dependencies:
+
+### 2. Install Dependencies (Composer)
+Masuk ke container atau eksekusi perintah composer langsung ke dalam container:
 ```bash
-docker exec -it <nama_container_app> composer install
+docker exec -it pep_test-app-1 composer install --no-dev --optimize-autoloader
 ```
-Penting: Perintah artisan atau composer sebaiknya selalu dijalankan dari dalam container docker untuk menghindari konflik file ownership (root vs user lokal).
 
-## API Documentation
-Dokumentasi API Swagger tersedia dan dapat diakses pada rute:
-`/api/docs` (Membutuhkan akses login / token yang valid).
+### 3. Konfigurasi Environment
+Pastikan file `.env` sudah terbuat dan dikonfigurasi (Database, Base URL, Email).
+```bash
+cp env .env
+```
 
-## Penjelasan "Tetek Bengek" Tailwind, Vite, JS & Manifest di CI4
+### 4. Masalah Permissions (Hak Akses `chmod` & `chown`) - PENTING!
+CodeIgniter 4 memerlukan hak akses tulis (write) pada folder `writable/`. Karena kita menggunakan Docker, web server di dalam container (biasanya berjalan sebagai user `www-data` atau `root`) harus memiliki izin tersebut.
+
+Jalankan perintah ini **ke dalam container** untuk menyetel permission dengan aman:
+```bash
+# Ubah kepemilikan file ke user web server di dalam container
+docker exec -it pep_test-app-1 chown -R www-data:www-data .
+
+# Pastikan folder writable bisa ditulis
+docker exec -it pep_test-app-1 chmod -R 775 writable
+docker exec -it pep_test-app-1 chmod -R 775 public/uploads
+```
+
+### 5. Mengatasi Error "Permission Denied" Saat Git Pull di Host
+Jika Anda terpaksa melakukan `git pull` dari terminal Host/Server (di luar docker) dan mendapat pesan error *Permission Denied* pada folder seperti `vendor/` atau `public/build/`, itu karena folder tersebut di-generate oleh Docker (sebagai root) sehingga user lokal Anda tidak punya akses.
+
+Solusinya, hapus folder tersebut dengan `sudo` di luar docker, lalu jalankan instalasi ulang di dalam docker:
+```bash
+# Di terminal Host/Luar Docker:
+sudo rm -rf vendor public/build
+
+# Tarik kode terbaru:
+git pull origin main
+
+# Di dalam Docker (Install ulang):
+docker exec -it pep_test-app-1 composer install
+docker exec -it pep_test-app-1 npm install
+docker exec -it pep_test-app-1 npm run build
+```
+
+---
+
+## Penjelasan "Tetek Bengek" Tailwind, Vite, JS & Manifest di CI4 (Khusus Docker)
 
 Aplikasi ini menggunakan **Tailwind CSS** dan **JS modern** yang di-build menggunakan **Vite**. 
-Meskipun menggunakan framework CodeIgniter 4 (bukan Laravel), konsep build assets-nya tetap sama.
 
 ### Alur Kerjanya (Kenapa kadang tampilan hancur/nggak geser?):
 1. File asli CSS dan JS Anda berada di dalam folder `resources/css/app.css` dan `resources/js/app.js`.
-2. Saat Anda menjalankan `npm run build`, Vite akan membaca file-file tersebut, meng-compile Tailwind CSS, dan membuat file hasil build (ter-minifikasi) ke dalam folder `public/build/assets/`.
-3. Vite juga membuat sebuah file **Manifest** di `public/build/.vite/manifest.json`. File manifest ini berisi pemetaan (mapping) nama file asli ke nama file hasil build (contoh: `app.css` dipetakan menjadi `app-DUAPY3vp.css`).
-4. Di dalam CodeIgniter (tepatnya di `app/Views/layouts/main.php`), kita membaca file `manifest.json` tersebut untuk mengetahui **nama file CSS dan JS terbaru** yang harus diload ke HTML.
+2. Saat perintah `npm run build` dijalankan, Vite akan meng-compile Tailwind CSS dan meminifikasi JS, lalu menyimpannya di folder `public/build/assets/`.
+3. Vite juga membuar file **Manifest** di `public/build/.vite/manifest.json`. File manifest ini memetakan nama file asli ke file hasil kompilasi (misal: `app.css` menjadi `app-xyz.css`).
+4. Di dalam CI4 (`app/Views/layouts/main.php`), kita memanggil `manifest.json` ini untuk mengetahui file mana yang harus di-load.
 
-### Penyebab Tampilan Hancur (Manifest tidak sesuai):
-- Anda melakukan perubahan di `resources/css/app.css` atau class Tailwind di file `.php`, tetapi **LUPA** menjalankan `npm run build`. Akibatnya class baru tidak ter-generate di file CSS yang ada di `public/build`.
-- Folder `public/build` terhapus (seperti saat kita menjalankan `sudo rm -rf public/build` sebelumnya), sehingga `manifest.json` hilang dan CI4 tidak meload CSS/JS sama sekali.
-- Anda mem-push ke server, tapi lupa menjalankan `npm run build` di server. (Catatan: Secara default, folder `public/build` diabaikan oleh `.gitignore` sehingga tidak ikut ter-push ke GitHub).
+### Penyebab Tampilan Hancur:
+- Lupa melakukan `npm run build` setelah mengubah kode CSS/Tailwind.
+- Folder `public/build` terhapus sehingga manifest hilang.
+- Anda melakukan `git pull` di server tapi tidak menjalankan build ulang (karena `public/build` sengaja diabaikan di `.gitignore` agar tidak membebani repository).
 
-### Solusi & Cara Menangani Front-end:
+### Solusi & Cara Menangani Front-end via Docker:
 
-**Saat Proses Development (Koding Lokal):**
-Jalankan perintah ini agar Vite memantau perubahan file secara realtime:
+**A. Saat Koding / Development Lokal:**
+Anda bisa membiarkan Vite berjalan di background untuk memantau perubahan secara realtime di dalam container:
 ```bash
-npm run dev
+docker exec -it pep_test-app-1 npm run dev
 ```
 
-**Saat Mau Deploy ke Server / Production:**
-Anda WAJIB mem-build ulang asset CSS & JS agar ter-generate versi terbarunya:
+**B. Saat Deploy ke Server / Production:**
+Setiap ada update kode ke server, **WAJIB** mem-build ulang asset CSS & JS dari dalam container:
 ```bash
-npm install
-npm run build
+docker exec -it pep_test-app-1 npm install
+docker exec -it pep_test-app-1 npm run build
 ```
-*(Jika di server menggunakan Docker, masuk dulu ke dalam container PHP/Node lalu jalankan perintah di atas).*
+
+---
+## API Documentation
+Dokumentasi API Swagger tersedia dan dapat diakses pada rute:
+`/api/docs` (Membutuhkan akses login / token yang valid).
