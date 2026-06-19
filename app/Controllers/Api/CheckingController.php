@@ -88,11 +88,30 @@ class CheckingController extends BaseController
                     $records = $resData['data']['extracted_data']['data'] ?? [];
                     
                     if (count($records) > 0) {
+                        $terdugaModel = new TerdugaModel();
+                        $existing = $terdugaModel->like('deskripsi', $nik)->first();
+                        
+                        if ($existing) {
+                            $terdugaModel->update($existing->id, [
+                                'nama' => $nama
+                            ]);
+                            $msg = 'Tercatat dalam Database PEP PPATK eksternal. Data existing di database internal berhasil diupdate.';
+                        } else {
+                            $terdugaModel->insert([
+                                'nama' => $nama,
+                                'terduga_type' => 'Orang',
+                                'deskripsi' => $nik,
+                                'created_at' => date('Y-m-d H:i:s'),
+                                'is_pending' => 0
+                            ]);
+                            $msg = 'Tercatat dalam Database PEP PPATK eksternal. Data baru berhasil ditambahkan ke database internal.';
+                        }
+
                         return $this->respond([
                             'success' => true,
                             'status' => 'Terindikasi',
                             'source' => 'PPATK_API',
-                            'message' => 'Tercatat dalam Database PEP PPATK eksternal.'
+                            'message' => $msg
                         ]);
                     } else {
                         return $this->respond([
