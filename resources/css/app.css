@@ -1,0 +1,82 @@
+@import "tailwindcss";
+@source "../views/vendor";
+@plugin "daisyui";
+
+/* Overriding primary colors for all themes */
+:root {
+  --color-primary: #3b82f6;
+  --color-secondary: #245098;
+  --color-accent: #f6af3b;
+}
+
+/* Modernize Flatpickr UI */
+.flatpickr-calendar {
+  border: none !important;
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1) !important;
+  border-radius: 1rem !important;
+  width: auto !important;
+}
+.flatpickr-current-month {
+  padding-top: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.25rem;
+}
+.flatpickr-monthDropdown-months {
+  font-weight: 700 !important;
+  border-radius: 0.5rem !important;
+  padding: 0.25rem 0.5rem !important;
+  background-color: var(--color-base-100) !important;
+  color: var(--color-base-content) !important;
+  cursor: pointer !important;
+  border: 1px solid var(--color-base-200) !important;
+}
+.flatpickr-monthDropdown-months:hover {
+  background-color: var(--color-base-200) !important;
+}
+/* Restore up/down arrows for year but style them better */
+.numInputWrapper span {
+  border: 1px solid var(--color-base-200) !important;
+  background-color: var(--color-base-100) !important;
+}
+.numInputWrapper span:hover {
+  background-color: var(--color-base-200) !important;
+}
+.flatpickr-current-month .numInputWrapper {
+  width: 9ch !important;
+  border-radius: 0.5rem !important;
+  transition: all 0.2s !important;
+  background-color: var(--color-base-100) !important;
+  border: 1px solid var(--color-base-200) !important;
+}
+.flatpickr-current-month .numInputWrapper:hover {
+  background: rgba(150, 150, 150, 0.1) !important;
+}
+.flatpickr-current-month input.cur-year {
+  font-weight: 700 !important;
+  padding: 0.25rem !important;
+  cursor: text !important;
+}
+.flatpickr-day {
+  border-radius: 0.5rem !important;
+}
+
+/* SweetAlert2 DaisyUI Adaptation */
+.swal2-popup {
+  background-color: var(--color-base-100) !important;
+  color: var(--color-base-content) !important;
+  border: 1px solid var(--color-base-200) !important;
+  border-radius: 1.5rem !important;
+}
+.swal2-title, .swal2-html-container {
+  color: var(--color-base-content) !important;
+}
+.swal2-icon.swal2-warning {
+  border-color: var(--color-warning) !important;
+  color: var(--color-warning) !important;
+}
+.swal2-icon.swal2-question {
+  border-color: var(--color-info) !important;
+  color: var(--color-info) !important;
+}
