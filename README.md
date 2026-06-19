@@ -1,68 +1,69 @@
-# CodeIgniter 4 Application Starter
+# Sistem Pengecekan PEP & DTTOT (CodeIgniter 4)
 
-## What is CodeIgniter?
+Sistem ini digunakan untuk mengecek kesesuaian data nasabah / calon debitur terhadap daftar Terduga Teroris (DTTOT) dan Politically Exposed Persons (PEP). Sistem ini dibangun menggunakan CodeIgniter 4.
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+## Persyaratan Server
+- PHP 8.1 atau lebih tinggi
+- Ekstensi PHP: `intl`, `mbstring`, `json`, `curl`, `pdo_sqlsrv`, `sqlsrv` (jika menggunakan SQL Server)
+- Composer
 
-This repository holds a composer-installable app starter.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
+## Panduan Instalasi & Deployment ke Server
 
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
+Berikut adalah langkah-langkah penting saat mendeploy aplikasi ini ke server produksi, terutama untuk menghindari masalah permission (hak akses).
 
-You can read the [user guide](https://codeigniter.com/user_guide/)
-corresponding to the latest version of the framework.
+### 1. Clone & Install Dependencies
+Setelah melakukan clone atau pull ke server, instal library PHP menggunakan Composer:
+```bash
+composer install --no-dev --optimize-autoloader
+```
 
-## Installation & updates
+### 2. Konfigurasi Environment
+Salin file `.env.example` atau `env` bawaan menjadi `.env` lalu sesuaikan dengan konfigurasi server Anda:
+```bash
+cp env .env
+```
+Pastikan Anda mengatur konfigurasi database, base URL, dan email tujuan alert di dalam file `.env`.
 
-`composer create-project codeigniter4/appstarter` then `composer update` whenever
-there is a new release of the framework.
+### 3. Masalah Permissions (Hak Akses) - PENTING!
+CodeIgniter 4 memerlukan hak akses tulis (write) pada folder `writable/` untuk menyimpan cache, logs, dan session. Seringkali setelah git pull atau memindahkan file, terjadi error 500 karena masalah permission.
 
-When updating, check the release notes to see if there are any changes you might need to apply
-to your `app` folder. The affected files can be copied or merged from
-`vendor/codeigniter4/framework/app`.
+Jalankan perintah berikut di folder root aplikasi untuk mengatur ownership dan permission:
 
-## Setup
+```bash
+# Ubah kepemilikan file ke user web server (misalnya www-data untuk Nginx/Apache di Ubuntu)
+sudo chown -R www-data:www-data .
 
-Copy `env` to `.env` and tailor for your app, specifically the baseURL
-and any database settings.
+# Pastikan folder writable bisa ditulis oleh web server
+sudo chmod -R 775 writable
+sudo chmod -R 775 public/uploads
+```
 
-## Important Change with index.php
+### 4. Mengatasi Folder yang Terkunci (Permission Denied saat Git Pull)
+Jika sebelumnya server menggunakan Docker atau Composer dijalankan sebagai root, folder seperti `vendor/` atau file tertentu bisa terkunci. Jika Anda mengalami error **"Permission denied"** saat menjalankan `git pull` atau pindah branch, hapus paksa folder tersebut dengan `sudo`, lalu jalankan `composer install` ulang:
 
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
+```bash
+# Hapus folder vendor yang terkunci
+sudo rm -rf vendor
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
+# Lakukan git pull atau checkout
+git pull origin main
 
-**Please** read the user guide for a better explanation of how CI4 works!
+# Install ulang dependencies (jangan lupa set chown lagi setelahnya jika perlu)
+composer install
+sudo chown -R www-data:www-data vendor
+```
 
-## Repository Management
+## Menjalankan dengan Docker
+Jika Anda menggunakan Docker (docker-compose), cukup jalankan:
+```bash
+docker-compose up -d --build
+```
+Lalu masuk ke container PHP untuk menginstal dependencies:
+```bash
+docker exec -it <nama_container_app> composer install
+```
+Penting: Perintah artisan atau composer sebaiknya selalu dijalankan dari dalam container docker untuk menghindari konflik file ownership (root vs user lokal).
 
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
-
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
-
-## Server Requirements
-
-PHP version 8.1 or higher is required, with the following extensions installed:
-
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
-
-> [!WARNING]
-> - The end of life date for PHP 7.4 was November 28, 2022.
-> - The end of life date for PHP 8.0 was November 26, 2023.
-> - If you are still using PHP 7.4 or 8.0, you should upgrade immediately.
-> - The end of life date for PHP 8.1 will be December 31, 2025.
-
-Additionally, make sure that the following extensions are enabled in your PHP:
-
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+## API Documentation
+Dokumentasi API Swagger tersedia dan dapat diakses pada rute:
+`/api/docs` (Membutuhkan akses login / token yang valid).
