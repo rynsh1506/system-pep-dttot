@@ -2,7 +2,7 @@
 
 <?= $this->section('content') ?>
 
-<div>
+<div x-data="reksaloanProcessForm()">
     <div class="flex items-center gap-3 mb-6">
         <a href="<?= base_url('reksaloan') ?>" class="btn btn-ghost btn-sm btn-circle">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
@@ -59,7 +59,10 @@
                                 </div>
                                 <div class="col-span-2">
                                     <span class="text-[10px] font-bold text-base-content/50 block">NIK / KTP</span>
-                                    <span class="font-mono font-semibold tracking-wide"><?= esc($debitur['ktp']) ?></span>
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-mono font-semibold tracking-wide"><?= esc($debitur['ktp']) ?></span>
+                                        <button type="button" @click="triggerScrapper()" class="btn btn-xs btn-primary shadow-sm rounded">Cek API PEP</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -83,10 +86,10 @@
                                 <span class="label-text text-xs font-bold text-base-content/70 uppercase">Hasil Pengecekan PEP <span class="text-error">*</span></span>
                                 <a href="https://pep.ppatk.go.id/admin/user/login" target="_blank" class="label-text-alt link link-primary text-xs font-semibold">Buka Portal PEP ↗</a>
                             </label>
-                            <select name="hasil_pep" class="select select-bordered focus:border-primary focus:outline-none w-full" required>
+                            <select name="hasil_pep" x-model="form.hasil_pep" class="select select-bordered focus:border-primary focus:outline-none w-full" required>
                                 <option value="">-- Pilih --</option>
-                                <option value="Tidak Terindikasi" <?= $defaultPep == 'Tidak Terindikasi' ? 'selected' : '' ?>>Tidak Terindikasi</option>
-                                <option value="Terindikasi" <?= $defaultPep == 'Terindikasi' ? 'selected' : '' ?>>Terindikasi</option>
+                                <option value="Tidak Terindikasi">Tidak Terindikasi</option>
+                                <option value="Terindikasi">Terindikasi</option>
                             </select>
                         </div>
 
@@ -125,6 +128,31 @@
         <?php /* RIGHT: Search Results */ ?>
         <div class="w-full lg:w-7/12 flex flex-col h-full space-y-6">
             
+            <?php /* API PPATK Scrapper Section */ ?>
+            <div class="card bg-base-100 border border-base-200 shadow-sm">
+                <div class="card-body p-5">
+                    <div class="flex items-center justify-between mb-3 border-b border-base-200 pb-2">
+                        <h2 class="card-title text-sm text-base-content/80 font-bold flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-secondary"><path fill-rule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zm-1.25 4.5a1.25 1.25 0 112.5 0v3.25h1.5a.75.75 0 010 1.5h-2.25a.75.75 0 01-.75-.75V6.5z" clip-rule="evenodd" /></svg>
+                            Hasil Pengecekan Otomatis (API Scrapper)
+                        </h2>
+                    </div>
+
+                    <div x-show="pepState === 'idle'" class="text-center p-6 bg-base-200/50 border border-dashed border-base-300 rounded-lg mt-3">
+                        <p class="font-semibold text-base-content/50 m-0">Menunggu Inisialisasi API...</p>
+                        <p class="text-xs text-base-content/40 mt-1 mb-0">Klik tombol 'Cek API PEP' atau tunggu proses otomatis berjalan.</p>
+                    </div>
+
+                    <div x-show="pepState === 'loading'" style="display: none;" class="text-center p-6 bg-base-200/50 border border-dashed border-base-300 rounded-lg mt-3">
+                        <span class="loading loading-spinner loading-lg text-primary mb-3"></span>
+                        <p class="font-semibold text-base-content m-0">Memeriksa ke Server PPATK...</p>
+                        <p class="text-xs text-base-content/50 mt-1 mb-0">Sistem sedang melakukan sinkronisasi live menggunakan NIK Debitur.</p>
+                    </div>
+
+                    <div x-show="pepState === 'result'" style="display: none;" :class="pepResultClass" class="text-center p-6 rounded-lg mt-3 border font-semibold" x-html="pepResultHtml"></div>
+                </div>
+            </div>
+
             <?php /* DATABASE INTERNAL MATCHES */ ?>
             <div class="card bg-base-100 border border-base-200 shadow-sm flex-1">
                 <div class="card-body p-5 flex flex-col h-full relative">
@@ -194,5 +222,103 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('reksaloanProcessForm', () => ({
+        form: {
+            nik: <?= json_encode((string)$debitur['ktp']) ?>,
+            nama_cadeb: <?= json_encode((string)$debitur['nama']) ?>,
+            hasil_pep: <?= json_encode((string)$defaultPep) ?>
+        },
+        pepState: 'idle', // idle, loading, result
+        pepResultClass: '',
+        pepResultHtml: '',
+        scrapperAbortController: null,
+
+        init() {
+            // Automatically trigger the scrapper on load
+            setTimeout(() => {
+                this.triggerScrapper();
+            }, 500);
+        },
+
+        triggerScrapper() {
+            if (this.form.nik.length < 10) return;
+
+            this.pepState = 'loading';
+
+            if (this.scrapperAbortController) {
+                this.scrapperAbortController.abort();
+            }
+
+            this.scrapperAbortController = new AbortController();
+            const payload = new URLSearchParams();
+            payload.append("nik", this.form.nik);
+
+            const apiUrl = "http://10.27.19.243:3000/api/v1/search";
+            const timeoutId = setTimeout(() => this.scrapperAbortController.abort(), 60000);
+
+            fetch(apiUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: payload,
+                signal: this.scrapperAbortController.signal
+            })
+            .then(response => {
+                clearTimeout(timeoutId);
+                return response.json();
+            })
+            .then(res => {
+                this.pepState = 'result';
+
+                if (res.success && res.data && res.data.extracted_data) {
+                    const extracted = res.data.extracted_data;
+                    const records = extracted.data || [];
+
+                    if (records.length > 0) {
+                        this.form.hasil_pep = 'Terindikasi';
+                        this.pepResultClass = 'bg-error/10 border-error text-error';
+                        this.pepResultHtml = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-10 h-10 mx-auto mb-3"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span class="text-lg">Tercatat dalam Database PEP!</span>';
+                    } else {
+                        this.form.hasil_pep = 'Tidak Terindikasi';
+                        this.pepResultClass = 'bg-success/10 border-success text-success';
+                        this.pepResultHtml = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-10 h-10 mx-auto mb-3"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg><span class="text-lg">Tidak Terindikasi</span><br><span class="text-sm font-normal mt-1 block opacity-75">(Data tidak ditemukan di database PPATK)</span>';
+                    }
+                } else {
+                    throw new Error(res.error || res.message || "Sistem PPATK merespon dengan format yang tidak dikenal.");
+                }
+            })
+            .catch(err => {
+                if (err.name === 'AbortError') return;
+
+                this.pepState = 'result';
+                this.pepResultClass = 'bg-error/10 border-error text-error';
+
+                let userMessage = "";
+                const errMsg = err.message ? err.message.toLowerCase() : "";
+
+                if (errMsg.includes("failed to fetch") || errMsg.includes("networkerror")) {
+                    userMessage = "Service API Internal (Scraper) mati atau tidak bisa dihubungi. Pastikan server Node.js menyala.";
+                } else if (errMsg.includes("timeout") || errMsg.includes("exceeded") || errMsg.includes("gagal mengakses")) {
+                    userMessage = "Website PPATK sedang sangat lambat atau Server Down. Sistem menghentikan proses karena melebihi batas waktu (60 detik).";
+                } else if (errMsg.includes("captcha")) {
+                    userMessage = "Sistem gagal menembus perlindungan CAPTCHA PPATK. Ini biasanya terjadi jika IP sedang dibatasi sementara oleh Google.";
+                } else if (errMsg.includes("login")) {
+                    userMessage = "Gagal login otomatis ke sistem PPATK. Cek apakah password berubah atau web PPATK sedang maintenance.";
+                } else {
+                    userMessage = err.message || "Terjadi kesalahan tidak dikenal."; 
+                }
+
+                this.pepResultHtml = `
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-10 h-10 mx-auto mb-3"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" /></svg>
+                    <span class="text-lg">Pengecekan Gagal / Timeout</span><br>
+                    <span class="text-sm font-normal mt-1 block opacity-80">Keterangan: ${userMessage}</span>
+                `;
+            });
+        }
+    }));
+});
+</script>
 
 <?= $this->endSection() ?>
