@@ -33,7 +33,7 @@
                         <div class="form-control mb-4">
                             <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Nama Lengkap <span class="text-error">*</span></span></label>
                             <div class="join w-full">
-                                <input x-model="form.nama_cadeb" value="<?= esc($pengajuan->nama_cadeb ?? '') ?>" @input.debounce.500ms="checkDttot()" type="text" class="input input-bordered focus:border-primary focus:outline-none w-full font-bold join-item" required />
+                                <input x-model="form.nama_cadeb" type="text" class="input input-bordered focus:border-primary focus:outline-none w-full font-bold join-item" required />
                                 <button type="button" @click="checkDttot()" class="btn btn-primary join-item">Cek</button>
                             </div>
                         </div>
@@ -41,7 +41,7 @@
                         <div class="form-control mb-4">
                             <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">NIK / Identitas <span class="text-error">*</span></span></label>
                             <div class="join w-full">
-                                <input x-model="form.nik" value="<?= esc($pengajuan->nik ?? '') ?>" @input.debounce.500ms="checkDttot(); triggerScrapper()" type="text" class="input input-bordered focus:border-primary focus:outline-none w-full font-mono font-semibold join-item" required />
+                                <input x-model="form.nik" type="text" class="input input-bordered focus:border-primary focus:outline-none w-full font-mono font-semibold join-item" required />
                                 <button type="button" @click="triggerScrapper()" class="btn btn-primary join-item">Cek</button>
                             </div>
                         </div>
@@ -117,16 +117,15 @@
                             Hasil Pengecekan Otomatis (API Scrapper)
                         </h2>
                     </div>
-
                     <div x-show="pepState === 'idle'" class="text-center p-6 bg-base-200/50 border border-dashed border-base-300 rounded-lg mt-3">
-                        <p class="font-semibold text-base-content/50 m-0">Menunggu Input NIK...</p>
-                        <p class="text-xs text-base-content/40 mt-1 mb-0">API PPATK akan berjalan otomatis setelah NIK diketik 10 digit.</p>
+                        <p class="font-semibold text-base-content/50 m-0">Menunggu Inisialisasi API...</p>
+                        <p class="text-xs text-base-content/40 mt-1 mb-0">Klik tombol 'Cek API PEP' atau tunggu proses otomatis berjalan.</p>
                     </div>
 
                     <div x-show="pepState === 'loading'" style="display: none;" class="text-center p-6 bg-base-200/50 border border-dashed border-base-300 rounded-lg mt-3">
                         <span class="loading loading-spinner loading-lg text-primary mb-3"></span>
                         <p class="font-semibold text-base-content m-0">Memeriksa ke Server PPATK...</p>
-                        <p class="text-xs text-base-content/50 mt-1 mb-0">Sistem sedang melakukan sinkronisasi live.</p>
+                        <p class="text-xs text-base-content/50 mt-1 mb-0">Sistem sedang melakukan sinkronisasi live menggunakan NIK Debitur.</p>
                     </div>
 
                     <div x-show="pepState === 'result'" style="display: none;" :class="pepResultClass" class="text-center p-6 rounded-lg mt-3 border font-semibold" x-html="pepResultHtml"></div>
@@ -148,54 +147,34 @@
                         </h2>
                         <template x-if="dttotMatches.length > 0">
                             <span class="badge badge-error gap-1 text-white">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3">
-                                    <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-8-5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 10 5Zm0 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
-                                </svg>
-                                <span x-text="dttotMatches.length"></span> Kecocokan Ditemukan!
-                            </span>
-                        </template>
-                        <template x-if="dttotMatches.length === 0 && (form.nama_cadeb !== '' || form.nik !== '')">
-                            <span class="badge badge-success text-white gap-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" />
-                                </svg>
-                                Tidak Terindikasi
+                                <span x-text="dttotMatches.length"></span> Matches
                             </span>
                         </template>
                     </div>
-                    <p class="text-xs text-base-content/60 mb-3 bg-base-200 p-2 rounded-md">
-                        <template x-if="form.nama_cadeb !== '' || form.nik !== ''">
-                            <span>Menampilkan data yang cocok dengan nama <strong x-text="'&quot;' + form.nama_cadeb + '&quot;'"></strong> atau NIK <strong x-text="'&quot;' + form.nik + '&quot;'"></strong> di database DTTOT.</span>
-                        </template>
-                        <template x-if="form.nama_cadeb === '' && form.nik === ''">
-                            <span>Pencarian data yang mirip dengan NAMA atau NIK yang diketik.</span>
-                        </template>
-                    </p>
 
-                    <div class="overflow-x-auto flex-1">
-                        <table class="table table-sm table-zebra w-full text-xs">
-                            <thead class="bg-base-200">
+                    <div x-show="!dttotLoading && dttotMatches.length === 0" class="flex-1 flex flex-col items-center justify-center text-center p-6 border-2 border-dashed border-base-200 rounded-lg bg-base-50/50">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-12 h-12 text-success/50 mb-3"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg>
+                        <p class="font-bold text-success/80 m-0">Tidak Terindikasi (Aman)</p>
+                        <p class="text-xs text-base-content/50 mt-1 max-w-xs mb-0">Sistem tidak menemukan kecocokan nama atau NIK di dalam database DTTOT internal.</p>
+                    </div>
+
+                    <div x-show="dttotMatches.length > 0" style="display: none;" class="flex-1 overflow-x-auto border border-base-200 rounded-lg">
+                        <table class="table table-sm table-pin-rows w-full text-xs">
+                            <thead class="bg-base-200/50 text-base-content/70">
                                 <tr>
-                                    <th class="font-semibold text-base-content">NAMA LENGKAP</th>
-                                    <th class="font-semibold text-base-content w-24">TIPE</th>
-                                    <th class="font-semibold text-base-content max-w-xs">DESKRIPSI / IDENTITAS</th>
+                                    <th class="font-bold uppercase tracking-wider py-3">Nama Lengkap</th>
+                                    <th class="font-bold uppercase tracking-wider py-3 text-center">Tipe</th>
+                                    <th class="font-bold uppercase tracking-wider py-3">Deskripsi / Identitas</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <template x-for="match in dttotMatches" :key="match.id">
-                                    <tr class="bg-error/5 border-b border-error/10">
-                                        <td class="font-bold text-error" x-text="match.nama"></td>
-                                        <td>
-                                            <span class="badge badge-error badge-sm text-[10px]" x-text="match.terduga_type || '-'"></span>
+                                <template x-for="(match, index) in dttotMatches" :key="index">
+                                    <tr class="hover:bg-base-200/30 transition-colors">
+                                        <td class="font-semibold text-error align-top py-2" x-text="match.nama"></td>
+                                        <td class="align-top py-2 text-center">
+                                            <span class="badge badge-sm badge-error badge-outline" x-text="match.kategori"></span>
                                         </td>
-                                        <td class="text-base-content/70 max-w-xs whitespace-normal" x-text="match.deskripsi || '-'"></td>
-                                    </tr>
-                                </template>
-                                <template x-if="dttotMatches.length === 0">
-                                    <tr>
-                                        <td colspan="3" class="text-center py-10 text-base-content/40">
-                                            Data tidak ditemukan di database DTTOT lokal.
-                                        </td>
+                                        <td class="text-base-content/80 align-top py-2 leading-relaxed" x-html="match.keterangan || match.nik"></td>
                                     </tr>
                                 </template>
                             </tbody>
@@ -236,7 +215,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         checkDttot() {
-            if (this.form.nama_cadeb.trim() === '' && this.form.nik.trim() === '') {
+            if (!this.form.nama_cadeb || !this.form.nik || (this.form.nama_cadeb.toString().trim() === '' && this.form.nik.toString().trim() === '')) {
                 this.dttotMatches = [];
                 return;
             }
@@ -272,7 +251,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         triggerScrapper() {
-            if (this.form.nik.length < 10) return;
+            if (!this.form.nik || this.form.nik.toString().length < 10) return;
 
             this.pepState = 'loading';
 
