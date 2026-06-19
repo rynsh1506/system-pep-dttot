@@ -129,3 +129,6 @@ _modules/*
 node_modules/
 public/build/
 storage/
+
+# Public Uploads
+public/uploads/
