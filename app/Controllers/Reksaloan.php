@@ -32,6 +32,7 @@ class Reksaloan extends BaseController
 
     public function getBranches()
     {
+        session_write_close();
         $dbSqlsrv = \Config\Database::connect('sqlsrv');
         $branches = [];
         try {
@@ -52,6 +53,7 @@ class Reksaloan extends BaseController
 
     public function listData()
     {
+        session_write_close();
         $bulan = $this->request->getGet('bulan') ?? date('m');
         $tahun = $this->request->getGet('tahun') ?? date('Y');
         $branchFilter = $this->request->getGet('branchFilter') ?? '';
