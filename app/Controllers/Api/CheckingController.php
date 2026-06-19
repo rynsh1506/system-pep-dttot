@@ -97,6 +97,7 @@ class CheckingController extends BaseController
                                 'hasil_pep' => 'Terindikasi',
                                 'updated_at' => date('Y-m-d H:i:s')
                             ]);
+                            $recordId = $existing->id;
                             $msg = 'Tercatat dalam Database PEP PPATK eksternal. Data existing di database internal berhasil diupdate.';
                         } else {
                             $pengajuanModel->insert([
@@ -104,11 +105,47 @@ class CheckingController extends BaseController
                                 'nama_cadeb' => $nama,
                                 'nik' => $nik,
                                 'hasil_pep' => 'Terindikasi',
-                                'hasil_pengecekan' => 'Menunggu',
+                                'hasil_pengecekan' => 'Belum Dicek',
                                 'created_at' => date('Y-m-d H:i:s')
                             ]);
+                            $recordId = $pengajuanModel->getInsertID();
                             $msg = 'Tercatat dalam Database PEP PPATK eksternal. Data baru berhasil ditambahkan ke database internal.';
                         }
+
+                        // Sync to SQL Server
+                        try {
+                            $sqlsrv = db_connect('sqlsrv');
+                            $sqlData = [
+                                'id_pengecekan' => $recordId,
+                                'Nama_Cadeb'    => strtoupper($nama),
+                                'NIK'           => $nik,
+                                'HasilDtot'     => $existing ? $existing->hasil_pengecekan : 'Belum Dicek',
+                                'Keterangan'    => 'Auto checked via API',
+                                'DiperiksaOleh' => 'API_SYSTEM',
+                                'WaktuPeriksa'  => date('Y-m-d H:i:s'),
+                                'IsProceed'     => 0,
+                                'Hasilpep'      => 'Terindikasi',
+                            ];
+                            
+                            $existingSql = $sqlsrv->table('HasilPengecekan')->where('id_pengecekan', $recordId)->get()->getRow();
+                            if ($existingSql) {
+                                $sqlsrv->table('HasilPengecekan')->where('id_pengecekan', $recordId)->update($sqlData);
+                            } else {
+                                $sqlsrv->table('HasilPengecekan')->insert($sqlData);
+                            }
+                        } catch (\Exception $e) {
+                            log_message('error', 'Gagal submit ke SQL Server via API: ' . $e->getMessage());
+                        }
+
+                        // Send Alert Email
+                        helper('email');
+                        send_alert_email(
+                            strtoupper($nama),
+                            $nik,
+                            $existing ? $existing->hasil_pengecekan : 'Belum Dicek',
+                            'Terindikasi',
+                            'API PEP Check'
+                        );
 
                         return $this->respond([
                             'success' => true,
@@ -126,6 +163,7 @@ class CheckingController extends BaseController
                                 'hasil_pep' => 'Tidak Terindikasi',
                                 'updated_at' => date('Y-m-d H:i:s')
                             ]);
+                            $recordId = $existing->id;
                             $msg = 'Tidak ditemukan di database PPATK. Data existing di database internal berhasil diupdate.';
                         } else {
                             $pengajuanModel->insert([
@@ -133,10 +171,36 @@ class CheckingController extends BaseController
                                 'nama_cadeb' => $nama,
                                 'nik' => $nik,
                                 'hasil_pep' => 'Tidak Terindikasi',
-                                'hasil_pengecekan' => 'Menunggu',
+                                'hasil_pengecekan' => 'Belum Dicek',
                                 'created_at' => date('Y-m-d H:i:s')
                             ]);
+                            $recordId = $pengajuanModel->getInsertID();
                             $msg = 'Tidak ditemukan di database PPATK. Data baru berhasil ditambahkan ke database internal.';
+                        }
+
+                        // Sync to SQL Server
+                        try {
+                            $sqlsrv = db_connect('sqlsrv');
+                            $sqlData = [
+                                'id_pengecekan' => $recordId,
+                                'Nama_Cadeb'    => strtoupper($nama),
+                                'NIK'           => $nik,
+                                'HasilDtot'     => $existing ? $existing->hasil_pengecekan : 'Belum Dicek',
+                                'Keterangan'    => 'Auto checked via API',
+                                'DiperiksaOleh' => 'API_SYSTEM',
+                                'WaktuPeriksa'  => date('Y-m-d H:i:s'),
+                                'IsProceed'     => 0,
+                                'Hasilpep'      => 'Tidak Terindikasi',
+                            ];
+                            
+                            $existingSql = $sqlsrv->table('HasilPengecekan')->where('id_pengecekan', $recordId)->get()->getRow();
+                            if ($existingSql) {
+                                $sqlsrv->table('HasilPengecekan')->where('id_pengecekan', $recordId)->update($sqlData);
+                            } else {
+                                $sqlsrv->table('HasilPengecekan')->insert($sqlData);
+                            }
+                        } catch (\Exception $e) {
+                            log_message('error', 'Gagal submit ke SQL Server via API: ' . $e->getMessage());
                         }
 
                         return $this->respond([
