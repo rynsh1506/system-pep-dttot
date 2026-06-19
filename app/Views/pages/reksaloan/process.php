@@ -68,13 +68,17 @@
                         </div>
 
                         <?php 
-                            $defaultDttot = $existingCheck ? $existingCheck->hasil_dtot : (empty($matchedRecords) ? 'Tidak Terindikasi' : 'Terindikasi'); 
-                            $defaultPep = $existingCheck ? $existingCheck->hasil_pep : (empty($matchedRecords) ? 'Tidak Terindikasi' : 'Terindikasi'); 
+                            // Only set default if it was already checked previously
+                            $defaultDttot = $existingCheck ? $existingCheck->hasil_dtot : ''; 
+                            $defaultPep = $existingCheck ? $existingCheck->hasil_pep : ''; 
+
+                            // The computed result for auto-filling via JS
+                            $computedDttot = empty($matchedRecords) ? 'Tidak Terindikasi' : 'Terindikasi';
                         ?>
 
                         <div class="form-control mb-4">
                             <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Hasil Pengecekan DTTOT <span class="text-error">*</span></span></label>
-                            <select name="hasil_dtot" class="select select-bordered focus:border-primary focus:outline-none w-full" required>
+                            <select name="hasil_dtot" x-model="form.hasil_dtot" class="select select-bordered focus:border-primary focus:outline-none w-full" required>
                                 <option value="">-- Pilih --</option>
                                 <option value="Tidak Terindikasi" <?= $defaultDttot == 'Tidak Terindikasi' ? 'selected' : '' ?>>Tidak Terindikasi</option>
                                 <option value="Terindikasi" <?= $defaultDttot == 'Terindikasi' ? 'selected' : '' ?>>Terindikasi</option>
@@ -229,6 +233,7 @@ document.addEventListener('alpine:init', () => {
         form: {
             nik: <?= json_encode((string)$debitur['ktp']) ?>,
             nama_cadeb: <?= json_encode((string)$debitur['nama']) ?>,
+            hasil_dtot: <?= json_encode((string)$defaultDttot) ?>,
             hasil_pep: <?= json_encode((string)$defaultPep) ?>
         },
         pepState: 'idle', // idle, loading, result
@@ -239,6 +244,10 @@ document.addEventListener('alpine:init', () => {
         init() {
             // Automatically trigger the scrapper on load
             setTimeout(() => {
+                // Auto-fill DTTOT based on PHP check result if it wasn't already checked
+                if (!this.form.hasil_dtot) {
+                    this.form.hasil_dtot = <?= json_encode($computedDttot) ?>;
+                }
                 this.triggerScrapper();
             }, 500);
         },
