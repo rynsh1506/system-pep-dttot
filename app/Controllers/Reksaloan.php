@@ -16,6 +16,7 @@ class Reksaloan extends BaseController
         $qNik = $this->request->getGet('qNik') ?? '';
         $qKontrak = $this->request->getGet('qKontrak') ?? '';
         
+        $limit = $this->request->getGet('limit') ?? 50;
         $page = (int)($this->request->getGet('page') ?? 1);
 
         return view('pages/reksaloan/index', [
@@ -26,6 +27,7 @@ class Reksaloan extends BaseController
             'qNama'        => $qNama,
             'qNik'         => $qNik,
             'qKontrak'     => $qKontrak,
+            'limit'        => $limit,
             'page'         => $page,
         ]);
     }
@@ -61,7 +63,8 @@ class Reksaloan extends BaseController
         $qNik = $this->request->getGet('qNik') ?? '';
         $qKontrak = $this->request->getGet('qKontrak') ?? '';
         
-        $perPage = 100;
+        $limitParam = $this->request->getGet('limit');
+        $perPage = ($limitParam && is_numeric($limitParam)) ? (int)$limitParam : 50;
         $page = (int)($this->request->getGet('page') ?? 1);
         if ($page < 1) $page = 1;
         $offset = ($page - 1) * $perPage;

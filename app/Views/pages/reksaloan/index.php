@@ -11,7 +11,7 @@
     <!-- Filters -->
     <div class="card bg-base-100 shadow-sm border border-base-200 mb-6">
         <div class="card-body p-4">
-            <form action="<?= base_url('reksaloan') ?>" method="GET" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 items-end">
+            <form action="<?= base_url('reksaloan') ?>" method="GET" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-4 items-end">
                 <div class="form-control w-full">
                     <label class="label pb-1"><span class="label-text text-xs font-semibold uppercase">Bulan</span></label>
                     <select name="bulan" class="select select-bordered select-sm w-full">
@@ -50,6 +50,16 @@
                     <input type="text" name="qNik" id="qNik" value="<?= esc($qNik) ?>" class="input input-bordered input-sm w-full" placeholder="Cari KTP..." />
                 </div>
                 
+                <div class="form-control w-full">
+                    <label class="label pb-1"><span class="label-text text-xs font-semibold uppercase">Tampil</span></label>
+                    <select name="limit" id="limitFilter" class="select select-bordered select-sm w-full" onchange="this.form.submit()">
+                        <option value="50" <?= $limit == 50 ? 'selected' : '' ?>>50 Baris</option>
+                        <option value="100" <?= $limit == 100 ? 'selected' : '' ?>>100 Baris</option>
+                        <option value="200" <?= $limit == 200 ? 'selected' : '' ?>>200 Baris</option>
+                        <option value="500" <?= $limit == 500 ? 'selected' : '' ?>>500 Baris</option>
+                    </select>
+                </div>
+                
                 <div class="form-control w-full flex flex-row gap-2">
                     <button type="submit" class="btn btn-primary btn-sm flex-1">Cari</button>
                     <a href="<?= base_url('reksaloan') ?>" class="btn btn-ghost btn-sm">Reset</a>
@@ -60,6 +70,15 @@
 
     <!-- Table -->
     <div class="card bg-base-100 shadow-sm border border-base-200">
+        <div class="card-body p-4 border-b border-base-200 pagination-container" style="display:none;">
+            <div class="flex justify-between items-center">
+                <span class="text-xs text-base-content/70 total-rows">Total Data: 0</span>
+                <div class="join pagination-buttons">
+                    <!-- Pagination JS -->
+                </div>
+            </div>
+        </div>
+
         <div class="overflow-x-auto">
             <table class="table table-sm table-zebra w-full text-sm">
                 <thead>
@@ -85,10 +104,10 @@
             </table>
         </div>
         
-        <div class="card-body p-4 border-t border-base-200" id="pagination-container" style="display:none;">
+        <div class="card-body p-4 border-t border-base-200 pagination-container" style="display:none;">
             <div class="flex justify-between items-center">
-                <span class="text-xs text-base-content/70" id="total-rows">Total Data: 0</span>
-                <div class="join" id="pagination-buttons">
+                <span class="text-xs text-base-content/70 total-rows">Total Data: 0</span>
+                <div class="join pagination-buttons">
                     <!-- Pagination JS -->
                 </div>
             </div>
@@ -101,9 +120,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchParams = new URLSearchParams(window.location.search);
     const branchSelect = document.getElementById('branchFilter');
     const tbody = document.getElementById('table-body');
-    const paginationContainer = document.getElementById('pagination-container');
-    const totalRowsSpan = document.getElementById('total-rows');
-    const paginationButtons = document.getElementById('pagination-buttons');
+    const paginationContainers = document.querySelectorAll('.pagination-container');
+    const totalRowsSpans = document.querySelectorAll('.total-rows');
+    const paginationButtonsContainers = document.querySelectorAll('.pagination-buttons');
     const currentBranch = searchParams.get('branchFilter') || 'ALL';
 
     // Fetch branches
@@ -173,8 +192,8 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             if (res.totalPages > 1) {
-                paginationContainer.style.display = 'block';
-                totalRowsSpan.textContent = `Total Data: ${res.totalRows}`;
+                paginationContainers.forEach(container => container.style.display = 'block');
+                totalRowsSpans.forEach(span => span.textContent = `Total Data: ${res.totalRows}`);
                 
                 let paramsPrev = new URLSearchParams(searchParams);
                 paramsPrev.set('page', res.page - 1);
@@ -182,11 +201,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 let paramsNext = new URLSearchParams(searchParams);
                 paramsNext.set('page', res.page + 1);
 
-                paginationButtons.innerHTML = `
+                const paginationHtml = `
                     <a href="?${paramsPrev.toString()}" class="join-item btn btn-sm ${res.page <= 1 ? 'btn-disabled' : ''}">«</a>
                     <button class="join-item btn btn-sm">Page ${res.page} / ${res.totalPages}</button>
                     <a href="?${paramsNext.toString()}" class="join-item btn btn-sm ${res.page >= res.totalPages ? 'btn-disabled' : ''}">»</a>
                 `;
+
+                paginationButtonsContainers.forEach(btnContainer => btnContainer.innerHTML = paginationHtml);
             }
         })
         .catch(err => {
