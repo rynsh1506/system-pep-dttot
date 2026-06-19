@@ -211,6 +211,7 @@ document.addEventListener('alpine:init', () => {
         pepResultHtml: '',
         isSaving: false,
         scrapperAbortController: null,
+        csrfToken: '<?= csrf_hash() ?>',
 
         checkDttot() {
             if (this.form.nama_cadeb.trim() === '' && this.form.nik.trim() === '') {
@@ -223,6 +224,7 @@ document.addEventListener('alpine:init', () => {
             const formData = new FormData();
             formData.append('nama_cadeb', this.form.nama_cadeb);
             formData.append('nik', this.form.nik);
+            formData.append('<?= csrf_token() ?>', this.csrfToken);
 
             fetch('<?= route_to('pengajuan.check') ?>', {
                 method: 'POST',
@@ -233,6 +235,7 @@ document.addEventListener('alpine:init', () => {
             })
             .then(res => res.json())
             .then(data => {
+                if (data.csrfHash) this.csrfToken = data.csrfHash;
                 if (data.status === 'success') {
                     this.dttotMatches = data.data;
                     this.form.hasil_pengecekan = this.dttotMatches.length > 0 ? 'Terindikasi' : 'Tidak Terindikasi';
@@ -346,6 +349,7 @@ document.addEventListener('alpine:init', () => {
                     if (this.form.bukti_ss) {
                         formData.append('bukti_ss', this.form.bukti_ss);
                     }
+                    formData.append('<?= csrf_token() ?>', this.csrfToken);
 
                     fetch('<?= route_to('pengajuan.save') ?>', {
                         method: 'POST',
@@ -356,6 +360,7 @@ document.addEventListener('alpine:init', () => {
                     })
                     .then(res => res.json())
                     .then(data => {
+                        if (data.csrfHash) this.csrfToken = data.csrfHash;
                         if (data.status === 'success') {
                             Swal.fire({
                                 icon: 'success',

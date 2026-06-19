@@ -701,7 +701,7 @@ class Home extends BaseController
 
         $data = $model->findAll();
         
-        return $this->response->setJSON(['status' => 'success', 'data' => $data]);
+        return $this->response->setJSON(['status' => 'success', 'data' => $data, 'csrfHash' => csrf_hash()]);
     }
     
     public function savePengajuan()
@@ -715,7 +715,7 @@ class Home extends BaseController
         ];
 
         if (!$this->validate($rules)) {
-            return $this->response->setJSON(['status' => 'error', 'message' => 'Validasi gagal.', 'errors' => $this->validator->getErrors()]);
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Validasi gagal.', 'errors' => $this->validator->getErrors(), 'csrfHash' => csrf_hash()]);
         }
 
         $bukti_ss = $this->request->getFile('bukti_ss');
@@ -764,7 +764,7 @@ class Home extends BaseController
             log_message('error', 'Gagal submit ke SQL Server: ' . $e->getMessage());
         }
         
-        return $this->response->setJSON(['status' => 'success', 'message' => 'Hasil pengecekan berhasil disimpan.', 'redirect' => route_to('pengajuan')]);
+        return $this->response->setJSON(['status' => 'success', 'message' => 'Hasil pengecekan berhasil disimpan.', 'redirect' => route_to('pengajuan'), 'csrfHash' => csrf_hash()]);
     }
     
     public function pengajuanProses($id)
@@ -786,7 +786,7 @@ class Home extends BaseController
         $pengajuan = $model->find($id);
         
         if (!$pengajuan) {
-            return $this->response->setJSON(['status' => 'error', 'message' => 'Pengajuan tidak ditemukan.']);
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Pengajuan tidak ditemukan.', 'csrfHash' => csrf_hash()]);
         }
 
         $rules = [
@@ -797,7 +797,7 @@ class Home extends BaseController
         ];
 
         if (!$this->validate($rules)) {
-            return $this->response->setJSON(['status' => 'error', 'message' => 'Validasi gagal.', 'errors' => $this->validator->getErrors()]);
+            return $this->response->setJSON(['status' => 'error', 'message' => 'Validasi gagal.', 'errors' => $this->validator->getErrors(), 'csrfHash' => csrf_hash()]);
         }
 
         $bukti_ss = $this->request->getFile('bukti_ss');
@@ -839,6 +839,6 @@ class Home extends BaseController
             log_message('error', 'Gagal submit ke SQL Server: ' . $e->getMessage());
         }
         
-        return $this->response->setJSON(['status' => 'success', 'message' => 'Hasil pengecekan berhasil disimpan.', 'redirect' => route_to('pengajuan')]);
+        return $this->response->setJSON(['status' => 'success', 'message' => 'Hasil pengecekan berhasil disimpan.', 'redirect' => route_to('pengajuan'), 'csrfHash' => csrf_hash()]);
     }
 }

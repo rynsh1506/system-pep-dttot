@@ -37,6 +37,7 @@
                     </div>
 
                     <form action="<?= base_url('reksaloan/save') ?>" method="POST" enctype="multipart/form-data">
+                        <?= csrf_field() ?>
                         <input type="hidden" name="no_kontrak" value="<?= esc($debitur['no_kontrak']) ?>" />
                         <input type="hidden" name="nama_debitur" value="<?= esc($debitur['nama']) ?>" />
                         <input type="hidden" name="nik" value="<?= esc($debitur['ktp']) ?>" />
