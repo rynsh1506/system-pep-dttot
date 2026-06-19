@@ -88,21 +88,24 @@ class CheckingController extends BaseController
                     $records = $resData['data']['extracted_data']['data'] ?? [];
                     
                     if (count($records) > 0) {
-                        $terdugaModel = new TerdugaModel();
-                        $existing = $terdugaModel->like('deskripsi', $nik)->first();
+                        $pengajuanModel = new PengajuanDtotModel();
+                        $existing = $pengajuanModel->where('nik', $nik)->first();
                         
                         if ($existing) {
-                            $terdugaModel->update($existing->id, [
-                                'nama' => $nama
+                            $pengajuanModel->update($existing->id, [
+                                'nama_cadeb' => $nama,
+                                'hasil_pep' => 'Terindikasi',
+                                'updated_at' => date('Y-m-d H:i:s')
                             ]);
                             $msg = 'Tercatat dalam Database PEP PPATK eksternal. Data existing di database internal berhasil diupdate.';
                         } else {
-                            $terdugaModel->insert([
-                                'nama' => $nama,
-                                'terduga_type' => 'Orang',
-                                'deskripsi' => $nik,
-                                'created_at' => date('Y-m-d H:i:s'),
-                                'is_pending' => 0
+                            $pengajuanModel->insert([
+                                'tanggal' => date('Y-m-d'),
+                                'nama_cadeb' => $nama,
+                                'nik' => $nik,
+                                'hasil_pep' => 'Terindikasi',
+                                'hasil_pengecekan' => 'Menunggu',
+                                'created_at' => date('Y-m-d H:i:s')
                             ]);
                             $msg = 'Tercatat dalam Database PEP PPATK eksternal. Data baru berhasil ditambahkan ke database internal.';
                         }
@@ -114,11 +117,33 @@ class CheckingController extends BaseController
                             'message' => $msg
                         ]);
                     } else {
+                        $pengajuanModel = new PengajuanDtotModel();
+                        $existing = $pengajuanModel->where('nik', $nik)->first();
+                        
+                        if ($existing) {
+                            $pengajuanModel->update($existing->id, [
+                                'nama_cadeb' => $nama,
+                                'hasil_pep' => 'Tidak Terindikasi',
+                                'updated_at' => date('Y-m-d H:i:s')
+                            ]);
+                            $msg = 'Tidak ditemukan di database PPATK. Data existing di database internal berhasil diupdate.';
+                        } else {
+                            $pengajuanModel->insert([
+                                'tanggal' => date('Y-m-d'),
+                                'nama_cadeb' => $nama,
+                                'nik' => $nik,
+                                'hasil_pep' => 'Tidak Terindikasi',
+                                'hasil_pengecekan' => 'Menunggu',
+                                'created_at' => date('Y-m-d H:i:s')
+                            ]);
+                            $msg = 'Tidak ditemukan di database PPATK. Data baru berhasil ditambahkan ke database internal.';
+                        }
+
                         return $this->respond([
                             'success' => true,
                             'status' => 'Tidak Terindikasi',
                             'source' => 'PPATK_API',
-                            'message' => 'Tidak ditemukan di database PPATK.'
+                            'message' => $msg
                         ]);
                     }
                 }
@@ -128,14 +153,11 @@ class CheckingController extends BaseController
             // Proceed to Fallback internal
         }
 
-        // Fallback to Internal Database 
+        // Fallback to Internal Database (Hanya cek pengajuan_dtot)
         $pengajuanModel = new PengajuanDtotModel();
         $internalPep = $pengajuanModel->where('nik', $nik)->where('hasil_pep', 'Terindikasi')->first();
 
-        $terdugaModel = new TerdugaModel();
-        $terdugaPep = $terdugaModel->like('deskripsi', $nik)->first();
-
-        if ($internalPep || $terdugaPep) {
+        if ($internalPep) {
             return $this->respond([
                 'success' => true,
                 'status' => 'Terindikasi',
