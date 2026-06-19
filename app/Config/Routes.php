@@ -49,3 +49,11 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     
     $routes->get('users', 'Home::users', ['as' => 'users']);
 });
+
+$routes->get('api-docs', static function() { return view('pages/swagger'); });
+
+$routes->group('api/v1', static function ($routes) {
+    $routes->post('login', 'Api\AuthController::login');
+    $routes->post('dttot/check', 'Api\CheckingController::checkDttot', ['filter' => 'apiAuth']);
+    $routes->post('pep/check', 'Api\CheckingController::checkPep', ['filter' => 'apiAuth']);
+});
