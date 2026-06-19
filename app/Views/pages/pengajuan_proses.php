@@ -251,7 +251,6 @@ document.addEventListener('alpine:init', () => {
         },
 
         triggerScrapper() {
-            alert("Tombol Cek Berhasil Ditekan! NIK: " + this.form.nik);
             this.pepState = 'loading';
 
             if (this.scrapperAbortController) {
@@ -301,7 +300,6 @@ document.addEventListener('alpine:init', () => {
                 }
             })
             .catch(err => {
-                alert("API Error: " + err.message);
                 if (err.name === 'AbortError') return;
 
                 this.pepState = 'result';
