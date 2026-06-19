@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Helper function to send email notification when DTTOT or PEP is "Terindikasi"
  * Uses PHPMailer with existing SMTP settings from Reksa Finance mail server
@@ -21,7 +22,8 @@ require_once __DIR__ . '/../vendor/autoload.php';
  * @param string $kontrak    Contract number (optional, for Reksaloan)
  * @return string             Status message for logging
  */
-function sendAlertEmail($nama, $nik, $hasil_dtot, $hasil_pep, $source = 'Pengajuan Cek', $kontrak = '-') {
+function sendAlertEmail($nama, $nik, $hasil_dtot, $hasil_pep, $source = 'Pengajuan Cek', $kontrak = '-')
+{
     // Only send if at least one is "Terindikasi"
     if ($hasil_dtot !== 'Terindikasi' && $hasil_pep !== 'Terindikasi') {
         return '';
@@ -47,26 +49,26 @@ function sendAlertEmail($nama, $nik, $hasil_dtot, $hasil_pep, $source = 'Pengaju
 
         $mail->isHTML(true);
         $mail->SetFrom('10271927@reksafinance.com', 'Sistem DTTOT & PEP');
-        
+
         // Daftar penerima email alert
         $recipients = [
-            'adwin.bhaskoro@reksafinance.com',
-            'robert.syahratoe@reksafinance.com',
-            'ghessa.utomo@reksafinance.com',
-            'triyana.rahmawati@reksafinance.com',
-            'asti.miftahul@reksafinance.com',
-            'julies.barli@reksafinance.com',
-            'rizal.dzalkarnaen@reksafinance.com',
-            'agatha.saputri@reksafinance.com',
-            'credit.ho3@reksafinance.com',
-            'ericho.primadadi@reksafinance.com',
-            'galih.prasetyo@reksafinance.com',
-            'yoseph.halomoan@reksafinance.com',
-            'siti.annisa@reksafinance.com',
-            'nur.azizah@reksafinance.com',
-            'ida.santi@reksafinance.com',
-            'bustaman@reksafinance.com',
-            'hanifah.adiyati@reksafinance.com'
+            // 'adwin.bhaskoro@reksafinance.com',
+            // 'robert.syahratoe@reksafinance.com',
+            // 'ghessa.utomo@reksafinance.com',
+            // 'triyana.rahmawati@reksafinance.com',
+            // 'asti.miftahul@reksafinance.com',
+            // 'julies.barli@reksafinance.com',
+            // 'rizal.dzalkarnaen@reksafinance.com',
+            // 'agatha.saputri@reksafinance.com',
+            // 'credit.ho3@reksafinance.com',
+            // 'ericho.primadadi@reksafinance.com',
+            // 'galih.prasetyo@reksafinance.com',
+            // 'yoseph.halomoan@reksafinance.com',
+            // 'siti.annisa@reksafinance.com',
+            // 'nur.azizah@reksafinance.com',
+            // 'ida.santi@reksafinance.com',
+            // 'bustaman@reksafinance.com',
+            // 'hanifah.adiyati@reksafinance.com'
         ];
 
         foreach ($recipients as $email) {

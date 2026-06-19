@@ -232,6 +232,18 @@ class Reksaloan extends BaseController
             $cekModel->insert($data);
         }
 
+        helper('email');
+        if ($hasilDtot === 'Terindikasi' || $hasilPep === 'Terindikasi') {
+            send_alert_email(
+                $namaDebitur,
+                $nik,
+                $hasilDtot,
+                $hasilPep,
+                'Reksaloan',
+                $noKontrak
+            );
+        }
+
         return redirect()->to('/reksaloan')->with('success', 'Hasil pengecekan reksaloan berhasil disimpan.');
     }
 }

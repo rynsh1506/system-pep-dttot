@@ -115,7 +115,7 @@ class PengajuanProcess extends Component
         $this->matchedRecords = Terduga::where(function ($q) {
             if (!empty(trim($this->nama_cadeb))) {
                 $q->where('nama', 'like', '%' . $this->nama_cadeb . '%')
-                  ->orWhere('deskripsi', 'like', '%' . $this->nama_cadeb . '%');
+                    ->orWhere('deskripsi', 'like', '%' . $this->nama_cadeb . '%');
             }
             if (!empty(trim($this->nik))) {
                 $q->orWhere('deskripsi', 'like', '%' . $this->nik . '%');
@@ -173,27 +173,27 @@ class PengajuanProcess extends Component
         if ($this->hasil_pengecekan === 'Terindikasi' || $this->hasil_pep === 'Terindikasi') {
             try {
                 $recipients = [
-                    'adwin.bhaskoro@reksafinance.com',
-                    'robert.syahratoe@reksafinance.com',
-                    'ghessa.utomo@reksafinance.com',
-                    'triyana.rahmawati@reksafinance.com',
-                    'asti.miftahul@reksafinance.com',
-                    'julies.barli@reksafinance.com',
-                    'rizal.dzalkarnaen@reksafinance.com',
-                    'agatha.saputri@reksafinance.com',
-                    'credit.ho3@reksafinance.com',
-                    'ericho.primadadi@reksafinance.com',
-                    'galih.prasetyo@reksafinance.com',
-                    'yoseph.halomoan@reksafinance.com',
-                    'siti.annisa@reksafinance.com',
-                    'nur.azizah@reksafinance.com',
-                    'ida.santi@reksafinance.com',
-                    'bustaman@reksafinance.com',
-                    'hanifah.adiyati@reksafinance.com'
+                    // 'adwin.bhaskoro@reksafinance.com',
+                    // 'robert.syahratoe@reksafinance.com',
+                    // 'ghessa.utomo@reksafinance.com',
+                    // 'triyana.rahmawati@reksafinance.com',
+                    // 'asti.miftahul@reksafinance.com',
+                    // 'julies.barli@reksafinance.com',
+                    // 'rizal.dzalkarnaen@reksafinance.com',
+                    // 'agatha.saputri@reksafinance.com',
+                    // 'credit.ho3@reksafinance.com',
+                    // 'ericho.primadadi@reksafinance.com',
+                    // 'galih.prasetyo@reksafinance.com',
+                    // 'yoseph.halomoan@reksafinance.com',
+                    // 'siti.annisa@reksafinance.com',
+                    // 'nur.azizah@reksafinance.com',
+                    // 'ida.santi@reksafinance.com',
+                    // 'bustaman@reksafinance.com',
+                    // 'hanifah.adiyati@reksafinance.com'
                 ];
 
                 $checked_by = Auth::user()->full_name ?? Auth::user()->username ?? 'Unknown';
-                
+
                 Mail::to($recipients)->send(new AlertTerindikasiMail(
                     $this->pengajuan->nama_cadeb,
                     $this->pengajuan->nik,

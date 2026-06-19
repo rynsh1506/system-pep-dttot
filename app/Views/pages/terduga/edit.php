@@ -23,12 +23,12 @@
                 <input type="hidden" name="id" value="<?= esc($terduga->id) ?>">
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <div class="form-control">
-                        <label class="label font-bold text-base-content/90">Nama Lengkap / Korporasi</label>
+                    <div class="form-control w-full">
+                        <label class="label"><span class="label-text font-bold text-base-content/90">Nama Lengkap / Korporasi</span></label>
                         <input type="text" name="nama" value="<?= esc($terduga->nama) ?>" class="input input-bordered w-full focus:border-primary focus:outline-none" required>
                     </div>
-                    <div class="form-control">
-                        <label class="label font-bold text-base-content/90">Tipe Terduga</label>
+                    <div class="form-control w-full">
+                        <label class="label"><span class="label-text font-bold text-base-content/90">Tipe Terduga</span></label>
                         <select name="terduga_type" class="select select-bordered w-full focus:border-primary focus:outline-none" required>
                             <option value="Orang" <?= $terduga->terduga_type === 'Orang' ? 'selected' : '' ?>>Orang</option>
                             <option value="Korporasi" <?= $terduga->terduga_type === 'Korporasi' ? 'selected' : '' ?>>Korporasi</option>
@@ -37,35 +37,35 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <div class="form-control">
-                        <label class="label font-bold text-base-content/90">Kode Densus / Khusus</label>
+                    <div class="form-control w-full">
+                        <label class="label"><span class="label-text font-bold text-base-content/90">Kode Densus / Khusus</span></label>
                         <input type="text" name="kode_densus" value="<?= esc($terduga->kode_densus) ?>" class="input input-bordered w-full font-mono text-sm focus:border-primary focus:outline-none">
                     </div>
-                    <div class="form-control">
-                        <label class="label font-bold text-base-content/90">WN / Asal Negara</label>
+                    <div class="form-control w-full">
+                        <label class="label"><span class="label-text font-bold text-base-content/90">WN / Asal Negara</span></label>
                         <input type="text" name="wn_asal_negara" value="<?= esc($terduga->wn_asal_negara) ?>" class="input input-bordered w-full focus:border-primary focus:outline-none" required>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <div class="form-control">
-                        <label class="label font-bold text-base-content/90">Tempat Lahir</label>
+                    <div class="form-control w-full">
+                        <label class="label"><span class="label-text font-bold text-base-content/90">Tempat Lahir</span></label>
                         <input type="text" name="tempat_lahir" value="<?= esc($terduga->tempat_lahir) ?>" class="input input-bordered w-full focus:border-primary focus:outline-none">
                     </div>
-                    <div class="form-control">
-                        <label class="label font-bold text-base-content/90">Tanggal Lahir</label>
+                    <div class="form-control w-full">
+                        <label class="label"><span class="label-text font-bold text-base-content/90">Tanggal Lahir</span></label>
                         <input type="date" name="tanggal_lahir" value="<?= esc($terduga->tanggal_lahir) ?>" class="input input-bordered w-full focus:border-primary focus:outline-none">
                     </div>
                 </div>
 
-                <div class="form-control mb-6">
-                    <label class="label font-bold text-base-content/90">Deskripsi / Keterangan</label>
-                    <textarea name="deskripsi" class="textarea textarea-bordered h-24 focus:border-primary focus:outline-none" required><?= esc($terduga->deskripsi) ?></textarea>
+                <div class="form-control w-full mb-6">
+                    <label class="label"><span class="label-text font-bold text-base-content/90">Deskripsi / Keterangan</span></label>
+                    <textarea name="deskripsi" class="textarea textarea-bordered w-full h-32 focus:border-primary focus:outline-none" required><?= esc($terduga->deskripsi) ?></textarea>
                 </div>
 
-                <div class="form-control mb-10">
-                    <label class="label font-bold text-base-content/90">Alamat</label>
-                    <textarea name="alamat" class="textarea textarea-bordered h-20 focus:border-primary focus:outline-none"><?= esc($terduga->alamat) ?></textarea>
+                <div class="form-control w-full mb-10">
+                    <label class="label"><span class="label-text font-bold text-base-content/90">Alamat</span></label>
+                    <textarea name="alamat" class="textarea textarea-bordered w-full h-24 focus:border-primary focus:outline-none"><?= esc($terduga->alamat) ?></textarea>
                 </div>
 
                 <div class="flex items-center justify-end gap-3 border-t border-base-200 pt-6">
