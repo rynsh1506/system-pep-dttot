@@ -33,7 +33,7 @@
                         <div class="form-control mb-4">
                             <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Nama Terdaftar <span class="text-error">*</span></span></label>
                             <div class="join w-full">
-                                <input x-model="form.nama_cadeb" @input.debounce.500ms="checkDttot()" type="text" placeholder="Masukkan nama..." class="input input-bordered focus:border-primary focus:outline-none w-full font-bold join-item" required />
+                                <input x-model="form.nama_cadeb" type="text" placeholder="Masukkan nama..." class="input input-bordered focus:border-primary focus:outline-none w-full font-bold join-item" required />
                                 <button type="button" @click="checkDttot()" class="btn btn-primary join-item">Cek</button>
                             </div>
                         </div>
@@ -41,7 +41,7 @@
                         <div class="form-control mb-4">
                             <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">NIK / Identitas <span class="text-error">*</span></span></label>
                             <div class="join w-full">
-                                <input x-model="form.nik" @input.debounce.500ms="checkDttot(); triggerScrapper()" type="text" placeholder="Masukkan NIK 16 digit..." class="input input-bordered focus:border-primary focus:outline-none w-full font-mono font-semibold join-item" required />
+                                <input x-model="form.nik" type="text" placeholder="Masukkan NIK 16 digit..." class="input input-bordered focus:border-primary focus:outline-none w-full font-mono font-semibold join-item" required />
                                 <button type="button" @click="triggerScrapper()" class="btn btn-primary join-item">Cek</button>
                             </div>
                         </div>
