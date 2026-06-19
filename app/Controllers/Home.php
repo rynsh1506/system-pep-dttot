@@ -680,14 +680,22 @@ class Home extends BaseController
         $model = new \App\Models\TerdugaModel();
         
         $model->groupStart();
+        $hasCondition = false;
+
         if (!empty(trim($nama_cadeb))) {
             $model->groupStart()
                   ->like('nama', $nama_cadeb)
                   ->orLike('deskripsi', $nama_cadeb)
                   ->groupEnd();
+            $hasCondition = true;
         }
+
         if (!empty(trim($nik))) {
-            $model->orLike('deskripsi', $nik);
+            if ($hasCondition) {
+                $model->orLike('deskripsi', $nik);
+            } else {
+                $model->like('deskripsi', $nik);
+            }
         }
         $model->groupEnd();
 

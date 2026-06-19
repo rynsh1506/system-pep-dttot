@@ -124,3 +124,8 @@ _modules/*
 
 /results/
 /phpunit*.xml
+
+# Laravel Leftovers
+node_modules/
+public/build/
+storage/

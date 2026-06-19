@@ -250,5 +250,24 @@ class Database extends Config
         if (ENVIRONMENT === 'testing') {
             $this->defaultGroup = 'tests';
         }
+
+        // Seamless integration with Laravel's .env file
+        $this->default['hostname'] = env('DB_DTOT_HOST', $this->default['hostname']);
+        $this->default['database'] = env('DB_DTOT_DATABASE', $this->default['database']);
+        $this->default['username'] = env('DB_DTOT_USERNAME', $this->default['username']);
+        $this->default['password'] = env('DB_DTOT_PASSWORD', $this->default['password']);
+        $this->default['port']     = env('DB_DTOT_PORT', $this->default['port']);
+
+        $this->cadeb['hostname'] = env('DB_CADEB_HOST', $this->cadeb['hostname']);
+        $this->cadeb['database'] = env('DB_CADEB_DATABASE', $this->cadeb['database']);
+        $this->cadeb['username'] = env('DB_CADEB_USERNAME', $this->cadeb['username']);
+        $this->cadeb['password'] = env('DB_CADEB_PASSWORD', $this->cadeb['password']);
+        $this->cadeb['port']     = env('DB_CADEB_PORT', $this->cadeb['port']);
+
+        $this->sqlsrv['hostname'] = env('DB_SQLSRV_HOST', $this->sqlsrv['hostname']);
+        $this->sqlsrv['database'] = env('DB_SQLSRV_DATABASE', $this->sqlsrv['database']);
+        $this->sqlsrv['username'] = env('DB_SQLSRV_USERNAME', $this->sqlsrv['username']);
+        $this->sqlsrv['password'] = env('DB_SQLSRV_PASSWORD', $this->sqlsrv['password']);
+        $this->sqlsrv['port']     = env('DB_SQLSRV_PORT', $this->sqlsrv['port']);
     }
 }

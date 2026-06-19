@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitadc9bd43306081cb5d5239031dbe209b
+class ComposerStaticInit98eb8bd3e416fee1973366079dd34177
 {
     public static $files = array (
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
@@ -139,7 +139,9 @@ class ComposerStaticInitadc9bd43306081cb5d5239031dbe209b
         'App\\Controllers\\AuthController' => __DIR__ . '/../..' . '/app/Controllers/AuthController.php',
         'App\\Controllers\\BaseController' => __DIR__ . '/../..' . '/app/Controllers/BaseController.php',
         'App\\Controllers\\Home' => __DIR__ . '/../..' . '/app/Controllers/Home.php',
+        'App\\Controllers\\Reksaloan' => __DIR__ . '/../..' . '/app/Controllers/Reksaloan.php',
         'App\\Filters\\AuthFilter' => __DIR__ . '/../..' . '/app/Filters/AuthFilter.php',
+        'App\\Models\\CekReksaloanModel' => __DIR__ . '/../..' . '/app/Models/CekReksaloanModel.php',
         'App\\Models\\ChangeRequestModel' => __DIR__ . '/../..' . '/app/Models/ChangeRequestModel.php',
         'App\\Models\\PengajuanDtotModel' => __DIR__ . '/../..' . '/app/Models/PengajuanDtotModel.php',
         'App\\Models\\TerdugaModel' => __DIR__ . '/../..' . '/app/Models/TerdugaModel.php',
@@ -3219,10 +3221,10 @@ class ComposerStaticInitadc9bd43306081cb5d5239031dbe209b
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitadc9bd43306081cb5d5239031dbe209b::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitadc9bd43306081cb5d5239031dbe209b::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInitadc9bd43306081cb5d5239031dbe209b::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInitadc9bd43306081cb5d5239031dbe209b::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit98eb8bd3e416fee1973366079dd34177::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit98eb8bd3e416fee1973366079dd34177::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit98eb8bd3e416fee1973366079dd34177::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit98eb8bd3e416fee1973366079dd34177::$classMap;
 
         }, null, ClassLoader::class);
     }
