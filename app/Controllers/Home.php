@@ -748,8 +748,8 @@ class Home extends BaseController
 
         // SQL Server
         try {
-            $sqlsrv = \Config\Database::connect('sqlsrv');
-            $sqlsrv->table('HasilPengecekan')->insert([
+            $sqlsrv = db_connect('sqlsrv');
+            $sqlData = [
                 'id_pengecekan' => $insertId,
                 'Nama_Cadeb'    => strtoupper($this->request->getPost('nama_cadeb')),
                 'NIK'           => $this->request->getPost('nik'),
@@ -759,7 +759,14 @@ class Home extends BaseController
                 'WaktuPeriksa'  => date('Y-m-d H:i:s'),
                 'IsProceed'     => 0,
                 'Hasilpep'      => $this->request->getPost('hasil_pep'),
-            ]);
+            ];
+            
+            $existing = $sqlsrv->table('HasilPengecekan')->where('id_pengecekan', $insertId)->get()->getRow();
+            if ($existing) {
+                $sqlsrv->table('HasilPengecekan')->where('id_pengecekan', $insertId)->update($sqlData);
+            } else {
+                $sqlsrv->table('HasilPengecekan')->insert($sqlData);
+            }
         } catch (\Exception $e) {
             log_message('error', 'Gagal submit ke SQL Server: ' . $e->getMessage());
         }
@@ -823,8 +830,8 @@ class Home extends BaseController
 
         // SQL Server
         try {
-            $sqlsrv = \Config\Database::connect('sqlsrv');
-            $sqlsrv->table('HasilPengecekan')->insert([
+            $sqlsrv = db_connect('sqlsrv');
+            $sqlData = [
                 'id_pengecekan' => $id,
                 'Nama_Cadeb'    => strtoupper($this->request->getPost('nama_cadeb')),
                 'NIK'           => $this->request->getPost('nik'),
@@ -834,7 +841,14 @@ class Home extends BaseController
                 'WaktuPeriksa'  => date('Y-m-d H:i:s'),
                 'IsProceed'     => 0,
                 'Hasilpep'      => $this->request->getPost('hasil_pep'),
-            ]);
+            ];
+            
+            $existing = $sqlsrv->table('HasilPengecekan')->where('id_pengecekan', $id)->get()->getRow();
+            if ($existing) {
+                $sqlsrv->table('HasilPengecekan')->where('id_pengecekan', $id)->update($sqlData);
+            } else {
+                $sqlsrv->table('HasilPengecekan')->insert($sqlData);
+            }
         } catch (\Exception $e) {
             log_message('error', 'Gagal submit ke SQL Server: ' . $e->getMessage());
         }

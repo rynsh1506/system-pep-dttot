@@ -104,13 +104,14 @@
                         <th class="text-xs font-semibold uppercase w-64">Keterangan</th>
                         <th class="text-xs font-semibold uppercase">Pemeriksa</th>
                         <th class="text-xs font-semibold uppercase">Waktu Cek</th>
+                        <th class="text-xs font-semibold uppercase text-center">Bukti</th>
                         <th class="text-xs font-semibold uppercase text-center w-24">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (empty($submissions)) : ?>
                         <tr>
-                            <td colspan="10" class="text-center py-12 text-base-content/30">
+                            <td colspan="11" class="text-center py-12 text-base-content/30">
                                 <p>Tidak ada data pada rentang tanggal yang dipilih.</p>
                             </td>
                         </tr>
@@ -122,22 +123,22 @@
                                 <td class="font-mono text-xs"><?= esc($row->nik) ?></td>
                                 <td><span class="badge badge-ghost badge-sm whitespace-nowrap"><?= esc($row->kategori ?? 'Mobile') ?></span></td>
                                 <td>
-                                    <?php 
-                                    $dttotClass = match($row->hasil_pengecekan ?? '') {
+                                    <?php
+                                    $dttotClass = match ($row->hasil_pengecekan ?? '') {
                                         'Terindikasi' => 'badge-error text-white',
                                         'Tidak Terindikasi' => 'badge-success text-white',
                                         default => 'badge-outline text-base-content',
-                                    }; 
+                                    };
                                     ?>
                                     <span class="badge <?= $dttotClass ?> badge-sm font-medium whitespace-nowrap"><?= esc($row->hasil_pengecekan ?? 'Belum Dicek') ?></span>
                                 </td>
                                 <td>
-                                    <?php 
-                                    $pepClass = match($row->hasil_pep ?? '') {
+                                    <?php
+                                    $pepClass = match ($row->hasil_pep ?? '') {
                                         'Terindikasi' => 'badge-error text-white',
                                         'Tidak Terindikasi' => 'badge-success text-white',
                                         default => 'badge-outline text-base-content',
-                                    }; 
+                                    };
                                     ?>
                                     <span class="badge <?= $pepClass ?> badge-sm font-medium whitespace-nowrap"><?= esc($row->hasil_pep ?? '-') ?></span>
                                 </td>
@@ -145,12 +146,16 @@
                                 <td class="text-xs"><?= esc($row->checker_name ?? '-') ?></td>
                                 <td class="text-xs"><?= $row->checked_at ? date('d/m/Y H:i', strtotime($row->checked_at)) : '-' ?></td>
                                 <td class="text-center">
+                                    <?php if ($row->bukti_ss): ?>
+                                        <a href="<?= base_url($row->bukti_ss) ?>" target="_blank" class="btn btn-ghost btn-xs text-primary" title="Lihat Bukti">
+                                            <i class="fa-solid fa-image"></i>Lihat
+                                        </a>
+                                    <?php else: ?>
+                                        <span class="text-xs text-base-content/40">-</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="text-center">
                                     <div class="flex items-center justify-center gap-1">
-                                        <?php if($row->bukti_ss): ?>
-                                            <a href="<?= base_url($row->bukti_ss) ?>" target="_blank" class="btn btn-ghost btn-xs text-primary btn-square" title="Lihat Bukti">
-                                                <i class="fa-solid fa-image"></i>
-                                            </a>
-                                        <?php endif; ?>
                                         <a href="<?= route_to('pengajuan.proses', $row->id) ?>" class="btn btn-xs btn-warning btn-square" title="Cek Detail">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
                                                 <path d="M5.433 13.917l1.262-3.155A4 4 0 0 1 7.58 9.42l6.92-6.918a2.121 2.121 0 0 1 3 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 0 1-.65-.65Z" />
