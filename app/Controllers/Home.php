@@ -707,7 +707,6 @@ class Home extends BaseController
     public function savePengajuan()
     {
         $rules = [
-            'tanggal'          => 'required|valid_date',
             'kategori'         => 'required',
             'nama_cadeb'       => 'required|min_length[3]',
             'nik'              => 'required|min_length[5]',
@@ -730,7 +729,7 @@ class Home extends BaseController
         $model = new \App\Models\PengajuanDtotModel();
         
         $data = [
-            'tanggal'          => $this->request->getPost('tanggal'),
+            'tanggal'          => date('Y-m-d'),
             'kategori'         => $this->request->getPost('kategori'),
             'nama_cadeb'       => strtoupper($this->request->getPost('nama_cadeb')),
             'nik'              => $this->request->getPost('nik'),

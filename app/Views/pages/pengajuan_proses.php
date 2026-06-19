@@ -228,6 +228,11 @@ document.addEventListener('alpine:init', () => {
 
         init() {
             this.checkDttot();
+            
+            // Automatically trigger the scrapper on load
+            setTimeout(() => {
+                this.triggerScrapper();
+            }, 500);
         },
 
         checkDttot() {

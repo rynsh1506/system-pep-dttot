@@ -20,10 +20,6 @@
                     </h2>
 
                     <form id="mainForm" @submit.prevent="savePengajuan">
-                        <div class="form-control mb-4">
-                            <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Tanggal <span class="text-error">*</span></span></label>
-                            <input type="date" x-model="form.tanggal" class="input input-bordered focus:border-primary focus:outline-none w-full" required />
-                        </div>
 
                         <div class="form-control mb-4">
                             <label class="label pb-1"><span class="label-text text-xs font-bold text-base-content/70 uppercase">Kategori <span class="text-error">*</span></span></label>
@@ -200,7 +196,6 @@
 document.addEventListener('alpine:init', () => {
     Alpine.data('pengajuanForm', () => ({
         form: {
-            tanggal: new Date().toISOString().split('T')[0],
             kategori: 'Calon Debitur',
             nama_cadeb: '',
             nik: '',
@@ -344,7 +339,6 @@ document.addEventListener('alpine:init', () => {
                     this.isSaving = true;
 
                     const formData = new FormData();
-                    formData.append('tanggal', this.form.tanggal);
                     formData.append('kategori', this.form.kategori);
                     formData.append('nama_cadeb', this.form.nama_cadeb);
                     formData.append('nik', this.form.nik);
