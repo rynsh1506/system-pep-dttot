@@ -150,14 +150,9 @@
                                             <a href="<?= base_url($row->bukti_ss) ?>" target="_blank" class="btn btn-ghost btn-xs text-primary btn-square" title="Lihat Bukti">
                                                 <i class="fa-solid fa-image"></i>
                                             </a>
-                                        <?php else: ?>
-                                            <span class="text-base-content/30 w-6 text-center">-</span>
                                         <?php endif; ?>
-                                        <a href="<?= route_to('pengajuan.proses', $row->id) ?>" class="btn btn-xs btn-primary btn-square" title="Cek Detail">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
-                                                <path d="M10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" />
-                                                <path fill-rule="evenodd" d="M.664 10.59a1.651 1.651 0 010-1.186A10.004 10.004 0 0110 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0110 17c-4.257 0-7.893-2.66-9.336-6.41zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
-                                            </svg>
+                                        <a href="<?= route_to('pengajuan.proses', $row->id) ?>" class="btn btn-xs btn-primary font-medium" title="Cek Detail">
+                                            Detail
                                         </a>
                                     </div>
                                 </td>
