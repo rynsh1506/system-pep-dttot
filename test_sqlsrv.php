@@ -1,26 +1,38 @@
 <?php
 require 'vendor/autoload.php';
 
-$host = '10.27.19.12';
-$user = 'sa';
-$pass = 'Bintang7';
-$db   = 'KRF';
+$serverName = "10.27.19.12, 1433";
+$connectionOptions = [
+    "Database" => "KRF",
+    "Uid" => "sa",
+    "PWD" => "Bintang7",
+    "TrustServerCertificate" => true
+];
 
-echo "Testing sqlsrv extension...\n";
-if (!extension_loaded('sqlsrv') && !extension_loaded('pdo_sqlsrv')) {
-    echo "ERROR: sqlsrv or pdo_sqlsrv extension is NOT loaded!\n";
+echo "Testing SQLSRV extension...\n";
+if (!function_exists('sqlsrv_connect')) {
+    echo "ERROR: sqlsrv_connect function does not exist. Is the extension installed?\n";
+    exit(1);
+}
+
+$conn = sqlsrv_connect($serverName, $connectionOptions);
+if ($conn === false) {
+    echo "ERROR: Could not connect.\n";
+    print_r(sqlsrv_errors());
+    exit(1);
+}
+
+echo "SUCCESS: Connected to SQL Server!\n";
+$sql = "SELECT TOP 1 * FROM Branch";
+$stmt = sqlsrv_query($conn, $sql);
+if ($stmt === false) {
+    echo "ERROR: Query failed.\n";
+    print_r(sqlsrv_errors());
 } else {
-    echo "Extension is loaded.\n";
+    echo "SUCCESS: Query executed. Rows:\n";
+    while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+        print_r($row);
+    }
 }
-
-try {
-    $conn = new PDO("sqlsrv:Server=$host;Database=$db;Encrypt=0;TrustServerCertificate=1", $user, $pass);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    echo "Connected successfully to SQL Server!\n";
-    
-    $stmt = $conn->query("SELECT TOP 5 * FROM Agreement");
-    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    print_r($rows);
-} catch (PDOException $e) {
-    echo "Connection failed: " . $e->getMessage() . "\n";
-}
+sqlsrv_free_stmt($stmt);
+sqlsrv_close($conn);

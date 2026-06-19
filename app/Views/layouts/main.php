@@ -190,11 +190,11 @@
                             try {
                                 $db = \Config\Database::connect();
                                 if (session()->get('role_level') == 2) {
-                                    $pendingCount = $db->table('pengajuan_dtot')->where('status', 'PENDING_SPV')->countAllResults();
+                                    $pendingCount = $db->table('change_requests')->where('status', 'PENDING_SPV')->countAllResults();
                                 } elseif (session()->get('role_level') == 3) {
-                                    $pendingCount = $db->table('pengajuan_dtot')->where('status', 'PENDING_MANAGER')->countAllResults();
+                                    $pendingCount = $db->table('change_requests')->where('status', 'PENDING_MANAGER')->countAllResults();
                                 } else {
-                                    $pendingCount = $db->table('pengajuan_dtot')->whereIn('status', ['PENDING_SPV', 'PENDING_MANAGER'])->countAllResults();
+                                    $pendingCount = $db->table('change_requests')->whereIn('status', ['PENDING_SPV', 'PENDING_MANAGER'])->countAllResults();
                                 }
                             } catch (\Exception $e) {}
                         ?>
