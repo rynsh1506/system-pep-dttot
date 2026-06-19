@@ -102,8 +102,8 @@
                     </div>
 
                     <div x-show="pepState === 'idle'" class="text-center p-6 bg-base-200/50 border border-dashed border-base-300 rounded-lg mt-3">
-                        <p class="font-semibold text-base-content/50 m-0">Menunggu Input NIK...</p>
-                        <p class="text-xs text-base-content/40 mt-1 mb-0">API PPATK akan berjalan otomatis setelah NIK diketik 10 digit.</p>
+                        <p class="font-semibold text-base-content/50 m-0">Menunggu Inisialisasi API...</p>
+                        <p class="text-xs text-base-content/40 mt-1 mb-0">Klik tombol 'Cek API PEP' untuk memulai proses otomatis.</p>
                     </div>
 
                     <div x-show="pepState === 'loading'" style="display: none;" class="text-center p-6 bg-base-200/50 border border-dashed border-base-300 rounded-lg mt-3">
