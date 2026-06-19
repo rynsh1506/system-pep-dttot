@@ -13,7 +13,13 @@
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
                     <path fill-rule="evenodd" d="M5.5 17a4.5 4.5 0 0 1-1.44-8.765 4.5 4.5 0 0 1 8.302-3.046 3.5 3.5 0 0 1 4.504 4.272A4 4 0 0 1 15 17H5.5Zm3.75-2.75a.75.75 0 0 0 1.5 0V9.66l1.95 2.1a.75.75 0 1 0 1.1-1.02l-3.25-3.5a.75.75 0 0 0-1.1 0l-3.25 3.5a.75.75 0 1 0 1.1 1.02l1.95-2.1v4.59Z" clip-rule="evenodd"/>
                 </svg>
-                Upload
+                Upload Data DTTOT
+            </a>
+            <a href="<?= route_to('terduga.tambah') ?>" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-success hover:bg-success/90 active:scale-[0.98] text-success-content text-sm font-semibold transition-all shadow-sm shadow-success/20">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                    <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
+                </svg>
+                Tambah Data Satuan
             </a>
             <a href="<?= route_to('search') ?>" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary hover:bg-primary/90 active:scale-[0.98] text-primary-content text-sm font-semibold transition-all shadow-sm shadow-primary/20">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
@@ -91,12 +97,6 @@
         <div class="px-6 py-4 border-b border-base-200">
             <div class="flex flex-row items-center justify-between mb-4">
                 <h2 class="text-base font-bold text-base-content">Data Terduga Terbaru</h2>
-                <a href="<?= route_to('search') ?>" class="btn btn-xs btn-outline btn-primary rounded-full">
-                    Lihat Semua
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-3.5 h-3.5">
-                        <path fill-rule="evenodd" d="M2 8a.75.75 0 0 1 .75-.75h8.69L8.22 4.03a.75.75 0 0 1 1.06-1.06l4.5 4.5a.75.75 0 0 1 0 1.06l-4.5 4.5a.75.75 0 0 1-1.06-1.06l3.22-3.22H2.75A.75.75 0 0 1 2 8Z" clip-rule="evenodd"/>
-                    </svg>
-                </a>
             </div>
             <div class="flex flex-row flex-wrap items-center justify-between gap-4">
                 <div class="flex items-center gap-2">

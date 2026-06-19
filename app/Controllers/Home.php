@@ -110,6 +110,62 @@ class Home extends BaseController
         ]);
     }
 
+    public function terdugaTambah()
+    {
+        if (session()->get('role_level') != 1 && session()->get('role_level') != 4) {
+            return redirect()->to('/dashboard')->with('error', 'Anda tidak memiliki akses.');
+        }
+
+        return view('pages/terduga/tambah', [
+            'title' => 'Tambah Data DTTOT Satuan'
+        ]);
+    }
+
+    public function terdugaStore()
+    {
+        if (session()->get('role_level') != 1 && session()->get('role_level') != 4) {
+            return redirect()->to('/dashboard')->with('error', 'Anda tidak memiliki akses.');
+        }
+
+        $data = [
+            'nama' => $this->request->getPost('nama'),
+            'terduga_type' => $this->request->getPost('terduga_type'),
+            'kode_densus' => $this->request->getPost('kode_densus'),
+            'tempat_lahir' => $this->request->getPost('tempat_lahir'),
+            'tanggal_lahir' => $this->request->getPost('tanggal_lahir') ?: null,
+            'wn_asal_negara' => $this->request->getPost('wn_asal_negara'),
+            'deskripsi' => $this->request->getPost('deskripsi'),
+            'alamat' => $this->request->getPost('alamat'),
+            'kategori_organisasi' => $this->request->getPost('kategori_organisasi') ?: null,
+            'created_at' => date('Y-m-d H:i:s')
+        ];
+
+        $db = \Config\Database::connect();
+        
+        if (session()->get('role_level') == 4) {
+            // Admin directly inserts
+            $data['is_pending'] = 0;
+            $db->table('terduga')->insert($data);
+            return redirect()->to("/dashboard")->with('success', 'Data berhasil ditambahkan.');
+        } else {
+            // Staff creates pending record and change request
+            $data['is_pending'] = 1;
+            $db->table('terduga')->insert($data);
+            $insertId = $db->insertID();
+
+            $dataJson = json_encode(array_merge(['id' => $insertId], $data));
+            $db->table('change_requests')->insert([
+                'target_id' => $insertId,
+                'request_type' => 'ADD',
+                'data_json' => $dataJson,
+                'requester_id' => session()->get('user_id'),
+                'status' => 'PENDING_SPV',
+                'created_at' => date('Y-m-d H:i:s')
+            ]);
+            return redirect()->to('/dashboard')->with('success', 'Data ditambahkan dan menunggu persetujuan.');
+        }
+    }
+
     public function terdugaUpdate()
     {
         if (session()->get('role_level') != 1 && session()->get('role_level') != 4) {
@@ -126,6 +182,7 @@ class Home extends BaseController
             'wn_asal_negara' => $this->request->getPost('wn_asal_negara'),
             'deskripsi' => $this->request->getPost('deskripsi'),
             'alamat' => $this->request->getPost('alamat'),
+            'kategori_organisasi' => $this->request->getPost('kategori_organisasi') ?: null,
         ];
 
         $db = \Config\Database::connect();
@@ -770,6 +827,16 @@ class Home extends BaseController
         } catch (\Exception $e) {
             log_message('error', 'Gagal submit ke SQL Server: ' . $e->getMessage());
         }
+        helper('email');
+        if ($this->request->getPost('hasil_pengecekan') === 'Terindikasi' || $this->request->getPost('hasil_pep') === 'Terindikasi') {
+            send_alert_email(
+                strtoupper($this->request->getPost('nama_cadeb')),
+                $this->request->getPost('nik'),
+                $this->request->getPost('hasil_pengecekan'),
+                $this->request->getPost('hasil_pep'),
+                'Manual Input (' . $this->request->getPost('kategori') . ')'
+            );
+        }
         
         return $this->response->setJSON(['status' => 'success', 'message' => 'Hasil pengecekan berhasil disimpan.', 'redirect' => route_to('pengajuan'), 'csrfHash' => csrf_hash()]);
     }
@@ -851,6 +918,16 @@ class Home extends BaseController
             }
         } catch (\Exception $e) {
             log_message('error', 'Gagal submit ke SQL Server: ' . $e->getMessage());
+        }
+        helper('email');
+        if ($this->request->getPost('hasil_pengecekan') === 'Terindikasi' || $this->request->getPost('hasil_pep') === 'Terindikasi') {
+            send_alert_email(
+                strtoupper($this->request->getPost('nama_cadeb')),
+                $this->request->getPost('nik'),
+                $this->request->getPost('hasil_pengecekan'),
+                $this->request->getPost('hasil_pep'),
+                'Proses Pengecekan'
+            );
         }
         
         return $this->response->setJSON(['status' => 'success', 'message' => 'Hasil pengecekan berhasil disimpan.', 'redirect' => route_to('pengajuan'), 'csrfHash' => csrf_hash()]);

@@ -17,20 +17,20 @@
     </div>
 
     <!-- Filter -->
-    <form action="" method="get" class="card bg-base-100 border border-base-200 shadow-sm mb-5">
+    <form action="" method="get" class="card bg-base-100 border border-base-200 shadow-sm mb-5" x-data x-ref="searchForm">
         <div class="card-body p-4">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
                 <div class="form-control w-full">
                     <label class="label pb-1"><span class="label-text text-xs font-semibold uppercase">Dari Tanggal</span></label>
-                    <input type="date" name="start_date" id="start_date" value="<?= esc($startDate) ?>" max="<?= esc($endDate) ?>" class="input input-bordered input-sm w-full" onchange="document.getElementById('end_date').min = this.value" />
+                    <input type="date" name="start_date" id="start_date" value="<?= esc($startDate) ?>" max="<?= esc($endDate) ?>" class="input input-bordered input-sm w-full" onchange="document.getElementById('end_date').min = this.value" @change="$refs.searchForm.submit()" />
                 </div>
                 <div class="form-control w-full">
                     <label class="label pb-1"><span class="label-text text-xs font-semibold uppercase">Sampai Tanggal</span></label>
-                    <input type="date" name="end_date" id="end_date" value="<?= esc($endDate) ?>" min="<?= esc($startDate) ?>" max="<?= date('Y-m-d') ?>" class="input input-bordered input-sm w-full" onchange="document.getElementById('start_date').max = this.value" />
+                    <input type="date" name="end_date" id="end_date" value="<?= esc($endDate) ?>" min="<?= esc($startDate) ?>" max="<?= date('Y-m-d') ?>" class="input input-bordered input-sm w-full" onchange="document.getElementById('start_date').max = this.value" @change="$refs.searchForm.submit()" />
                 </div>
                 <div class="form-control w-full">
                     <label class="label pb-1"><span class="label-text text-xs font-semibold uppercase">Hasil DTTOT</span></label>
-                    <select name="filterDttot" class="select select-bordered select-sm w-full">
+                    <select name="filterDttot" class="select select-bordered select-sm w-full" @change="$refs.searchForm.submit()">
                         <option value="All" <?= $filterDttot == 'All' ? 'selected' : '' ?>>Semua</option>
                         <option value="Terindikasi" <?= $filterDttot == 'Terindikasi' ? 'selected' : '' ?>>Terindikasi</option>
                         <option value="Tidak Terindikasi" <?= $filterDttot == 'Tidak Terindikasi' ? 'selected' : '' ?>>Tidak Terindikasi</option>
@@ -39,7 +39,7 @@
                 </div>
                 <div class="form-control w-full">
                     <label class="label pb-1"><span class="label-text text-xs font-semibold uppercase">Hasil PEP</span></label>
-                    <select name="filterPep" class="select select-bordered select-sm w-full">
+                    <select name="filterPep" class="select select-bordered select-sm w-full" @change="$refs.searchForm.submit()">
                         <option value="All" <?= $filterPep == 'All' ? 'selected' : '' ?>>Semua</option>
                         <option value="Terindikasi" <?= $filterPep == 'Terindikasi' ? 'selected' : '' ?>>Terindikasi</option>
                         <option value="Tidak Terindikasi" <?= $filterPep == 'Tidak Terindikasi' ? 'selected' : '' ?>>Tidak Terindikasi</option>
@@ -47,8 +47,12 @@
                     </select>
                 </div>
                 <div class="form-control w-full flex flex-row gap-2 justify-end items-end pb-0">
-                    <button type="submit" class="btn btn-primary btn-sm w-1/2">Filter</button>
-                    <a href="<?= base_url('report') ?>" class="btn btn-ghost btn-sm w-1/2 text-base-content/60 border border-base-200">Reset</a>
+                    <a href="<?= base_url('report') ?>" class="btn btn-ghost btn-sm w-full text-base-content/60 border border-base-200 hover:bg-base-200 hover:text-base-content gap-2" title="Reset Filter">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                            <path fill-rule="evenodd" d="M15.312 11.424a5.5 5.5 0 0 1-9.201 2.466l-.312-.311h2.433a.75.75 0 0 0 0-1.5H3.989a.75.75 0 0 0-.75.75v4.242a.75.75 0 0 0 1.5 0v-2.43l.31.31a7 7 0 0 0 11.712-3.138.75.75 0 0 0-1.449-.39Zm1.23-3.723a.75.75 0 0 0 .219-.53V2.929a.75.75 0 0 0-1.5 0V5.36l-.31-.31A7 7 0 0 0 3.239 8.188a.75.75 0 1 0 1.448.389A5.5 5.5 0 0 1 13.89 6.11l.311.31h-2.432a.75.75 0 0 0 0 1.5h4.243a.75.75 0 0 0 .53-.219Z" clip-rule="evenodd" />
+                        </svg>
+                        Reset Filter
+                    </a>
                 </div>
             </div>
         </div>

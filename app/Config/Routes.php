@@ -19,6 +19,8 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     // Nanti akan di-route ke controller masing-masing
     $routes->get('search', 'Home::search', ['as' => 'search']);
     $routes->get('terduga/detail/(:num)', 'Home::terdugaDetail/$1', ['as' => 'terduga.detail']);
+    $routes->get('terduga/tambah', 'Home::terdugaTambah', ['as' => 'terduga.tambah']);
+    $routes->post('terduga/store', 'Home::terdugaStore', ['as' => 'terduga.store']);
     $routes->get('terduga/edit/(:num)', 'Home::terdugaEdit/$1', ['as' => 'terduga.edit']);
     $routes->post('terduga/update', 'Home::terdugaUpdate', ['as' => 'terduga.update']);
     $routes->get('upload-data', 'Home::uploadData', ['as' => 'upload-data']);

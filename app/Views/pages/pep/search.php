@@ -13,7 +13,7 @@
 
     <!-- Filters -->
     <div class="card bg-base-100 border border-base-200 shadow-sm mb-4">
-        <form action="" method="get" class="card-body p-4">
+        <form action="" method="get" class="card-body p-4" x-data x-ref="searchForm">
             <div class="flex flex-col sm:flex-row gap-3 items-end">
                 <div class="form-control flex-1">
                     <label class="label pb-1"><span class="label-text text-xs font-semibold uppercase text-base-content/70">Nama Subjek</span></label>
@@ -21,29 +21,29 @@
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-base-content/40">
                             <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd"/>
                         </svg>
-                        <input type="text" name="search" value="<?= esc($search) ?>" placeholder="Cari nama subjek..." class="grow bg-transparent text-sm outline-none" />
+                        <input type="text" name="search" value="<?= esc($search) ?>" placeholder="Cari nama subjek..." class="grow bg-transparent text-sm outline-none" @input.debounce.500ms="$refs.searchForm.submit()" />
                     </label>
                 </div>
                 <div class="form-control w-full sm:w-52">
                     <label class="label pb-1"><span class="label-text text-xs font-semibold uppercase text-base-content/70">No. Identitas</span></label>
                     <label class="input input-bordered input-sm flex items-center gap-2">
-                        <input type="text" name="filterNik" value="<?= esc($filterNik) ?>" placeholder="Cari NIK/No. Identitas..." class="grow bg-transparent text-sm outline-none font-mono" />
+                        <input type="text" name="filterNik" value="<?= esc($filterNik) ?>" placeholder="Cari NIK/No. Identitas..." class="grow bg-transparent text-sm outline-none font-mono" @input.debounce.500ms="$refs.searchForm.submit()" />
                     </label>
                 </div>
                 <div class="form-control w-full sm:w-48">
                     <label class="label pb-1"><span class="label-text text-xs font-semibold uppercase text-base-content/70">Status PEP</span></label>
-                    <select name="filterPep" class="select select-bordered select-sm w-full">
+                    <select name="filterPep" class="select select-bordered select-sm w-full" @change="$refs.searchForm.submit()">
                         <option value="" <?= $filterPep === '' ? 'selected' : '' ?>>Semua Status PEP</option>
                         <option value="Terindikasi" <?= $filterPep === 'Terindikasi' ? 'selected' : '' ?>>Terindikasi</option>
                         <option value="Tidak Terindikasi" <?= $filterPep === 'Tidak Terindikasi' ? 'selected' : '' ?>>Tidak Terindikasi</option>
                     </select>
                 </div>
-                <div class="form-control pb-0.5 flex flex-row gap-2">
-                    <button type="submit" class="btn btn-primary btn-sm">Cari</button>
-                    <a href="<?= base_url('pep/search') ?>" class="btn btn-ghost btn-sm text-base-content/60 hover:text-base-content" title="Reset Filter">
+                <div class="form-control pb-0 flex flex-row gap-2">
+                    <a href="<?= base_url('pep/search') ?>" class="btn btn-ghost btn-sm text-base-content/60 hover:text-base-content hover:bg-base-200 border border-base-200 gap-2" title="Reset Filter">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
                             <path fill-rule="evenodd" d="M15.312 11.424a5.5 5.5 0 0 1-9.201 2.466l-.312-.311h2.433a.75.75 0 0 0 0-1.5H3.989a.75.75 0 0 0-.75.75v4.242a.75.75 0 0 0 1.5 0v-2.43l.31.31a7 7 0 0 0 11.712-3.138.75.75 0 0 0-1.449-.39Zm1.23-3.723a.75.75 0 0 0 .219-.53V2.929a.75.75 0 0 0-1.5 0V5.36l-.31-.31A7 7 0 0 0 3.239 8.188a.75.75 0 1 0 1.448.389A5.5 5.5 0 0 1 13.89 6.11l.311.31h-2.432a.75.75 0 0 0 0 1.5h4.243a.75.75 0 0 0 .53-.219Z" clip-rule="evenodd" />
                         </svg>
+                        Reset Filter
                     </a>
                 </div>
             </div>

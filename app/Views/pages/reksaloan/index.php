@@ -11,10 +11,12 @@
     <!-- Filters -->
     <div class="card bg-base-100 shadow-sm border border-base-200 mb-6">
         <div class="card-body p-4">
-            <form action="<?= base_url('reksaloan') ?>" method="GET" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-4 items-end">
+            <form action="<?= base_url('reksaloan') ?>" method="GET" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 items-end" id="filterForm" x-data x-ref="searchForm">
+                <!-- Limit is moved outside, but we still need to send it. We'll use a hidden input that is synced, or just rely on the new select below that triggers form submit -->
+                
                 <div class="form-control w-full">
                     <label class="label pb-1"><span class="label-text text-xs font-semibold uppercase">Bulan</span></label>
-                    <select name="bulan" class="select select-bordered select-sm w-full">
+                    <select name="bulan" class="select select-bordered w-full" @change="$refs.searchForm.submit()">
                         <?php for ($i = 1; $i <= 12; $i++): ?>
                             <option value="<?= str_pad($i, 2, '0', STR_PAD_LEFT) ?>" <?= $bulan == str_pad($i, 2, '0', STR_PAD_LEFT) ? 'selected' : '' ?>>
                                 <?= date('F', mktime(0, 0, 0, $i, 10)) ?>
@@ -25,7 +27,7 @@
                 
                 <div class="form-control w-full">
                     <label class="label pb-1"><span class="label-text text-xs font-semibold uppercase">Tahun</span></label>
-                    <select name="tahun" class="select select-bordered select-sm w-full">
+                    <select name="tahun" class="select select-bordered w-full" @change="$refs.searchForm.submit()">
                         <?php $currentYear = date('Y'); for ($i = $currentYear; $i >= 2020; $i--): ?>
                             <option value="<?= $i ?>" <?= $tahun == $i ? 'selected' : '' ?>><?= $i ?></option>
                         <?php endfor; ?>
@@ -34,7 +36,7 @@
                 
                 <div class="form-control w-full">
                     <label class="label pb-1"><span class="label-text text-xs font-semibold uppercase">Cabang</span></label>
-                    <select name="branchFilter" id="branchFilter" class="select select-bordered select-sm w-full">
+                    <select name="branchFilter" id="branchFilter" class="select select-bordered w-full" @change="$refs.searchForm.submit()">
                         <option value="ALL">Semua Cabang</option>
                         <!-- Loaded via JS -->
                     </select>
@@ -42,27 +44,21 @@
                 
                 <div class="form-control w-full">
                     <label class="label pb-1"><span class="label-text text-xs font-semibold uppercase">Nama</span></label>
-                    <input type="text" name="qNama" id="qNama" value="<?= esc($qNama) ?>" class="input input-bordered input-sm w-full" placeholder="Cari nama..." />
+                    <input type="text" name="qNama" id="qNama" value="<?= esc($qNama) ?>" class="input input-bordered w-full" placeholder="Cari nama..." @input.debounce.500ms="$refs.searchForm.submit()" />
                 </div>
                 
                 <div class="form-control w-full">
                     <label class="label pb-1"><span class="label-text text-xs font-semibold uppercase">No KTP</span></label>
-                    <input type="text" name="qNik" id="qNik" value="<?= esc($qNik) ?>" class="input input-bordered input-sm w-full" placeholder="Cari KTP..." />
+                    <input type="text" name="qNik" id="qNik" value="<?= esc($qNik) ?>" class="input input-bordered w-full" placeholder="Cari KTP..." @input.debounce.500ms="$refs.searchForm.submit()" />
                 </div>
                 
-                <div class="form-control w-full">
-                    <label class="label pb-1"><span class="label-text text-xs font-semibold uppercase">Tampil</span></label>
-                    <select name="limit" id="limitFilter" class="select select-bordered select-sm w-full" onchange="this.form.submit()">
-                        <option value="50" <?= $limit == 50 ? 'selected' : '' ?>>50 Baris</option>
-                        <option value="100" <?= $limit == 100 ? 'selected' : '' ?>>100 Baris</option>
-                        <option value="200" <?= $limit == 200 ? 'selected' : '' ?>>200 Baris</option>
-                        <option value="500" <?= $limit == 500 ? 'selected' : '' ?>>500 Baris</option>
-                    </select>
-                </div>
-                
-                <div class="form-control w-full flex flex-row gap-2">
-                    <button type="submit" class="btn btn-primary btn-sm flex-1">Cari</button>
-                    <a href="<?= base_url('reksaloan') ?>" class="btn btn-ghost btn-sm">Reset</a>
+                <div class="form-control w-full flex flex-row items-end pb-0">
+                    <a href="<?= base_url('reksaloan') ?>" class="btn btn-ghost w-full text-base-content/60 hover:text-base-content hover:bg-base-200 gap-2 border border-base-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                            <path fill-rule="evenodd" d="M15.312 11.424a5.5 5.5 0 0 1-9.201 2.466l-.312-.311h2.433a.75.75 0 0 0 0-1.5H3.989a.75.75 0 0 0-.75.75v4.242a.75.75 0 0 0 1.5 0v-2.43l.31.31a7 7 0 0 0 11.712-3.138.75.75 0 0 0-1.449-.39Zm1.23-3.723a.75.75 0 0 0 .219-.53V2.929a.75.75 0 0 0-1.5 0V5.36l-.31-.31A7 7 0 0 0 3.239 8.188a.75.75 0 1 0 1.448.389A5.5 5.5 0 0 1 13.89 6.11l.311.31h-2.432a.75.75 0 0 0 0 1.5h4.243a.75.75 0 0 0 .53-.219Z" clip-rule="evenodd" />
+                        </svg>
+                        Reset Filter
+                    </a>
                 </div>
             </form>
         </div>
@@ -70,11 +66,23 @@
 
     <!-- Table -->
     <div class="card bg-base-100 shadow-sm border border-base-200">
-        <div class="card-body p-4 border-b border-base-200 pagination-container" style="display:none;">
-            <div class="flex justify-between items-center">
-                <span class="text-xs text-base-content/70 total-rows">Total Data: 0</span>
-                <div class="join pagination-buttons">
-                    <!-- Pagination JS -->
+        <div class="flex flex-row flex-wrap items-center justify-between gap-4 px-4 py-4 border-b border-base-200">
+            <div class="flex items-center gap-2">
+                <span class="text-xs text-base-content/60 font-semibold uppercase tracking-wide">Tampilkan</span>
+                <select name="limit" id="limitFilter" form="filterForm" class="select select-bordered select-sm w-24" onchange="document.getElementById('filterForm').submit()">
+                    <option value="50" <?= $limit == 50 ? 'selected' : '' ?>>50</option>
+                    <option value="100" <?= $limit == 100 ? 'selected' : '' ?>>100</option>
+                    <option value="200" <?= $limit == 200 ? 'selected' : '' ?>>200</option>
+                    <option value="500" <?= $limit == 500 ? 'selected' : '' ?>>500</option>
+                </select>
+                <span class="text-xs text-base-content/60 font-semibold uppercase tracking-wide">Baris</span>
+            </div>
+            <div class="pagination-container" style="display:none;">
+                <div class="flex items-center gap-3">
+                    <span class="text-xs text-base-content/70 font-medium total-rows">Total Data: 0</span>
+                    <div class="join pagination-buttons">
+                        <!-- Pagination JS -->
+                    </div>
                 </div>
             </div>
         </div>
