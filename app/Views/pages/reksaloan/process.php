@@ -244,8 +244,6 @@ document.addEventListener('alpine:init', () => {
         },
 
         triggerScrapper() {
-            if (this.form.nik.length < 10) return;
-
             this.pepState = 'loading';
 
             if (this.scrapperAbortController) {
