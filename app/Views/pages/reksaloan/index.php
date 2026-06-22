@@ -124,7 +124,7 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+(function() {
     const searchParams = new URLSearchParams(window.location.search);
     const branchSelect = document.getElementById('branchFilter');
     const tbody = document.getElementById('table-body');
@@ -221,7 +221,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(err => {
             tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-error font-semibold">Terjadi kesalahan saat memuat data.</td></tr>`;
         });
-});
+})();
 </script>
 
 <?= $this->endSection() ?>

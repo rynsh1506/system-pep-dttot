@@ -31,6 +31,11 @@
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
+    
+    <!-- Turbo Drive for SPA-like navigation -->
+    <script type="module">
+        import hotwiredTurbo from 'https://cdn.skypack.dev/@hotwired/turbo';
+    </script>
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -313,7 +318,8 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        (function() {
+
             const themeToggle = document.getElementById('theme-toggle');
             const flatpickrDarkTheme = document.getElementById('flatpickr-dark-theme');
 
@@ -333,7 +339,7 @@
                     updateFlatpickrTheme(theme);
                 });
             }
-        });
+        })();
 
         // We will define a global utility to show swal if needed, since livewire is gone
         window.showSwal = function(title, text, icon, redirectUrl = null) {
