@@ -39,6 +39,12 @@
         "sort-packages": true
     },
     "scripts": {
-        "test": "phpunit"
+        "test": "phpunit",
+        "post-install-cmd": [
+            "php scripts/patch-sqlsrv.php"
+        ],
+        "post-update-cmd": [
+            "php scripts/patch-sqlsrv.php"
+        ]
     }
 }
