@@ -160,14 +160,18 @@ class CheckingController extends BaseController
                         $existing = $pengajuanModel->where('nik', $nik)->first();
                         
                         if ($existing) {
+                            $finalHasilPep = ($existing->hasil_pep === 'Terindikasi') ? 'Terindikasi' : 'Tidak Terindikasi';
+                            
                             $pengajuanModel->update($existing->id, [
                                 'kategori' => 'Calon Debitur',
                                 'nama_cadeb' => $nama,
-                                'hasil_pep' => 'Tidak Terindikasi',
+                                'hasil_pep' => $finalHasilPep,
                                 'updated_at' => date('Y-m-d H:i:s')
                             ]);
                             $recordId = $existing->id;
-                            $msg = 'Tidak ditemukan di database PPATK. Data existing di database internal berhasil diupdate.';
+                            $msg = ($finalHasilPep === 'Terindikasi') 
+                                ? 'Tidak ditemukan di database PPATK, namun database internal berstatus Terindikasi. Status dipertahankan.' 
+                                : 'Tidak ditemukan di database PPATK. Data existing di database internal berhasil diupdate.';
                         } else {
                             $pengajuanModel->insert([
                                 'tanggal' => date('Y-m-d'),
@@ -180,6 +184,7 @@ class CheckingController extends BaseController
                             ]);
                             $recordId = $pengajuanModel->getInsertID();
                             $msg = 'Tidak ditemukan di database PPATK. Data baru berhasil ditambahkan ke database internal.';
+                            $finalHasilPep = 'Tidak Terindikasi';
                         }
 
                         // Sync to SQL Server
@@ -194,7 +199,7 @@ class CheckingController extends BaseController
                                 'DiperiksaOleh' => 'API_SYSTEM',
                                 'WaktuPeriksa'  => date('Y-m-d H:i:s'),
                                 'IsProceed'     => 0,
-                                'Hasilpep'      => 'Tidak Terindikasi',
+                                'Hasilpep'      => $finalHasilPep,
                             ];
                             
                             $existingSql = $sqlsrv->table('HasilPengecekan')->where('id_pengecekan', $recordId)->get()->getRow();
@@ -209,7 +214,7 @@ class CheckingController extends BaseController
 
                         return $this->respond([
                             'success' => true,
-                            'status' => 'Tidak Terindikasi',
+                            'status' => $finalHasilPep,
                             'source' => 'PPATK_API',
                             'message' => $msg
                         ]);
