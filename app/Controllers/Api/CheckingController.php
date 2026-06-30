@@ -93,6 +93,7 @@ class CheckingController extends BaseController
                         
                         if ($existing) {
                             $pengajuanModel->update($existing->id, [
+                                'kategori' => 'Calon Debitur',
                                 'nama_cadeb' => $nama,
                                 'hasil_pep' => 'Terindikasi',
                                 'updated_at' => date('Y-m-d H:i:s')
@@ -102,6 +103,7 @@ class CheckingController extends BaseController
                         } else {
                             $pengajuanModel->insert([
                                 'tanggal' => date('Y-m-d'),
+                                'kategori' => 'Calon Debitur',
                                 'nama_cadeb' => $nama,
                                 'nik' => $nik,
                                 'hasil_pep' => 'Terindikasi',
@@ -159,6 +161,7 @@ class CheckingController extends BaseController
                         
                         if ($existing) {
                             $pengajuanModel->update($existing->id, [
+                                'kategori' => 'Calon Debitur',
                                 'nama_cadeb' => $nama,
                                 'hasil_pep' => 'Tidak Terindikasi',
                                 'updated_at' => date('Y-m-d H:i:s')
@@ -168,6 +171,7 @@ class CheckingController extends BaseController
                         } else {
                             $pengajuanModel->insert([
                                 'tanggal' => date('Y-m-d'),
+                                'kategori' => 'Calon Debitur',
                                 'nama_cadeb' => $nama,
                                 'nik' => $nik,
                                 'hasil_pep' => 'Tidak Terindikasi',
